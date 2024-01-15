@@ -27,14 +27,14 @@ public class DriveJoystickCmd extends Command {
         double ySpeed = this.controller.getLeftY();
         double rotation = this.controller.getRightX();
         boolean RightBumperDown = this.controller.getRightBumper();
-
+        
         // Apply deadband
         xSpeed = MathUtil.applyDeadband(xSpeed, DriverJoystick.DEADBAND);
         ySpeed = MathUtil.applyDeadband(ySpeed, DriverJoystick.DEADBAND);
         rotation = MathUtil.applyDeadband(rotation, DriverJoystick.DEADBAND);
 
         // Drive
-        this.swerveSubsystem.move(xSpeed, -ySpeed, rotation, !RightBumperDown);
+        this.swerveSubsystem.teleMove(xSpeed, -ySpeed, rotation, !RightBumperDown);
     }
 
     @Override

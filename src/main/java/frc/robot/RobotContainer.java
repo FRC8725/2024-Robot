@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-import frc.robot.commands.AutoTrackCmd;
+import frc.robot.commands.AutoTrackNoteCmd;
 import frc.robot.commands.DriveJoystickCmd;
 import frc.robot.joysticks.DriverJoystick;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -12,9 +12,8 @@ import frc.robot.subsystems.VisionManager;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 
 public class RobotContainer {
@@ -29,18 +28,20 @@ public class RobotContainer {
     this.putToDashboard();
   }
 
-
   private void putToDashboard() {
 
   }
 
   private void configureBindings() {
       new JoystickButton(driverJoystick, XboxController.Button.kB.value).whileTrue(new InstantCommand(this.swerveSubsystem::zeroHeading));
-      new JoystickButton(driverJoystick, XboxController.Button.kY.value).whileTrue(new AutoTrackCmd(this.swerveSubsystem, this.visionManager));
+      new JoystickButton(driverJoystick, XboxController.Button.kX.value).whileTrue(new RunCommand(this.swerveSubsystem::lockModules, this.swerveSubsystem));
+      new JoystickButton(driverJoystick, XboxController.Button.kY.value).whileTrue(new AutoTrackNoteCmd(this.swerveSubsystem, this.visionManager));
   }
 
+  
+
   public Command getAutonomousCommand() {
-      return new AutoTrackCmd(swerveSubsystem, visionManager);
+      return new AutoTrackNoteCmd(swerveSubsystem, visionManager);
       // return new Auto(swerveSubsystem);
         
   }

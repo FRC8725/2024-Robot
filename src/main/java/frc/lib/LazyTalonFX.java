@@ -36,21 +36,21 @@ public class LazyTalonFX extends TalonFX {
 
     public void setRadPosition(double radian) {
         double rotation = Units.radiansToRotations(radian);
-        this.setRadPosition(rotation * (2048.0 / this.gearRatio));
+        this.getConfigurator().setPosition(rotation * (2048.0 / this.gearRatio));
     }
 
     public double getVelocityAsMPS(double circumference) {
         var rotorVelSingal = this.getRotorVelocity();
         double motorRPM = rotorVelSingal.getValue() * (600.0 / 2048.0);
         double mechRPM = motorRPM * this.gearRatio;
-        rotorVelSingal.waitForUpdate(0.020);
+        //rotorVelSingal.waitForUpdate(0.020);
         return mechRPM * circumference / 60.0;
     }
 
     public double getPositionAsRad() {
         var rotorPosSingal = this.getRotorPosition();
-        double radian = Units.rotationsToRadians(rotorPosSingal.getValue());
-        rotorPosSingal.waitForUpdate(0.020);
-        return radian / (2048.0 / this.gearRatio);
+        double radians = Units.rotationsToRadians(rotorPosSingal.getValue());
+        // rotorPosSingal.waitForUpdate(0.020);
+        return radians / (2048.0 / this.gearRatio);
     }
 }

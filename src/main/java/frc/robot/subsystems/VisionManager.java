@@ -7,9 +7,11 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class VisionManager extends SubsystemBase {
@@ -19,18 +21,24 @@ public class VisionManager extends SubsystemBase {
     return instance;
   }
 
-  DoubleSubscriber tidSub = NetworkTableInstance.getDefault().getTable("limelight").getDoubleTopic("tid").subscribe(-1);
-  DoubleArraySubscriber targetpose_robotspaceSub = NetworkTableInstance.getDefault().getTable("limelight").getDoubleArrayTopic("targetpose_robotspace").subscribe(new double[6]);
+  DoubleSubscriber tag_tidSub = NetworkTableInstance.getDefault().getTable("limelight").getDoubleTopic("tid").subscribe(-1);
+  DoubleArraySubscriber tag_targetpose_robotspaceSub = NetworkTableInstance.getDefault().getTable("limelight").getDoubleArrayTopic("targetpose_robotspace").subscribe(new double[6]);
+
+  DoubleSubscriber note_tvSub = NetworkTableInstance.getDefault().getTable("limelight-note").getDoubleTopic("tv").subscribe(-1);
+  DoubleSubscriber note_tySub = NetworkTableInstance.getDefault().getTable("limelight-note").getDoubleTopic("ty").subscribe(-1);
+  DoubleSubscriber note_txSub = NetworkTableInstance.getDefault().getTable("limelight-note").getDoubleTopic("tx").subscribe(-1);
 
   public VisionManager() { }
 
   @Override
-  public void periodic() { }
+  public void periodic() {
+    SmartDashboard.putNumber("distance", getNoteDistance());
+  }
 
   public Transform3d getAprilTagRelative() {
-    var bestCameraToTargetArray = targetpose_robotspaceSub.get();
+    var bestCameraToTargetArray = tag_targetpose_robotspaceSub.get();
     Transform3d bestCameraToTarget = new Transform3d();
-    if (hasTarget()) {
+    if (hasTagTarget()) {
       bestCameraToTarget = new Transform3d(
         new Translation3d (bestCameraToTargetArray[0], -bestCameraToTargetArray[1], bestCameraToTargetArray[2]),
         new Rotation3d(bestCameraToTargetArray[3], bestCameraToTargetArray[4], bestCameraToTargetArray[5])
@@ -39,45 +47,37 @@ public class VisionManager extends SubsystemBase {
     return bestCameraToTarget;
   }
 
-  public boolean hasTarget() {
-    return tidSub.get() != -1.;
+  public double getNoteDistance() {
+    if (!hasNoteTarget()) {
+      return 0.0;
+    }
+
+    double noteOffsetAngle = note_tySub.get();
+
+    double limelightHeightcm = 45.0;
+    double limelightMountDegrees = 0;
+
+    double noteHeight  = 0;
+    double angleToGoalRadians = Units.degreesToRadians(limelightMountDegrees + noteOffsetAngle);
+    
+    double distanceToTarget = (noteHeight - limelightHeightcm) / Math.tan(angleToGoalRadians);
+
+    return distanceToTarget;
+    
+  }
+
+  public double getNoteHorizontal() {
+    return note_txSub.get();
+  }
+
+  public boolean hasTagTarget() {
+    return tag_tidSub.get() != -1.;
+  }
+
+  public boolean hasNoteTarget() {
+    return note_tvSub.get() != 0.0;
   }
 
   boolean isFirstConnected = true;
 
-  // public static double getdistanceToGoalInches(){
-  //   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-  //   NetworkTableEntry ty = table.getEntry("ty");
-  //   double targetOffsetAngle_Vertical = ty.getDouble(0.0);
-    
-  //   double limelightMountAngleDegrees = Constants.VisionConstants.klimelightMountAngleDegrees;
-  //   double limelightLensHeightInches = Constants.VisionConstants.klimelightLensHeightInches;
-  //   double goalHeightInches =  Constants.VisionConstants.kgoalHeightInches;
-
-  //   double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
-  //   double angleToGoalRadians = Units.degreesToRadians(angleToGoalDegrees);
-
-  //   //calculate distance
-  //   double distanceToGoalInches = (goalHeightInches - limelightLensHeightInches)/Math.tan(angleToGoalRadians);
-  //   return distanceToGoalInches;
-  // }
-
-  // public static double getDistanceToGoalHorizontalInches(double distanceToGoalInches) {
-  //   if(distanceToGoalInches == -1) {
-  //     distanceToGoalInches = getdistanceToGoalInches();
-  //   }
-  //   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-  //   NetworkTableEntry tx = table.getEntry("tx");
-  //   double targetOffsetAngle_Horizontal = tx.getDouble(0.0);
-  //   double targetOffsetRadians_Horizontal = Units.degreesToRadians(targetOffsetAngle_Horizontal);
-  //   double distanceToGoalHorizontalInches = (Math.tan(targetOffsetRadians_Horizontal) * distanceToGoalInches) - Constants.VisionConstants.klimelightHorizontalOffsetInches;
-  //   return distanceToGoalHorizontalInches;
-  // }
-
-  // public static double getApriltagId(){
-  //   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-  //   NetworkTableEntry tid = table.getEntry("tid");
-  //   double apriltag_id = tid.getDouble(0.0);
-  //   return apriltag_id;
-  // }
 }
