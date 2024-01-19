@@ -1,10 +1,14 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MusicTone;
+import com.ctre.phoenix6.controls.MusicTone;
+import com.ctre.phoenix6.controls.MusicTone;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -12,6 +16,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.LazyTalonFX;
+import frc.robot.Constants;
 import frc.robot.RobotMap;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.mSwerveModuleConstants;
@@ -58,7 +63,7 @@ public class mSwerveModule {
     }
 
     public double getTurningPosition() {
-        return turningMotor.getPositionAsRad();
+        return turningMotor.getPositionAsRotation();
     }
 
     public double getDriveVelocity() {
@@ -82,25 +87,31 @@ public class mSwerveModule {
     }
 
     public SwerveModuleState getState() {
-        return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getAbsoluteEncoderRad()));
+        double driveVelocity =
+            driveMotor.getVelocity().getValue() *  Constants.mSwerveModuleConstants.kDriveVelocityConversionFactor;
+
+        return new SwerveModuleState(
+            driveVelocity,
+            new Rotation2d(getAbsoluteEncoderRad())
+        );
     }
 
     public double getDriveMeters() {
-        return driveMotor.getPositionAsRad() * mSwerveModuleConstants.kWheelDiameterMeters / 2;
+        return driveMotor.getPositionAsRotation() * Constants.mSwerveModuleConstants.kDrivePositionConversionFactor;
     }
 
     public SwerveModulePosition getPosition() {
-        return new SwerveModulePosition(getDriveMeters(), new Rotation2d(getAbsoluteEncoderRad()));
+        double drivePosition = driveMotor.getPosition().getValue() * Constants.mSwerveModuleConstants.kDrivePositionConversionFactor;
+    
+        return new SwerveModulePosition(
+            drivePosition,
+            new Rotation2d(getAbsoluteEncoderRad())
+        );
     }
 
     public void setDesiredState(SwerveModuleState state) {
-        if (Math.abs(state.speedMetersPerSecond) < 0.001) {
-            stop();
-            return;
-        }
-
         state = SwerveModuleState.optimize(state, getState().angle);
-        driveMotor.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
+        driveMotor.set(MathUtil.applyDeadband(state.speedMetersPerSecond, 0.001));
         turningMotor.set(turningPIDController.calculate(getAbsoluteEncoderRad(), state.angle.getRadians()));
         // SmartDashboard.putString("Swerve[" + absoluteEncoder.getDeviceID() + "] state", state.toString());
         putDashboard();
@@ -123,10 +134,10 @@ public class mSwerveModule {
                 break;
         }
     }
-
     public void putDashboard() {
         SmartDashboard.putNumber("ABS angle " + absoluteEncoder.getDeviceID(), getAbsoluteEncoderRad());
-        SmartDashboard.putNumber("Abs Position " + absoluteEncoder.getDeviceID(), getAbsPosition());
+        SmartDashboard.putNumber("Postion" + absoluteEncoder.getDeviceID(), driveMotor.getPositionAsRotation());
+        // SmartDashboard.putNumber("Abs Position " + absoluteEncoder.getDeviceID(), getAbsPosition());
     }
-}
+}//
 

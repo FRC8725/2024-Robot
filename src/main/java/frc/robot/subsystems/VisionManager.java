@@ -13,6 +13,7 @@ import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class VisionManager extends SubsystemBase {
   private static final VisionManager instance = new VisionManager();
@@ -53,14 +54,9 @@ public class VisionManager extends SubsystemBase {
     }
 
     double noteOffsetAngle = note_tySub.get();
-
-    double limelightHeightcm = 45.0;
-    double limelightMountDegrees = 0;
-
     double noteHeight  = 0;
-    double angleToGoalRadians = Units.degreesToRadians(limelightMountDegrees + noteOffsetAngle);
-    
-    double distanceToTarget = (noteHeight - limelightHeightcm) / Math.tan(angleToGoalRadians);
+    double angleToGoalRadians = Units.degreesToRadians(Constants.VisionConstants.klimelightMountDegrees + noteOffsetAngle);
+    double distanceToTarget = (noteHeight - Constants.VisionConstants.klimelightHeightcm) / Math.tan(angleToGoalRadians);
 
     return distanceToTarget;
     

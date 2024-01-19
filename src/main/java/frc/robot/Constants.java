@@ -20,7 +20,13 @@ public final class Constants {
         public static final double kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI;
         public static final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60;
 
-        public static final double kTurning_kP = 0.75;
+        public static final double kDrivePositionConversionFactor = 
+            1/kDriveMotorGearRatio/2048*kWheelDiameterMeters*Math.PI;
+
+        public static final double kDriveVelocityConversionFactor =
+            1/kDriveMotorGearRatio/2048*kWheelDiameterMeters*Math.PI*10;
+
+        public static final double kTurning_kP = 0.55;
         public static final double kTurning_kI = 0.;
         public static final double kTurning_kD = 0.;
 
@@ -89,9 +95,9 @@ public final class Constants {
         public static final double kPhysicalMaxSpeedMetersPerSecond = 3;
         public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 3 * Math.PI;
 
-        public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 4;
+        public static final double kTeleDriveMaxSpeedMetersPerSecond = 3 / kPhysicalMaxSpeedMetersPerSecond;
         public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = //
-                kPhysicalMaxAngularSpeedRadiansPerSecond / 4;
+                3 * Math.PI / kPhysicalMaxAngularSpeedRadiansPerSecond;
         public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
     }

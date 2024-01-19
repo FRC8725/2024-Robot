@@ -47,10 +47,12 @@ public class LazyTalonFX extends TalonFX {
         return mechRPM * circumference / 60.0;
     }
 
-    public double getPositionAsRad() {
+    public double getPositionAsRotation() {
         var rotorPosSingal = this.getRotorPosition();
-        double radians = Units.rotationsToRadians(rotorPosSingal.getValue());
+        return rotorPosSingal.getValue();
         // rotorPosSingal.waitForUpdate(0.020);
-        return radians / (2048.0 / this.gearRatio);
+        
+        
+        // return radians;
     }
 }

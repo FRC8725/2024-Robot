@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.controls.MusicTone;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -16,6 +17,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
@@ -42,8 +44,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
     private final AHRS gyro = new AHRS(SPI.Port.kMXP);
 
-    private final SwerveDrivePoseEstimator SwerveEstimator = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics, getRotation2d(), new SwerveModulePosition[]{frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()}, new Pose2d());
     private final Field2d field = new Field2d();
+    private final SwerveDriveOdometry mOdometry = new SwerveDriveOdometry(
+        DriveConstants.kDriveKinematics,
+        this.getRotation2d(),
+        getModulePositions()
+    );
 
     private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
 
@@ -105,15 +111,29 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public Pose2d getPose() {
-        return SwerveEstimator.getEstimatedPosition();
+        return mOdometry.getPoseMeters();
     }
 
-    public double getPitch() {
-        return gyro.getPitch();
+    public SwerveModuleState[] getModuleStates() {
+        return new SwerveModuleState[]{
+            frontLeft.getState(),
+            frontRight.getState(),
+            backLeft.getState(),
+            backRight.getState()
+        };
+    }
+
+    public SwerveModulePosition[] getModulePositions() {
+        return new SwerveModulePosition[] {
+            frontLeft.getPosition(),
+            frontRight.getPosition(),
+            backLeft.getPosition(),
+            backRight.getPosition()
+        };
     }
 
     public void resetOdometry(Pose2d pose) {
-        SwerveEstimator.resetPosition(getRotation2d(), new SwerveModulePosition[]{frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()}, pose);
+        mOdometry.resetPosition(getRotation2d(), getModulePositions(), pose);
     }
 
     public void stopModules() {
@@ -150,7 +170,6 @@ public class SwerveSubsystem extends SubsystemBase {
         xSpeed = xLimiter.calculate(xSpeed);
         ySpeed = yLimiter.calculate(ySpeed);
         rotation = turningLimiter.calculate(rotation);
-    
         constructAndSetModuleStates(xSpeed, ySpeed, rotation, fieldOriented);
     }
     
@@ -180,11 +199,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SwerveEstimator.update(getRotation2d(), new SwerveModulePosition[]{frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()});
+        mOdometry.update(getRotation2d(), getModulePositions());
+        // SwerveEstimator.update(getRotation2d(), getModulePositions());
         // var gloabalPose = vision.getEstimatedGlobalPose();
         // if (vision.hasTarget()) SwerveEstimator.addVisionMeasurement(gloabalPose.get().getFirst(), gloabalPose.get().getSecond());
         SmartDashboard.putNumber("Robot Heading", getHeading());
-        SmartDashboard.putNumber("Robot Pitch", getPitch());
+        // SmartDashboard.putNumber("Robot Pitch", getPitch());
         SmartDashboard.putData(field);
         field.setRobotPose(getPose());
         backLeft.putDashboard();
