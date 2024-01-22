@@ -9,49 +9,26 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
 public final class Constants {
-    public static final class mSwerveModuleConstants {
-        public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
-        public static final double kWheelRadius = kWheelDiameterMeters / 2;
-        public static final double kWheelCircumference = kWheelDiameterMeters * 2 * Math.PI;
-        public static final double kDriveMotorGearRatio = 1. / 8.14;
-        public static final double kTurningMotorGearRatio = 7. / 150.;
-        public static final double kDriveEncoderRot2Meter = kDriveMotorGearRatio * Math.PI * kWheelDiameterMeters;
-        public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
-        public static final double kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI;
-        public static final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60;
-
-        public static final double kDrivePositionConversionFactor = 
-            1/kDriveMotorGearRatio/2048*kWheelDiameterMeters*Math.PI;
-
-        public static final double kDriveVelocityConversionFactor =
-            1/kDriveMotorGearRatio/2048*kWheelDiameterMeters*Math.PI*10;
-
-        public static final double kTurning_kP = 0.55;
-        public static final double kTurning_kI = 0.;
-        public static final double kTurning_kD = 0.;
-
-    }
-
     public static final class AutoConstants {
         public static final double kMaxSpeedMetersPerSecond = 2;
         public static final double kMaxAngularSpeedRadiansPerSecond = 1.5 * Math.PI;
         public static final double kMaxAccelerationMetersPerSecondSquared = 2;
         public static final double kMaxAngularAccelerationRadiansPerSecondSquared = 2;
 
-        public static final double kPathing_kP = 0.87;
+        public static final double kPathing_kP = 5.0;
         public static final double kPathing_kI = 0.05;
         public static final double kPathing_kD = 0.;
 
-        public static final double kPathingTurning_kP = 0.265;
+        public static final double kPathingTurning_kP = 5.0;
         public static final double kPathingTurning_kI = 0.;
         public static final double kPathingTurning_kD = 0.;
 
         public static final TrapezoidProfile.Constraints kDriveControllerConstraints = //
-            new TrapezoidProfile.Constraints(kMaxSpeedMetersPerSecond, kMaxAccelerationMetersPerSecondSquared);
+                new TrapezoidProfile.Constraints(kMaxSpeedMetersPerSecond, kMaxAccelerationMetersPerSecondSquared);
 
         public static final TrapezoidProfile.Constraints kThetaControllerConstraints = //
-            new TrapezoidProfile.Constraints(kMaxAngularSpeedRadiansPerSecond, kMaxAccelerationMetersPerSecondSquared);
-        
+                new TrapezoidProfile.Constraints(kMaxAngularSpeedRadiansPerSecond, kMaxAccelerationMetersPerSecondSquared);
+
     }
 
     public static final class DriveConstants {
@@ -61,12 +38,12 @@ public final class Constants {
         // Distance between right and left wheels
         public static final double kWheelBase = Units.inchesToMeters(24);
         // Distance between front and back wheels
-        public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(new Translation2d(kWheelBase / 2, -kTrackWidth / 2), new Translation2d(kWheelBase / 2, kTrackWidth / 2), new Translation2d(-kWheelBase / 2, -kTrackWidth / 2), new Translation2d(-kWheelBase / 2, kTrackWidth / 2));
+        public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(new Translation2d(kWheelBase / 2, kTrackWidth / 2), new Translation2d(kWheelBase / 2, -kTrackWidth / 2), new Translation2d(-kWheelBase / 2, kTrackWidth / 2), new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
 
-        public static final boolean kFrontLeftTurningMotorReversed = false;
-        public static final boolean kBackLeftTurningEncoderReversed = false;
-        public static final boolean kFrontRightTurningEncoderReversed = false;
-        public static final boolean kBackRightTurningEncoderReversed = false;
+        public static final boolean kFrontLeftTurningMotorReversed = true;
+        public static final boolean kBackLeftTurningEncoderReversed = true;
+        public static final boolean kFrontRightTurningEncoderReversed = true;
+        public static final boolean kBackRightTurningEncoderReversed = true;
 
         public static final boolean kFrontLeftDriveMotorReversed = true;
         public static final boolean kBackLeftDriveMotorReversed = true;
@@ -99,15 +76,12 @@ public final class Constants {
     }
 
     public static final class VisionConstants {
-        public static final Transform3d Tag2Goal =
-        new Transform3d(
-                new Translation3d(-DriveConstants.kTrackWidth / 2, 0, 0),
-                new Rotation3d(0, 0, 0));
+        public static final Transform3d Tag2Goal = new Transform3d(new Translation3d(-DriveConstants.kTrackWidth / 2, 0, 0), new Rotation3d(0, 0, 0));
 
         public static final double klimelightHeightcm = 45.0;
         public static final double klimelightMountDegrees = 0;
-    
-        public static final double knoteHeight  = 0;
+
+        public static final double knoteHeight = 0;
 
         public static final double kAutoTrackYP = 0.01;
         public static final double kAutoTrackThetaP = 0.03;
