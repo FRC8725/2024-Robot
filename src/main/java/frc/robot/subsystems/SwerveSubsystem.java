@@ -4,14 +4,12 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.controls.MusicTone;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,35 +18,33 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.RobotMap;
+import frc.robot.RobotMap.SwervePort;
 
 public class SwerveSubsystem extends SubsystemBase {
-    private final mSwerveModule frontLeft = new mSwerveModule(RobotMap.kFrontLeftDriveMotorPort, RobotMap.kFrontLeftTurningMotorPort, DriveConstants.kFrontLeftDriveMotorReversed, DriveConstants.kFrontLeftTurningMotorReversed, RobotMap.kFrontLeftDriveAbsoluteEncoderPort, DriveConstants.kFrontLeftDriveAbsoluteEncoderOffsetRad, DriveConstants.kFrontLeftDriveAbsoluteEncoderReversed);
+    private final mSwerveModule frontLeft = new mSwerveModule(SwervePort.kFrontLeftDriveMotor, SwervePort.kFrontLeftTurningMotor, DriveConstants.kFrontLeftDriveMotorReversed, DriveConstants.kFrontLeftTurningMotorReversed, SwervePort.kFrontLeftDriveAbsEncoder, DriveConstants.kFrontLeftDriveAbsoluteEncoderOffsetRad, DriveConstants.kFrontLeftDriveAbsoluteEncoderReversed);
 
-    private final mSwerveModule frontRight = new mSwerveModule(RobotMap.kFrontRightDriveMotorPort, RobotMap.kFrontRightTurningMotorPort, DriveConstants.kFrontRightDriveEncoderReversed, DriveConstants.kFrontRightTurningEncoderReversed, RobotMap.kFrontRightDriveAbsoluteEncoderPort, DriveConstants.kFrontRightDriveAbsoluteEncoderOffsetRad, DriveConstants.kFrontRightDriveAbsoluteEncoderReversed);
+    private final mSwerveModule frontRight = new mSwerveModule(SwervePort.kFrontRightDriveMotor, SwervePort.kFrontRightTurningMotor, DriveConstants.kFrontRightDriveMotorReversed, DriveConstants.kFrontRightTurningEncoderReversed, SwervePort.kFrontRightDriveAbsEncoder, DriveConstants.kFrontRightDriveAbsoluteEncoderOffsetRad, DriveConstants.kFrontRightDriveAbsoluteEncoderReversed);
 
-    private final mSwerveModule backLeft = new mSwerveModule(RobotMap.kBackLeftDriveMotorPort, RobotMap.kBackLeftTurningMotorPort, DriveConstants.kBackLeftDriveEncoderReversed, DriveConstants.kBackLeftTurningEncoderReversed, RobotMap.kBackLeftDriveAbsoluteEncoderPort, DriveConstants.kBackLeftDriveAbsoluteEncoderOffsetRad, DriveConstants.kBackLeftDriveAbsoluteEncoderReversed);
+    private final mSwerveModule backLeft = new mSwerveModule(SwervePort.kBackLeftDriveMotor, SwervePort.kBackLeftTurningMotor, DriveConstants.kBackLeftDriveMotorReversed, DriveConstants.kBackLeftTurningEncoderReversed, SwervePort.kBackLeftDriveAbsEncoder, DriveConstants.kBackLeftDriveAbsoluteEncoderOffsetRad, DriveConstants.kBackLeftDriveAbsoluteEncoderReversed);
 
-    private final mSwerveModule backRight = new mSwerveModule(RobotMap.kBackRightDriveMotorPort, RobotMap.kBackRightTurningMotorPort, DriveConstants.kBackRightDriveEncoderReversed, DriveConstants.kBackRightTurningEncoderReversed, RobotMap.kBackRightDriveAbsoluteEncoderPort, DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad, DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
+    private final mSwerveModule backRight = new mSwerveModule(SwervePort.kBackRightDriveMotor, SwervePort.kBackRightTurningMotor, DriveConstants.kBackRightDriveMotorReversed, DriveConstants.kBackRightTurningEncoderReversed, SwervePort.kBackRightDriveAbsEncoder, DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad, DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
 
     private final AHRS gyro = new AHRS(SPI.Port.kMXP);
 
     private final Field2d field = new Field2d();
-    private final SwerveDriveOdometry mOdometry = new SwerveDriveOdometry(
-        DriveConstants.kDriveKinematics,
-        this.getRotation2d(),
-        getModulePositions()
+    
+    private final SwerveDriveOdometry odometry = new SwerveDriveOdometry(
+            Constants.DriveConstants.kDriveKinematics, getRotation2d(), this.getModulePositions()
     );
 
     private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
@@ -72,12 +68,11 @@ public class SwerveSubsystem extends SubsystemBase {
             this::getChassisSpeeds, 
             this::driveChassis, 
             new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                        new PIDConstants(AutoConstants.kPathingX_kP, 0.0, 0.0),
-                        new PIDConstants(AutoConstants.kPathingTurning_kP, 0.0, 0.0),
-                        4.5, // Max module speed, in m/s
-                        0.4, // Drive base radius in meters. Distance from robot center to furthest module.
-                        new ReplanningConfig() // Default path replanning config. See the API for the options here
-                ), 
+                        new PIDConstants(AutoConstants.kPathing_kP, AutoConstants.kPathing_kI, AutoConstants.kPathing_kD),
+                        new PIDConstants(AutoConstants.kPathingTurning_kP, AutoConstants.kPathingTurning_kI, AutoConstants.kPathingTurning_kD),
+                        AutoConstants.kMaxSpeedMetersPerSecond, // Max module speed, in m/s
+                        0.3, // Drive base radius in meters. Distance from robot center to furthest module.
+                        new ReplanningConfig(true, true, 5, 5)), 
             () -> {
                     var alliance = DriverStation.getAlliance();
                     if (alliance.isPresent()) {
@@ -90,12 +85,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     private ChassisSpeeds getChassisSpeeds() {
-        double velocityx = gyro.getVelocityX();
-        double velocityy = gyro.getVelocityY();
-
-        double omegaRadPerSec = Units.degreesToRadians(gyro.getRate());
-        
-        return new ChassisSpeeds(velocityx, velocityy, omegaRadPerSec);
+        return Constants.DriveConstants.kDriveKinematics.toChassisSpeeds(this.getModuleStates());
     }
 
     public void zeroHeading() {
@@ -111,7 +101,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public Pose2d getPose() {
-        return mOdometry.getPoseMeters();
+        return odometry.getPoseMeters();
     }
 
     public SwerveModuleState[] getModuleStates() {
@@ -133,7 +123,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void resetOdometry(Pose2d pose) {
-        mOdometry.resetPosition(getRotation2d(), getModulePositions(), pose);
+        odometry.resetPosition(getRotation2d(), getModulePositions(), pose);
     }
 
     public void stopModules() {
@@ -185,7 +175,7 @@ public class SwerveSubsystem extends SubsystemBase {
         SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
         setModuleStates(moduleStates);
     }
-
+    
     public Command getResetGyroCommand() {
         return Commands.runOnce(this::zeroHeading, this);
     }
@@ -199,12 +189,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        mOdometry.update(getRotation2d(), getModulePositions());
-        // SwerveEstimator.update(getRotation2d(), getModulePositions());
-        // var gloabalPose = vision.getEstimatedGlobalPose();
-        // if (vision.hasTarget()) SwerveEstimator.addVisionMeasurement(gloabalPose.get().getFirst(), gloabalPose.get().getSecond());
+        odometry.update(this.gyro.getRotation2d(), getModulePositions());
+
         SmartDashboard.putNumber("Robot Heading", getHeading());
-        // SmartDashboard.putNumber("Robot Pitch", getPitch());
         SmartDashboard.putData(field);
         field.setRobotPose(getPose());
         backLeft.putDashboard();

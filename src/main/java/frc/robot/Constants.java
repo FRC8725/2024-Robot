@@ -33,20 +33,16 @@ public final class Constants {
     }
 
     public static final class AutoConstants {
-        public static final double kMaxSpeedMetersPerSecond = DriveConstants.kPhysicalMaxSpeedMetersPerSecond / 3;
-        public static final double kMaxAngularSpeedRadiansPerSecond = DriveConstants.kPhysicalMaxAngularSpeedRadiansPerSecond / 5;
+        public static final double kMaxSpeedMetersPerSecond = 2;
+        public static final double kMaxAngularSpeedRadiansPerSecond = 1.5 * Math.PI;
         public static final double kMaxAccelerationMetersPerSecondSquared = 2;
         public static final double kMaxAngularAccelerationRadiansPerSecondSquared = 2;
 
-        public static final double kPathingX_kP = 0.;
-        public static final double kPathingX_kI = 0.;
-        public static final double kPathingX_kD = 0.;
+        public static final double kPathing_kP = 0.87;
+        public static final double kPathing_kI = 0.05;
+        public static final double kPathing_kD = 0.;
 
-        public static final double kPathingY_kP = 0.;
-        public static final double kPathingY_kI = 0.;
-        public static final double kPathingY_kD = 0.;
-
-        public static final double kPathingTurning_kP = 0.;
+        public static final double kPathingTurning_kP = 0.265;
         public static final double kPathingTurning_kI = 0.;
         public static final double kPathingTurning_kD = 0.;
 
@@ -72,32 +68,32 @@ public final class Constants {
         public static final boolean kFrontRightTurningEncoderReversed = false;
         public static final boolean kBackRightTurningEncoderReversed = false;
 
-        public static final boolean kFrontLeftDriveMotorReversed = false;
-        public static final boolean kBackLeftDriveEncoderReversed = false;
-        public static final boolean kFrontRightDriveEncoderReversed = false;
-        public static final boolean kBackRightDriveEncoderReversed = true;
+        public static final boolean kFrontLeftDriveMotorReversed = true;
+        public static final boolean kBackLeftDriveMotorReversed = true;
+        public static final boolean kFrontRightDriveMotorReversed = false;
+        public static final boolean kBackRightDriveMotorReversed = false;
 
-        public static final boolean kFrontLeftDriveAbsoluteEncoderReversed = true;
-        public static final boolean kBackLeftDriveAbsoluteEncoderReversed = true;
-        public static final boolean kFrontRightDriveAbsoluteEncoderReversed = true;
-        public static final boolean kBackRightDriveAbsoluteEncoderReversed = true;
+        public static final boolean kFrontLeftDriveAbsoluteEncoderReversed = false;
+        public static final boolean kBackLeftDriveAbsoluteEncoderReversed = false;
+        public static final boolean kFrontRightDriveAbsoluteEncoderReversed = false;
+        public static final boolean kBackRightDriveAbsoluteEncoderReversed = false;
 
-        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = 0.698 * 180 / Math.PI;
-        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = 1.803 * 180 / Math.PI;
-        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = -1.059 * 180 / Math.PI;
-        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = 0.645 * 180 / Math.PI;
+        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = 0.;
+        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = 0.;
+        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = 0.;
+        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = 0.;
 
-        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRotation = Units.radiansToRotations(kFrontLeftDriveAbsoluteEncoderOffsetRad);
-        public static final double kBackLeftDriveAbsoluteEncoderOffsetRotation = Units.radiansToRotations(kBackLeftDriveAbsoluteEncoderOffsetRad);
-        public static final double kFrontRightDriveAbsoluteEncoderOffsetRotation = Units.radiansToRotations(kFrontRightDriveAbsoluteEncoderOffsetRad);
-        public static final double kBackRightDriveAbsoluteEncoderOffsetRotation = Units.radiansToRotations(kBackRightDriveAbsoluteEncoderOffsetRad);
+        public static final double kFrontLeftDriveAbsoluteEncoderOffsetDegrees = Units.radiansToDegrees(kFrontLeftDriveAbsoluteEncoderOffsetRad);
+        public static final double kBackLeftDriveAbsoluteEncoderOffsetDegrees = Units.radiansToDegrees(kBackLeftDriveAbsoluteEncoderOffsetRad);
+        public static final double kFrontRightDriveAbsoluteEncoderOffsetDegrees = Units.radiansToDegrees(kFrontRightDriveAbsoluteEncoderOffsetRad);
+        public static final double kBackRightDriveAbsoluteEncoderOffsetDegrees = Units.radiansToDegrees(kBackRightDriveAbsoluteEncoderOffsetRad);
 
         public static final double kPhysicalMaxSpeedMetersPerSecond = 3;
         public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 3 * Math.PI;
 
-        public static final double kTeleDriveMaxSpeedMetersPerSecond = 3 / kPhysicalMaxSpeedMetersPerSecond;
+        public static final double kTeleDriveMaxSpeedMetersPerSecond = 2 / kPhysicalMaxSpeedMetersPerSecond;
         public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = //
-                3 * Math.PI / kPhysicalMaxAngularSpeedRadiansPerSecond;
+                2 * Math.PI / kPhysicalMaxAngularSpeedRadiansPerSecond;
         public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
     }
@@ -116,5 +112,10 @@ public final class Constants {
         public static final double kAutoTrackYP = 0.01;
         public static final double kAutoTrackThetaP = 0.03;
 
+    }
+
+    public static final class ShooterConstants {
+        public static final double kshootSpeed = 0.9;
+        public static final double kloadSpeed = 0.5;
     }
 }

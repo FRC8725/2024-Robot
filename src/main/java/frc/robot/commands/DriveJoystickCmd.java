@@ -34,7 +34,7 @@ public class DriveJoystickCmd extends Command {
         rotation = MathUtil.applyDeadband(rotation, DriverJoystick.DEADBAND);
 
         // Drive
-        this.swerveSubsystem.teleMove(xSpeed, -ySpeed, rotation, !RightBumperDown);
+        this.swerveSubsystem.teleMove(-xSpeed, -ySpeed, rotation, !RightBumperDown);
     }
 
     @Override

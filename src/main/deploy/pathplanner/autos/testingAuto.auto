@@ -1,0 +1,43 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 2.0,
+      "y": 7.0
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "npath-1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "npath-2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "npath-3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "npath-4"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
