@@ -14,6 +14,7 @@ import frc.robot.commands.AutoTrackNoteCmd;
 import frc.robot.commands.DriveJoystickCmd;
 import frc.robot.commands.ShootCmd;
 import frc.robot.joysticks.DriverJoystick;
+import frc.robot.joysticks.SwerveJoystick;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionManager;
@@ -21,28 +22,25 @@ import frc.robot.subsystems.VisionManager;
 public class RobotContainer implements IDashboardProvider {
     private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
     private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
-
-    private final DriverJoystick driverJoystick = new DriverJoystick(1);
+    private final SwerveJoystick swerveJoystick = new SwerveJoystick(1);
     private final DriverJoystick controllerJoystick = new DriverJoystick(0);
-
     private final VisionManager visionManager = new VisionManager();
     private final SendableChooser<Command> autoChooser;
     private final DigitalInput testDI = new DigitalInput(0);
 
     public RobotContainer() {
-        DriveJoystickCmd driverJoystickCommand = new DriveJoystickCmd(swerveSubsystem, driverJoystick);
-        this.swerveSubsystem.setDefaultCommand(driverJoystickCommand);
+        this.swerveJoystick.setDefaultCommand(this.swerveSubsystem);
         ShootCmd shootCommand = new ShootCmd(shooterSubsystem, controllerJoystick);
         this.shooterSubsystem.setDefaultCommand(shootCommand);
         this.autoChooser = AutoBuilder.buildAutoChooser();
-        this.registerDashboard();
         this.configureBindings();
+        this.registerDashboard();
     }
 
     private void configureBindings() {
-        new JoystickButton(driverJoystick, XboxController.Button.kB.value).whileTrue(new InstantCommand(this.swerveSubsystem::zeroHeading));
-        new JoystickButton(driverJoystick, XboxController.Button.kX.value).whileTrue(new RunCommand(this.swerveSubsystem::lockModules, this.swerveSubsystem));
-        new JoystickButton(driverJoystick, XboxController.Button.kY.value).whileTrue(new AutoTrackNoteCmd(this.swerveSubsystem, this.visionManager));
+        new JoystickButton(swerveJoystick, XboxController.Button.kB.value).whileTrue(new InstantCommand(this.swerveSubsystem::zeroHeading));
+        new JoystickButton(swerveJoystick, XboxController.Button.kX.value).whileTrue(new RunCommand(this.swerveSubsystem::lockModules, this.swerveSubsystem));
+        new JoystickButton(swerveJoystick, XboxController.Button.kY.value).whileTrue(new AutoTrackNoteCmd(this.swerveSubsystem, this.visionManager));
     }
 
     public Command getAutonomousCommand() {
@@ -51,7 +49,8 @@ public class RobotContainer implements IDashboardProvider {
     }
 
     @Override
-    public void putDashboard() {}
+    public void putDashboard() {
+    }
 
     @Override
     public void putDashboardOnce() {

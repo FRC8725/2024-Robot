@@ -15,19 +15,22 @@ public class Robot extends TimedRobot {
         DashboardHelper.enableRegistration();
         this.robotContainer = new RobotContainer();
         DashboardHelper.disableRegistration();
+        DashboardHelper.putAllRegistriesOnce();
     }
 
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
-        DashboardHelper.putAllRegistries();
+        DashboardHelper.putAllRegistriesPeriodic();
     }
 
     @Override
-    public void disabledInit() {}
+    public void disabledInit() {
+    }
 
     @Override
-    public void disabledPeriodic() {}
+    public void disabledPeriodic() {
+    }
 
     @Override
     public void autonomousInit() {
@@ -50,7 +53,8 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void teleopPeriodic() {}
+    public void teleopPeriodic() {
+    }
 
     @Override
     public void testInit() {
@@ -58,11 +62,14 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void testPeriodic() {}
+    public void testPeriodic() {
+    }
 
     @Override
-    public void simulationInit() {}
+    public void simulationInit() {
+    }
 
     @Override
-    public void simulationPeriodic() {}
+    public void simulationPeriodic() {
+    }
 }

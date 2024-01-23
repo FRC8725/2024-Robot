@@ -18,7 +18,8 @@ public class DriveJoystickCmd extends Command {
     }
 
     @Override
-    public void initialize() {}
+    public void initialize() {
+    }
 
     @Override
     public void execute() {
@@ -27,7 +28,7 @@ public class DriveJoystickCmd extends Command {
         double ySpeed = this.controller.getLeftY();
         double rotation = this.controller.getRightX();
         boolean RightBumperDown = this.controller.getRightBumper();
-        
+
         // Apply deadband
         xSpeed = MathUtil.applyDeadband(xSpeed, DriverJoystick.DEADBAND);
         ySpeed = MathUtil.applyDeadband(ySpeed, DriverJoystick.DEADBAND);

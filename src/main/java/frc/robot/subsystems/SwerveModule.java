@@ -11,6 +11,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.LazyTalonFX;
 import frc.lib.helpers.IDashboardProvider;
+import frc.lib.helpers.OutputUnit;
+import frc.lib.helpers.UnitTypes;
 import frc.robot.RobotMap.SwervePort;
 
 public class SwerveModule implements IDashboardProvider {
@@ -62,17 +64,20 @@ public class SwerveModule implements IDashboardProvider {
         return new SwerveModuleState(this.getDriveVelocity(), new Rotation2d(this.getAbsTurningPosition()));
     }
 
-    private double getDrivePosition() { // m
+    @OutputUnit(UnitTypes.METERS)
+    private double getDrivePosition() {
         double rawPosition = this.driveMotor.getPosition().getValue();
         return rawPosition * DRIVING_GEAR_RATIO * 2.0 * Math.PI * WHEEL_RADIUS;
     }
 
-    private double getDriveVelocity() { // m/s
+    @OutputUnit(UnitTypes.METERS_PER_SECOND)
+    private double getDriveVelocity() {
         double rawVelocity = this.driveMotor.getVelocity().getValue();
         return rawVelocity * DRIVING_GEAR_RATIO * 2.0 * Math.PI * WHEEL_RADIUS;
     }
 
-    private double getAbsTurningPosition() { // rad in [-Math.PI, Math.PI)
+    @OutputUnit(UnitTypes.RADIANS)
+    private double getAbsTurningPosition() { // value in [-Math.PI, Math.PI)
         double position = this.absoluteEncoder.getAbsolutePosition().getValue();
         position = Units.rotationsToRadians(position) - this.absEncoderOffset;
         return Math.IEEEremainder(position, 2.0 * Math.PI);
@@ -121,5 +126,6 @@ public class SwerveModule implements IDashboardProvider {
     }
 
     @Override
-    public void putDashboardOnce() {}
+    public void putDashboardOnce() {
+    }
 }

@@ -4,6 +4,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 
 import java.util.ArrayList;
 
+/**
+ * Mechanisms for {@link IDashboardProvider}. Implemented in {@link frc.robot.Robot}
+ */
 public class DashboardHelper {
     private static final ArrayList<IDashboardProvider> providers = new ArrayList<>();
     private static boolean isRegistrationValid = false;
@@ -16,8 +19,12 @@ public class DashboardHelper {
         }
     }
 
-    public static void putAllRegistries() {
+    public static void putAllRegistriesPeriodic() {
         providers.forEach(IDashboardProvider::putDashboard);
+    }
+
+    public static void putAllRegistriesOnce() {
+        providers.forEach(IDashboardProvider::putDashboardOnce);
     }
 
     public static void enableRegistration() {
