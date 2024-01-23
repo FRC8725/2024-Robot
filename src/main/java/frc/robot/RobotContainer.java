@@ -25,7 +25,6 @@ public class RobotContainer implements IDashboardProvider {
     private final DriverJoystick controllerJoystick = new DriverJoystick(0);
     private final VisionManager visionManager = new VisionManager();
     private final SendableChooser<Command> autoChooser;
-    private final DigitalInput testDI = new DigitalInput(0);
 
     public RobotContainer() {
         this.swerveJoystick.setDefaultCommand(this.swerveSubsystem);
