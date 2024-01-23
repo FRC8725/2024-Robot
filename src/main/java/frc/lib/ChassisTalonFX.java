@@ -5,10 +5,10 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.util.Units;
 
-public class LazyTalonFX extends TalonFX {
+public class ChassisTalonFX extends TalonFX {
     private final double gearRatio;
 
-    public LazyTalonFX(int motorId, double gearRatio) {
+    public ChassisTalonFX(int motorId, double gearRatio) {
         super(motorId);
         // If the motor is for chassis, we won't set a high current limit.
         this.setCurrentLimit(false);

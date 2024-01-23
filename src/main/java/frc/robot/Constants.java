@@ -92,11 +92,19 @@ public final class Constants {
 
         public static final double kAutoTrackYP = 0.01;
         public static final double kAutoTrackThetaP = 0.03;
-
     }
 
     public static final class ShooterConstants {
         public static final double kShootSpeed = 0.9;
         public static final double kLoadSpeed = 0.5;
+    }
+
+    public static final class  ElevatorConstants {
+        public static final double kHeightLimit = 0.0;
+        public static final double kSpeed = 0.5;
+
+        public static final double kP = 0.0;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
     }
 }

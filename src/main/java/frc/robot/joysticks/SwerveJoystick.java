@@ -8,7 +8,7 @@ import frc.lib.helpers.UnitTypes;
 import frc.robot.commands.DriveJoystickCmd;
 import frc.robot.subsystems.SwerveSubsystem;
 
-public class SwerveJoystick extends XboxController {
+public class SwerveJoystick extends XboxController{
     public static final double DEADBAND = 0.05;
 
     public SwerveJoystick(int port) {
