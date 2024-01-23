@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.lib.helpers.IDashboardProvider;
 import frc.robot.commands.AutoTrackNoteCmd;
-import frc.robot.commands.DriveJoystickCmd;
 import frc.robot.commands.ShootCmd;
 import frc.robot.joysticks.DriverJoystick;
 import frc.robot.joysticks.SwerveJoystick;

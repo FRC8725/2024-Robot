@@ -55,8 +55,8 @@ public class VisionManager extends SubsystemBase {
 
     double noteOffsetAngle = note_tySub.get();
     double noteHeight  = 0;
-    double angleToGoalRadians = Units.degreesToRadians(Constants.VisionConstants.klimelightMountDegrees + noteOffsetAngle);
-    double distanceToTarget = (noteHeight - Constants.VisionConstants.klimelightHeightcm) / Math.tan(angleToGoalRadians);
+    double angleToGoalRadians = Units.degreesToRadians(Constants.VisionConstants.kLimelightMount + noteOffsetAngle);
+    double distanceToTarget = (noteHeight - Constants.VisionConstants.kLimelightHeight) / Math.tan(angleToGoalRadians);
 
     return distanceToTarget;
     

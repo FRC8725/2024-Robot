@@ -32,9 +32,9 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void shoot() {
-        rightMotor.set(ShooterConstants.kshootSpeed);
-        leftMotor.set(ShooterConstants.kshootSpeed);
-        loadMotor.set(ShooterConstants.kloadSpeed);
+        rightMotor.set(ShooterConstants.kShootSpeed);
+        leftMotor.set(ShooterConstants.kShootSpeed);
+        loadMotor.set(ShooterConstants.kLoadSpeed);
     }
 
     public void stop() {
@@ -44,7 +44,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void load() {
-        loadMotor.set(ShooterConstants.kloadSpeed);
+        loadMotor.set(ShooterConstants.kLoadSpeed);
     }
 
     @Override

@@ -26,7 +26,7 @@ public class SwerveModule implements IDashboardProvider {
     private final PIDController turningPIDController = new PIDController(0.45, 0.0, 0.0);
     private final String name;
 
-    public SwerveModule(String name, int driveMotorId, int turningMotorId, boolean driveMotorInverted, boolean turningMotorInverted, int absoluteEncoderID, double absEncoderOffset, boolean absoluteEncoderReversed) {
+    public SwerveModule(String name, int driveMotorId, int turningMotorId, boolean driveMotorInverted, boolean turningMotorInverted, int absoluteEncoderID, double absEncoderOffset) {
         this.name = name;
         this.absEncoderOffset = absEncoderOffset;
         this.absoluteEncoder = new CANcoder(absoluteEncoderID);
@@ -49,11 +49,11 @@ public class SwerveModule implements IDashboardProvider {
         this.driveMotor.setInverted(inverted);
     }
 
-    private void configTurningMotor(boolean reversed) {
+    private void configTurningMotor(boolean inverted) {
         this.turningMotor.getConfigurator().apply(new TalonFXConfiguration());
         this.turningMotor.setCurrentLimit(false);
         this.turningMotor.setNeutralMode(NeutralModeValue.Brake);
-        this.turningMotor.setInverted(reversed);
+        this.turningMotor.setInverted(inverted);
     }
 
     public SwerveModulePosition getPosition() {
@@ -111,11 +111,11 @@ public class SwerveModule implements IDashboardProvider {
         switch (this.turningMotor.getDeviceID()) {
             case (SwervePort.kFrontLeftTurningMotor):
             case (SwervePort.kBackRightTurningMotor):
-                this.turningMotor.set(this.turningPIDController.calculate(getAbsTurningPosition(), Math.PI / 4));
+                this.turningMotor.set(this.turningPIDController.calculate(this.getAbsTurningPosition(), Math.PI / 4));
                 break;
             case (SwervePort.kFrontRightTurningMotor):
             case (SwervePort.kBackLeftTurningMotor):
-                this.turningMotor.set(this.turningPIDController.calculate(getAbsTurningPosition(), -Math.PI / 4));
+                this.turningMotor.set(this.turningPIDController.calculate(this.getAbsTurningPosition(), -Math.PI / 4));
                 break;
         }
     }

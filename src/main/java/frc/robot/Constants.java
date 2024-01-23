@@ -7,12 +7,17 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import frc.lib.helpers.OutputUnit;
+import frc.lib.helpers.UnitTypes;
 
 public final class Constants {
     public static final class AutoConstants {
-        public static final double kMaxSpeedMetersPerSecond = 2;
-        public static final double kMaxAngularSpeedRadiansPerSecond = 1.5 * Math.PI;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 2;
+        @OutputUnit(UnitTypes.METERS_PER_SECOND)
+        public static final double MAX_SPEED = 2;
+        @OutputUnit(UnitTypes.RADIANS_PER_SECOND)
+        public static final double MAX_ANGULAR_SPEED = 1.5 * Math.PI;
+        @OutputUnit(UnitTypes.METERS_PER_SECOND_SQUARED)
+        public static final double MAX_ACCELERATION = 2;
         public static final double kMaxAngularAccelerationRadiansPerSecondSquared = 2;
 
         public static final double kPathing_kP = 5.0;
@@ -24,10 +29,10 @@ public final class Constants {
         public static final double kPathingTurning_kD = 0.;
 
         public static final TrapezoidProfile.Constraints kDriveControllerConstraints = //
-                new TrapezoidProfile.Constraints(kMaxSpeedMetersPerSecond, kMaxAccelerationMetersPerSecondSquared);
+                new TrapezoidProfile.Constraints(MAX_SPEED, MAX_ACCELERATION);
 
         public static final TrapezoidProfile.Constraints kThetaControllerConstraints = //
-                new TrapezoidProfile.Constraints(kMaxAngularSpeedRadiansPerSecond, kMaxAccelerationMetersPerSecondSquared);
+                new TrapezoidProfile.Constraints(MAX_ANGULAR_SPEED, MAX_ACCELERATION);
 
     }
 
@@ -78,10 +83,11 @@ public final class Constants {
     public static final class VisionConstants {
         public static final Transform3d Tag2Goal = new Transform3d(new Translation3d(-DriveConstants.kTrackWidth / 2, 0, 0), new Rotation3d(0, 0, 0));
 
-        public static final double klimelightHeightcm = 45.0;
-        public static final double klimelightMountDegrees = 0;
-
-        public static final double knoteHeight = 0;
+        @OutputUnit(UnitTypes.CENTIMETERS)
+        public static final double kLimelightHeight = 45.0;
+        @OutputUnit(UnitTypes.DEGREES)
+        public static final double kLimelightMount = 0;
+        public static final double kNoteHeight = 0;
 
         public static final double kAutoTrackYP = 0.01;
         public static final double kAutoTrackThetaP = 0.03;
@@ -89,7 +95,7 @@ public final class Constants {
     }
 
     public static final class ShooterConstants {
-        public static final double kshootSpeed = 0.9;
-        public static final double kloadSpeed = 0.5;
+        public static final double kShootSpeed = 0.9;
+        public static final double kLoadSpeed = 0.5;
     }
 }

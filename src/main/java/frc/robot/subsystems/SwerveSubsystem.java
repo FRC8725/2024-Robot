@@ -26,13 +26,13 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.RobotMap.SwervePort;
 
 public class SwerveSubsystem extends SubsystemBase {
-    private final SwerveModule frontLeft = new SwerveModule("FL Module", SwervePort.kFrontLeftDriveMotor, SwervePort.kFrontLeftTurningMotor, DriveConstants.kFrontLeftDriveMotorReversed, DriveConstants.kFrontLeftTurningMotorReversed, SwervePort.kFrontLeftDriveAbsEncoder, DriveConstants.kFrontLeftDriveAbsoluteEncoderOffsetRad, DriveConstants.kFrontLeftDriveAbsoluteEncoderReversed);
+    private final SwerveModule frontLeft = new SwerveModule("FL Module", SwervePort.kFrontLeftDriveMotor, SwervePort.kFrontLeftTurningMotor, DriveConstants.kFrontLeftDriveMotorReversed, DriveConstants.kFrontLeftTurningMotorReversed, SwervePort.kFrontLeftDriveAbsEncoder, DriveConstants.kFrontLeftDriveAbsoluteEncoderOffsetRad);
 
-    private final SwerveModule frontRight = new SwerveModule("FR Module", SwervePort.kFrontRightDriveMotor, SwervePort.kFrontRightTurningMotor, DriveConstants.kFrontRightDriveMotorReversed, DriveConstants.kFrontRightTurningEncoderReversed, SwervePort.kFrontRightDriveAbsEncoder, DriveConstants.kFrontRightDriveAbsoluteEncoderOffsetRad, DriveConstants.kFrontRightDriveAbsoluteEncoderReversed);
+    private final SwerveModule frontRight = new SwerveModule("FR Module", SwervePort.kFrontRightDriveMotor, SwervePort.kFrontRightTurningMotor, DriveConstants.kFrontRightDriveMotorReversed, DriveConstants.kFrontRightTurningEncoderReversed, SwervePort.kFrontRightDriveAbsEncoder, DriveConstants.kFrontRightDriveAbsoluteEncoderOffsetRad);
 
-    private final SwerveModule backLeft = new SwerveModule("BL Module", SwervePort.kBackLeftDriveMotor, SwervePort.kBackLeftTurningMotor, DriveConstants.kBackLeftDriveMotorReversed, DriveConstants.kBackLeftTurningEncoderReversed, SwervePort.kBackLeftDriveAbsEncoder, DriveConstants.kBackLeftDriveAbsoluteEncoderOffsetRad, DriveConstants.kBackLeftDriveAbsoluteEncoderReversed);
+    private final SwerveModule backLeft = new SwerveModule("BL Module", SwervePort.kBackLeftDriveMotor, SwervePort.kBackLeftTurningMotor, DriveConstants.kBackLeftDriveMotorReversed, DriveConstants.kBackLeftTurningEncoderReversed, SwervePort.kBackLeftDriveAbsEncoder, DriveConstants.kBackLeftDriveAbsoluteEncoderOffsetRad);
 
-    private final SwerveModule backRight = new SwerveModule("BR Module", SwervePort.kBackRightDriveMotor, SwervePort.kBackRightTurningMotor, DriveConstants.kBackRightDriveMotorReversed, DriveConstants.kBackRightTurningEncoderReversed, SwervePort.kBackRightDriveAbsEncoder, DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad, DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
+    private final SwerveModule backRight = new SwerveModule("BR Module", SwervePort.kBackRightDriveMotor, SwervePort.kBackRightTurningMotor, DriveConstants.kBackRightDriveMotorReversed, DriveConstants.kBackRightTurningEncoderReversed, SwervePort.kBackRightDriveAbsEncoder, DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad);
 
     private final AHRS gyro = new AHRS(SPI.Port.kMXP);
 
@@ -57,7 +57,7 @@ public class SwerveSubsystem extends SubsystemBase {
         }).start();
 
         AutoBuilder.configureHolonomic(this::getPose, this::resetOdometry, this::getChassisSpeeds, this::driveChassis, new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                new PIDConstants(AutoConstants.kPathing_kP, AutoConstants.kPathing_kI, AutoConstants.kPathing_kD), new PIDConstants(AutoConstants.kPathingTurning_kP, AutoConstants.kPathingTurning_kI, AutoConstants.kPathingTurning_kD), AutoConstants.kMaxSpeedMetersPerSecond, // Max module speed, in m/s
+                new PIDConstants(AutoConstants.kPathing_kP, AutoConstants.kPathing_kI, AutoConstants.kPathing_kD), new PIDConstants(AutoConstants.kPathingTurning_kP, AutoConstants.kPathingTurning_kI, AutoConstants.kPathingTurning_kD), AutoConstants.MAX_SPEED, // Max module speed, in m/s
                 0.3, // Drive base radius in meters. Distance from robot center to furthest module.
                 new ReplanningConfig(true, true, 5, 5)), () -> {
             var alliance = DriverStation.getAlliance();
