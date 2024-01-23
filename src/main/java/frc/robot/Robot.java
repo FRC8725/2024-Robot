@@ -34,6 +34,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
+        this.robotContainer.setSwerveStart();
         this.autonomousCommand = this.robotContainer.getAutonomousCommand();
 
         if (this.autonomousCommand != null) {
@@ -50,6 +51,8 @@ public class Robot extends TimedRobot {
         if (this.autonomousCommand != null) {
             this.autonomousCommand.cancel();
         }
+
+        this.robotContainer.resetSwerveStart();
     }
 
     @Override

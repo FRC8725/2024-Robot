@@ -25,8 +25,12 @@ public class SwerveDriveCommand extends Command {
         final double ySpeed = this.controller.getDesiredRobotYSpeed();
         final double rotation = this.controller.getDesiredRobotRotation();
         boolean RightBumperDown = this.controller.getRightBumper();
-        // TODO fix this nonsense
-        this.swerveSubsystem.teleMove(xSpeed, ySpeed, rotation, !RightBumperDown);
+
+        if (xSpeed != 0 || ySpeed != 0 || rotation != 0) {
+            this.swerveSubsystem.setStart();
+        }
+
+        this.swerveSubsystem.drive(xSpeed, ySpeed, rotation, !RightBumperDown);
     }
 
     @Override

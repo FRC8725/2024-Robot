@@ -34,6 +34,14 @@ public class RobotContainer implements IDashboardProvider {
         this.registerDashboard();
     }
 
+    public void setSwerveStart() {
+        this.swerveSubsystem.setStart();
+    }
+
+    public void resetSwerveStart() {
+        this.swerveSubsystem.resetStart();
+    }
+
     private void configureBindings() {
         new JoystickButton(swerveJoystick, XboxController.Button.kB.value).whileTrue(new InstantCommand(this.swerveSubsystem::zeroHeading));
         new JoystickButton(swerveJoystick, XboxController.Button.kX.value).whileTrue(new RunCommand(this.swerveSubsystem::lockModules, this.swerveSubsystem));

@@ -13,6 +13,7 @@ import frc.lib.ChassisTalonFX;
 import frc.lib.helpers.IDashboardProvider;
 import frc.lib.helpers.OutputUnit;
 import frc.lib.helpers.UnitTypes;
+import frc.robot.Constants;
 import frc.robot.RobotMap.SwervePort;
 
 public class SwerveModule implements IDashboardProvider {
@@ -23,6 +24,7 @@ public class SwerveModule implements IDashboardProvider {
     private final ChassisTalonFX turningMotor;
     private final CANcoder absoluteEncoder;
     private final double absEncoderOffset;
+    private final PIDController drivePIDController = new PIDController(0.0, 6.0, 0.0);
     private final PIDController turningPIDController = new PIDController(0.45, 0.0, 0.0);
     private final String name;
 
@@ -88,18 +90,26 @@ public class SwerveModule implements IDashboardProvider {
         this.turningMotor.setRadPosition(this.getAbsTurningPosition());
     }
 
-    public void setDesiredState(SwerveModuleState desiredState) {
-        if (Math.abs(desiredState.speedMetersPerSecond) < 0.001) {
+    public void setDesiredState(SwerveModuleState desiredState, boolean hasStarted) {
+        if (!hasStarted) {
             this.stop();
             return;
         }
 
         desiredState = SwerveModuleState.optimize(desiredState, this.getState().angle);
-        this.driveMotor.set(desiredState.speedMetersPerSecond);
+
+        final double desiredSpeed = desiredState.speedMetersPerSecond;
+        final double currentSpeed = this.getState().speedMetersPerSecond;
+        final double output = this.drivePIDController.calculate(currentSpeed, desiredSpeed);
+        this.driveMotor.set(output);
+//        this.driveMotor.set(desiredState.speedMetersPerSecond / Constants.DriveConstants.PHYSICAL_MAX_SPEED);
+
         final double desiredAngle = desiredState.angle.getRadians();
         final double currentAngle = this.getState().angle.getRadians();
         this.turningMotor.set(this.turningPIDController.calculate(currentAngle, desiredAngle));
-        // SmartDashboard.putString(this.name + " desiredState", desiredState.toString());
+
+        SmartDashboard.putString(this.name + " desiredState", desiredState.toString());
+        SmartDashboard.putNumber(this.name + " Pid", output);
     }
 
     public void stop() {
@@ -121,7 +131,6 @@ public class SwerveModule implements IDashboardProvider {
     }
 
     public void putDashboard() {
-        this.turningMotor.set(1.0);
         SmartDashboard.putNumber(this.name + " DriveSpeed", this.getState().speedMetersPerSecond);
         SmartDashboard.putNumber(this.name + " AbsTurnPos", this.getState().angle.getDegrees());
     }

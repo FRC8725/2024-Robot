@@ -8,11 +8,17 @@ import frc.lib.helpers.OutputUnit;
 import frc.lib.helpers.UnitTypes;
 
 public class ModuleTalonFX extends TalonFX {
-
     public ModuleTalonFX(int motorId) {
         super(motorId);
-        
-        var currentConfig = new CurrentLimitsConfigs().withStatorCurrentLimitEnable(true).withStatorCurrentLimit(40).withSupplyCurrentLimitEnable(true).withSupplyCurrentLimit(30).withSupplyCurrentThreshold(10).withSupplyTimeThreshold(0.5);
+
+        var currentConfig = new CurrentLimitsConfigs()
+                .withStatorCurrentLimitEnable(true)
+                .withStatorCurrentLimit(40)
+                .withSupplyCurrentLimitEnable(true)
+                .withSupplyCurrentLimit(30)
+                .withSupplyCurrentThreshold(10)
+                .withSupplyTimeThreshold(0.5);
+
         var talonConfig = new TalonFXConfiguration().withCurrentLimits(currentConfig);
 
         this.getConfigurator().apply(talonConfig);
