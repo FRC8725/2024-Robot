@@ -18,7 +18,8 @@ public final class Constants {
         public static final double MAX_ANGULAR_SPEED = 1.5 * Math.PI;
         @OutputUnit(UnitTypes.METERS_PER_SECOND_SQUARED)
         public static final double MAX_ACCELERATION = 2;
-        public static final double kMaxAngularAccelerationRadiansPerSecondSquared = 2;
+        @OutputUnit(UnitTypes.RADIANS_PER_SECOND_SQUARED)
+        public static final double MAX_ANGULAR_ACCELERATION = 2;
 
         public static final double kPathing_kP = 5.0;
         public static final double kPathing_kI = 0.05;
