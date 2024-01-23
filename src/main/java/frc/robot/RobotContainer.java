@@ -1,7 +1,6 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -25,7 +24,6 @@ public class RobotContainer implements IDashboardProvider {
     private final DriverJoystick controllerJoystick = new DriverJoystick(0);
     private final VisionManager visionManager = new VisionManager();
     private final SendableChooser<Command> autoChooser;
-    private final DigitalInput testDI = new DigitalInput(0);
 
     public RobotContainer() {
         this.swerveJoystick.setDefaultCommand(this.swerveSubsystem);

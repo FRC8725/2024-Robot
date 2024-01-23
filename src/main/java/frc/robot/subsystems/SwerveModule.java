@@ -9,7 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.lib.LazyTalonFX;
+import frc.lib.ChassisTalonFX;
 import frc.lib.helpers.IDashboardProvider;
 import frc.lib.helpers.OutputUnit;
 import frc.lib.helpers.UnitTypes;
@@ -19,8 +19,8 @@ public class SwerveModule implements IDashboardProvider {
     public static final double WHEEL_RADIUS = Units.inchesToMeters(2.0);
     private static final double DRIVING_GEAR_RATIO = 7.0 / 57.0;
     private static final double STEERING_GEAR_RATIO = 7.0 / 150.0;
-    private final LazyTalonFX driveMotor;
-    private final LazyTalonFX turningMotor;
+    private final ChassisTalonFX driveMotor;
+    private final ChassisTalonFX turningMotor;
     private final CANcoder absoluteEncoder;
     private final double absEncoderOffset;
     private final PIDController turningPIDController = new PIDController(0.45, 0.0, 0.0);
@@ -31,8 +31,8 @@ public class SwerveModule implements IDashboardProvider {
         this.absEncoderOffset = absEncoderOffset;
         this.absoluteEncoder = new CANcoder(absoluteEncoderID);
 
-        this.driveMotor = new LazyTalonFX(driveMotorId, DRIVING_GEAR_RATIO);
-        this.turningMotor = new LazyTalonFX(turningMotorId, STEERING_GEAR_RATIO);
+        this.driveMotor = new ChassisTalonFX(driveMotorId, DRIVING_GEAR_RATIO);
+        this.turningMotor = new ChassisTalonFX(turningMotorId, STEERING_GEAR_RATIO);
         this.configDriveMotor(driveMotorInverted);
         this.configTurningMotor(turningMotorInverted);
 
