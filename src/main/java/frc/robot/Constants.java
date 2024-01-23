@@ -71,14 +71,18 @@ public final class Constants {
         public static final double kFrontRightDriveAbsoluteEncoderOffsetDegrees = Units.radiansToDegrees(kFrontRightDriveAbsoluteEncoderOffsetRad);
         public static final double kBackRightDriveAbsoluteEncoderOffsetDegrees = Units.radiansToDegrees(kBackRightDriveAbsoluteEncoderOffsetRad);
 
-        public static final double kPhysicalMaxSpeedMetersPerSecond = 3;
-        public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 3 * Math.PI;
-
-        public static final double kTeleDriveMaxSpeedMetersPerSecond = 2 / kPhysicalMaxSpeedMetersPerSecond;
-        public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = //
-                2 * Math.PI / kPhysicalMaxAngularSpeedRadiansPerSecond;
-        public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
-        public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
+        @OutputUnit(UnitTypes.METERS_PER_SECOND)
+        public static final double PHYSICAL_MAX_SPEED = 4.0;
+        @OutputUnit(UnitTypes.RADIANS_PER_SECOND)
+        public static final double PHYSICAL_MAX_ANGULAR_SPEED = 3.0 * Math.PI;
+        @OutputUnit(UnitTypes.METERS_PER_SECOND)
+        public static final double TELEOP_MAX_SPEED = 2.0;
+        @OutputUnit(UnitTypes.RADIANS_PER_SECOND)
+        public static final double TELEOP_MAX_ANGULAR_SPEED = Math.PI;
+        @OutputUnit(UnitTypes.METERS_PER_SECOND_SQUARED)
+        public static final double TELEOP_MAX_ACCELERATION = 6.0;
+        @OutputUnit(UnitTypes.RADIANS_PER_SECOND_SQUARED)
+        public static final double TELEOP_MAX_ANGULAR_ACCELERATION = 2.0 * Math.PI;
     }
 
     public static final class VisionConstants {

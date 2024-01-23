@@ -1,6 +1,6 @@
 package frc.robot;
 
-public class RobotMap {
+public final class RobotMap {
     public static class SwervePort{
         public static final int kFrontLeftDriveMotor = 2;
         public static final int kBackLeftDriveMotor = 5;

@@ -4,7 +4,7 @@ package frc.lib.helpers;
 public enum CoordinationPolicy {
     /**
      * The coordinate system used on {@link edu.wpi.first.wpilibj.XboxController}'s raw axis.
-     * Forward for +x and leftward for +y.
+     * Rightward for +x and backward for +y.
      */
     XBOX_COORDINATION,
 

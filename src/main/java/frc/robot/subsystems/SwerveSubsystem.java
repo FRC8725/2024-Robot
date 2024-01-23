@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -43,9 +39,9 @@ public class SwerveSubsystem extends SubsystemBase {
     private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
 
     public SwerveSubsystem() {
-        this.xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
-        this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
-        this.turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
+        this.xLimiter = new SlewRateLimiter(DriveConstants.TELEOP_MAX_ACCELERATION);
+        this.yLimiter = new SlewRateLimiter(DriveConstants.TELEOP_MAX_ACCELERATION);
+        this.turningLimiter = new SlewRateLimiter(DriveConstants.TELEOP_MAX_ANGULAR_ACCELERATION);
 
         new Thread(() -> {
             try {
@@ -93,7 +89,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void setModuleStates(SwerveModuleState[] desiredStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.PHYSICAL_MAX_SPEED);
         frontLeft.setDesiredState(desiredStates[0]);
         frontRight.setDesiredState(desiredStates[1]);
         backLeft.setDesiredState(desiredStates[2]);
@@ -122,15 +118,11 @@ public class SwerveSubsystem extends SubsystemBase {
         backRight.resetRelativeEncoders();
     }
 
-    public void teleMove(Double xSpeed, Double ySpeed, Double rotation, boolean fieldOriented) {
-        xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
-        ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
-        rotation = turningLimiter.calculate(rotation) * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond;
-
+    public void teleMove(double xSpeed, double ySpeed, double rotation, boolean fieldOriented) {
         constructAndSetModuleStates(xSpeed, ySpeed, rotation, fieldOriented);
     }
 
-    public void move(Double xSpeed, Double ySpeed, Double rotation, boolean fieldOriented) {
+    public void move(double xSpeed, double ySpeed, double rotation, boolean fieldOriented) {
         xSpeed = xLimiter.calculate(xSpeed);
         ySpeed = yLimiter.calculate(ySpeed);
         rotation = turningLimiter.calculate(rotation);
@@ -138,9 +130,11 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     private void constructAndSetModuleStates(Double xSpeed, Double ySpeed, Double rotation, boolean fieldOriented) {
-        ChassisSpeeds chassisSpeeds = fieldOriented ? ChassisSpeeds.fromFieldRelativeSpeeds(ySpeed, xSpeed, rotation, getRotation2d()) : new ChassisSpeeds(ySpeed, xSpeed, rotation);
+        ChassisSpeeds chassisSpeeds = fieldOriented
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(ySpeed, xSpeed, rotation, this.getRotation2d())
+                : new ChassisSpeeds(ySpeed, xSpeed, rotation);
 
-        driveChassis(chassisSpeeds);
+        this.driveChassis(chassisSpeeds);
     }
 
     private void driveChassis(ChassisSpeeds chassisSpeeds) {
