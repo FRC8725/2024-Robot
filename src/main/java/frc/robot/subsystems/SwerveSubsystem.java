@@ -25,31 +25,35 @@ public class SwerveSubsystem extends SubsystemBase {
     private final SwerveModule frontLeft = new SwerveModule("FL Module",
             SwervePort.kFrontLeftDriveMotor,
             SwervePort.kFrontLeftTurningMotor,
-            DriveConstants.kFrontLeftDriveMotorReversed,
-            DriveConstants.kFrontLeftTurningMotorReversed,
+            true,
+            true,
             SwervePort.kFrontLeftDriveAbsEncoder,
-            DriveConstants.kFrontLeftDriveAbsoluteEncoderOffsetRad);
+            0.0);
+
     private final SwerveModule frontRight = new SwerveModule("FR Module",
             SwervePort.kFrontRightDriveMotor,
             SwervePort.kFrontRightTurningMotor,
-            DriveConstants.kFrontRightDriveMotorReversed,
-            DriveConstants.kFrontRightTurningEncoderReversed,
+            false,
+            true,
             SwervePort.kFrontRightDriveAbsEncoder,
-            DriveConstants.kFrontRightDriveAbsoluteEncoderOffsetRad);
+            0.0);
+
     private final SwerveModule backLeft = new SwerveModule("BL Module",
             SwervePort.kBackLeftDriveMotor,
             SwervePort.kBackLeftTurningMotor,
-            DriveConstants.kBackLeftDriveMotorReversed,
-            DriveConstants.kBackLeftTurningEncoderReversed,
+            true,
+            true,
             SwervePort.kBackLeftDriveAbsEncoder,
-            DriveConstants.kBackLeftDriveAbsoluteEncoderOffsetRad);
+            0.0);
+            
     private final SwerveModule backRight = new SwerveModule("BR Module",
             SwervePort.kBackRightDriveMotor,
             SwervePort.kBackRightTurningMotor,
-            DriveConstants.kBackRightDriveMotorReversed,
-            DriveConstants.kBackRightTurningEncoderReversed,
+            false,
+            true,
             SwervePort.kBackRightDriveAbsEncoder,
-            DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad);
+            0.0);
+
     private final AHRS gyro = new AHRS(SPI.Port.kMXP);
     private final Field2d field = new Field2d();
     private final SwerveDriveOdometry odometry = new SwerveDriveOdometry(
@@ -78,8 +82,8 @@ public class SwerveSubsystem extends SubsystemBase {
                 this::getChassisSpeeds,
                 this::driveChassis,
                 new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                        new PIDConstants(AutoConstants.kPathing_kP, AutoConstants.kPathing_kI, AutoConstants.kPathing_kD),
-                        new PIDConstants(AutoConstants.kPathingTurning_kP, AutoConstants.kPathingTurning_kI, AutoConstants.kPathingTurning_kD),
+                        new PIDConstants(5.0, 0.05, 0.),
+                        new PIDConstants(5.0, 0., 0.),
                         AutoConstants.MAX_SPEED, // Max module speed, in m/s
                         0.3, // Drive base radius in meters. Distance from robot center to furthest module.
                         new ReplanningConfig(true, true,

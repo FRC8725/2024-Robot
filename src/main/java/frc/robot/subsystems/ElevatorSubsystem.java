@@ -4,18 +4,17 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.ModuleTalonFX;
-import frc.robot.Constants.ElevatorConstants;
 import frc.robot.RobotMap.ElevatorPort;
 
 public class ElevatorSubsystem extends SubsystemBase {
     private final ModuleTalonFX rightMotor = new ModuleTalonFX(ElevatorPort.kRightMotor);
     private final ModuleTalonFX leftMotor = new ModuleTalonFX(ElevatorPort.kLeftMotor);
     private final DigitalInput limitSwitch = new DigitalInput(0);
-    private final PIDController elevatorPidController = new PIDController(ElevatorConstants.kP, ElevatorConstants.kI, ElevatorConstants.kD);
+    private final PIDController elevatorPidController = new PIDController(0., 0., 0.);
 
-    /**
-     * Creates a new ElevatorSubsystem.
-     */
+    private final double LIMIT = 0.;
+    private final double SPEED = 0.2;
+
     public ElevatorSubsystem() {
         rightMotor.setInverted(true);
         leftMotor.setInverted(false);
@@ -25,19 +24,18 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void move(boolean direction) {
-        if (direction && rightMotor.getRadPosition() < ElevatorConstants.kHeightLimit && leftMotor.getRadPosition() < ElevatorConstants.kHeightLimit) {
-            rightMotor.set(ElevatorConstants.kSpeed);
-            leftMotor.set(ElevatorConstants.kSpeed);
+        if (direction && rightMotor.getRadPosition() < LIMIT && leftMotor.getRadPosition() < LIMIT) {
+            rightMotor.set(SPEED);
+            leftMotor.set(SPEED);
         } else if (!direction && !limitSwitch.get()) {
-            rightMotor.set(-ElevatorConstants.kSpeed);
-            leftMotor.set(-ElevatorConstants.kSpeed);
+            rightMotor.set(-SPEED);
+            leftMotor.set(-SPEED);
         }
     }
 
     public void move(double position) {
-        elevatorPidController.setSetpoint(position);
-        rightMotor.set(elevatorPidController.calculate(rightMotor.getRadPosition()));
-        leftMotor.set(elevatorPidController.calculate(leftMotor.getRadPosition()));
+        rightMotor.set(elevatorPidController.calculate(rightMotor.getRadPosition(), position));
+        leftMotor.set(elevatorPidController.calculate(leftMotor.getRadPosition(), position));
     }
 
     public void stop() {

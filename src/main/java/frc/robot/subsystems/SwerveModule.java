@@ -13,7 +13,6 @@ import frc.lib.ChassisTalonFX;
 import frc.lib.helpers.IDashboardProvider;
 import frc.lib.helpers.OutputUnit;
 import frc.lib.helpers.UnitTypes;
-import frc.robot.Constants;
 import frc.robot.RobotMap.SwervePort;
 
 public class SwerveModule implements IDashboardProvider {

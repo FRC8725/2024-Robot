@@ -19,7 +19,7 @@ public class SwerveJoystick extends XboxController implements IDashboardProvider
         super(port);
         this.registerDashboard();
     }
-
+    
     public void setDefaultCommand(SwerveSubsystem subsystem) {
         SwerveDriveCommand command = new SwerveDriveCommand(subsystem, this);
         subsystem.setDefaultCommand(command);

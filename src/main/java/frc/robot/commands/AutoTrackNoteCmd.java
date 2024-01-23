@@ -10,8 +10,8 @@ import frc.robot.subsystems.VisionManager;
 
 public class AutoTrackNoteCmd extends Command {
     private final SwerveSubsystem swerveSubsystem;
-    private final PIDController autoTrackPidController = new PIDController(Constants.VisionConstants.kAutoTrackYP, 0, 0);
-    private final PIDController autoTrackThetaPidController = new PIDController(Constants.VisionConstants.kAutoTrackThetaP, 0, 0);
+    private final PIDController autoTrackPidController = new PIDController(0.01, 0, 0);
+    private final PIDController autoTrackThetaPidController = new PIDController(0.03, 0, 0);
     private final VisionManager visionManager;
 
     public AutoTrackNoteCmd(SwerveSubsystem swerveSubsystem, VisionManager visionManager) {
@@ -28,17 +28,17 @@ public class AutoTrackNoteCmd extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        double note_distance = this.visionManager.getNoteDistance();
-        double note_horizontal = this.visionManager.getNoteHorizontal();
+        final double note_distance = this.visionManager.getNoteDistance();
+        final double note_horizontal = this.visionManager.getNoteHorizontal();
 
-        double target_distance = 120.0;
-        double target_horizontal = 9.2;
+        final double target_distance = 120.0;
+        final double target_horizontal = 9.2;
 
-        double vertical_speed = autoTrackPidController.calculate(target_distance, note_distance);
-        double rotation_speed = MathUtil.applyDeadband(autoTrackThetaPidController.calculate(target_horizontal, note_horizontal), 0.15);
+        final double vertical_speed = autoTrackPidController.calculate(target_distance, note_distance);
+        final double rotation_speed = MathUtil.applyDeadband(autoTrackThetaPidController.calculate(target_horizontal, note_horizontal), 0.15);
 
-        SmartDashboard.putNumber("Vertical_speed", vertical_speed);
-        SmartDashboard.putNumber("Rotation_speed", rotation_speed);
+        // SmartDashboard.putNumber("Vertical_speed", vertical_speed);
+        // SmartDashboard.putNumber("Rotation_speed", rotation_speed);
 
         if (this.visionManager.hasNoteTarget() && vertical_speed > 0)
             this.swerveSubsystem.move(0.0, vertical_speed, rotation_speed, false);
