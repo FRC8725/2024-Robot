@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.ModuleTalonFX;
 import frc.robot.RobotMap.ShooterPort;
@@ -16,7 +17,6 @@ public class ShooterSubsystem extends SubsystemBase {
     private final double SHOOT_SPEED = 0.9;
     private final double LOAD_SPEED = 0.5; 
 
-
     public ShooterSubsystem() {
         rightMotor.setInverted(true);
         leftMotor.setInverted(false);
@@ -26,7 +26,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public void shoot() {
         rightMotor.set(SHOOT_SPEED);
         leftMotor.set(SHOOT_SPEED);
-        loadMotor.set(LOAD_SPEED);
+        // loadMotor.set(LOAD_SPEED);
     }
 
     public void stop() {
