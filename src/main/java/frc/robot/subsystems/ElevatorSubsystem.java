@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -13,12 +15,15 @@ public class ElevatorSubsystem extends SubsystemBase {
     private final DigitalInput limitSwitch = new DigitalInput(0);
     private final PIDController elevatorPidController = new PIDController(0., 0., 0.);
 
-    private final double LIMIT = 999;
+    private final double LIMIT = 1200;
     private final double SPEED = 0.2;
 
     public ElevatorSubsystem() {
-        rightMotor.setInverted(false);
+        rightMotor.setInverted(true);
         leftMotor.setInverted(false);
+
+        rightMotor.setNeutralMode(NeutralModeValue.Brake);
+        leftMotor.setNeutralMode(NeutralModeValue.Brake);
 
         this.resetPosition();
     }
@@ -27,9 +32,11 @@ public class ElevatorSubsystem extends SubsystemBase {
         if (direction && rightMotor.getRadPosition() < LIMIT && leftMotor.getRadPosition() < LIMIT) {
             rightMotor.set(SPEED);
             leftMotor.set(SPEED);
-        } else if (!direction && !limitSwitch.get()) {
+        } else if (!direction) {
             rightMotor.set(-SPEED);
             leftMotor.set(-SPEED);
+        } else {
+            this.stop();
         }
     }
 
@@ -52,6 +59,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Elevator Position right", rightMotor.getRadPosition());
         SmartDashboard.putNumber("Elevator Position left", leftMotor.getRadPosition());
+        SmartDashboard.putBoolean("Limit Switch", limitSwitch.get()); 
         // This method will be called once per scheduler run
     }
 }

@@ -12,7 +12,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private final ModuleTalonFX loadMotor = new ModuleTalonFX(ShooterPort.kloadMotor);
 
     private final ModuleTalonFX liftMotor = new ModuleTalonFX(ShooterPort.kLiftMotor);
-    private final Encoder liftEncoder = new Encoder(0, 1);
+    // private final Encoder liftEncoder = new Encoder(0, 1);
 
     private final double SHOOT_SPEED = 0.9;
     private final double LOAD_SPEED = 0.5; 

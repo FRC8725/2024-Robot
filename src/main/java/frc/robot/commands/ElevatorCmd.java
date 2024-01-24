@@ -27,7 +27,6 @@ public class ElevatorCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-      
       if (controller.getYButton()) this.elevatorSubsystem.move(true);
       else if (controller.getAButton()) this.elevatorSubsystem.move(false);
       else this.elevatorSubsystem.stop();
@@ -35,7 +34,9 @@ public class ElevatorCmd extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    this.elevatorSubsystem.stop();
+  }
 
   // Returns true when the command should end.
   @Override
