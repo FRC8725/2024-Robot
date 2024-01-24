@@ -23,13 +23,13 @@ public class RobotContainer implements IDashboardProvider {
     private final SwerveJoystick swerveJoystick = new SwerveJoystick(1);
     private final DriverJoystick controllerJoystick = new DriverJoystick(0);
     private final VisionManager visionManager = new VisionManager();
-    private final SendableChooser<Command> autoChooser;
+    private final SendableChooser<Command> autoCommandChooser;
 
     public RobotContainer() {
         this.swerveJoystick.setDefaultCommand(this.swerveSubsystem);
         ShootCmd shootCommand = new ShootCmd(shooterSubsystem, controllerJoystick);
         this.shooterSubsystem.setDefaultCommand(shootCommand);
-        this.autoChooser = AutoBuilder.buildAutoChooser();
+        this.autoCommandChooser = AutoBuilder.buildAutoChooser();
         this.configureBindings();
         this.registerDashboard();
     }
@@ -49,7 +49,7 @@ public class RobotContainer implements IDashboardProvider {
     }
 
     public Command getAutonomousCommand() {
-        return this.autoChooser.getSelected();
+        return this.autoCommandChooser.getSelected();
         // return new AutoTrackNoteCmd(swerveSubsystem, visionManager);
     }
 
@@ -59,6 +59,6 @@ public class RobotContainer implements IDashboardProvider {
 
     @Override
     public void putDashboardOnce() {
-        SmartDashboard.putData("SelectAuto", this.autoChooser);
+        SmartDashboard.putData("SelectAuto", this.autoCommandChooser);
     }
 }

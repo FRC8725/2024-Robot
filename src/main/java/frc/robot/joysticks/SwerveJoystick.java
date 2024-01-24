@@ -29,21 +29,21 @@ public class SwerveJoystick extends XboxController implements IDashboardProvider
     @OutputUnit(UnitTypes.METERS_PER_SECOND)
     public double getDesiredRobotXSpeed() {
         double speed = -MathUtil.applyDeadband(this.getLeftY(), DEADBAND);
-        return this.xSpeedLimiter.calculate(speed * Constants.DriveConstants.TELEOP_MAX_SPEED);
+        return this.xSpeedLimiter.calculate(speed * Constants.DriveConstants.TELEOP_MAX_ROBOT_SPEED);
     }
 
     @CoordinateSystem(CoordinationPolicy.ROBOT_COORDINATION)
     @OutputUnit(UnitTypes.METERS_PER_SECOND)
     public double getDesiredRobotYSpeed() {
         double speed = -MathUtil.applyDeadband(this.getLeftX(), DEADBAND);
-        return this.ySpeedLimiter.calculate(speed * Constants.DriveConstants.TELEOP_MAX_SPEED);
+        return this.ySpeedLimiter.calculate(speed * Constants.DriveConstants.TELEOP_MAX_ROBOT_SPEED);
     }
 
     @CoordinateSystem(CoordinationPolicy.ROBOT_COORDINATION)
     @OutputUnit(UnitTypes.RADIANS_PER_SECOND)
     public double getDesiredRobotRotation() {
         double speed = -MathUtil.applyDeadband(this.getRightX(), DEADBAND);
-        return this.rotationLimiter.calculate(speed * Constants.DriveConstants.TELEOP_MAX_ANGULAR_SPEED);
+        return this.rotationLimiter.calculate(speed * Constants.DriveConstants.TELEOP_MAX_ROBOT_ANGULAR_SPEED);
     }
 
     @Override
