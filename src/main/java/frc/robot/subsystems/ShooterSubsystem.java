@@ -18,8 +18,8 @@ public class ShooterSubsystem extends SubsystemBase {
     private final double LOAD_SPEED = 0.5; 
 
     public ShooterSubsystem() {
-        rightMotor.setInverted(true);
-        leftMotor.setInverted(false);
+        rightMotor.setInverted(false);
+        leftMotor.setInverted(true);
         loadMotor.setInverted(false);
     }
 

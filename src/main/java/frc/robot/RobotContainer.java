@@ -13,7 +13,7 @@ import frc.robot.commands.AutoTrackNoteCmd;
 import frc.robot.commands.ElevatorCmd;
 import frc.robot.commands.IntakeCmd;
 import frc.robot.commands.ShootCmd;
-import frc.robot.joysticks.DriverJoystick;
+import frc.robot.joysticks.ControllerJoystick;
 import frc.robot.joysticks.SwerveJoystick;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -27,7 +27,7 @@ public class RobotContainer implements IDashboardProvider {
     private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
     private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
     private final SwerveJoystick swerveJoystick = new SwerveJoystick(1);
-    private final DriverJoystick controllerJoystick = new DriverJoystick(0);
+    private final ControllerJoystick controllerJoystick = new ControllerJoystick(0);
     private final VisionManager visionManager = new VisionManager();
     private final SendableChooser<Command> autoCommandChooser;
 
