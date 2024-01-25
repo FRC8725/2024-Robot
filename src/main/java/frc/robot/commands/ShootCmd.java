@@ -27,14 +27,22 @@ public class ShootCmd extends Command {
   @Override
   public void execute() {
     if (controller.getLeftBumper()) this.shooterSubsystem.shoot();
-    else if (controller.getRightBumper()) this.shooterSubsystem.load();
-    else this.shooterSubsystem.stop(); 
+    else this.shooterSubsystem.stopShoot(); 
+
+    if (controller.getRightBumper()) this.shooterSubsystem.load();
+    else this.shooterSubsystem.stopLoad();
+
+    if(controller.getLeftTriggerAxis() > 0.1) this.shooterSubsystem.lift(-controller.getLeftTriggerAxis());
+    else if(controller.getRightTriggerAxis() > 0.1) this.shooterSubsystem.lift(controller.getRightTriggerAxis());
+    else this.shooterSubsystem.stopLift();
+
+    
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    this.shooterSubsystem.stop();
+    this.shooterSubsystem.stopShoot();
   }
 
   // Returns true when the command should end.

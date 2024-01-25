@@ -2,10 +2,11 @@ package frc.robot;
 
 public final class RobotMap {
     public static class ShooterPort {
-        public static final int kLeftMotor = 15;
-        public static final int kRightMotor = 14;
+        public static final int kLeftShootMotor = 15;
+        public static final int kRightShootMotor = 14;
         public static final int kloadMotor = 13;
-        public static final int kLiftMotor = 16;
+        public static final int kRightLiftMotor = 21;
+        public static final int kLeftLiftMotor = 16;
     }
 
     public static class ElevatorPort {

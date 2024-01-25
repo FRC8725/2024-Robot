@@ -30,6 +30,8 @@ public class ElevatorCmd extends Command {
       if (controller.getYButton()) this.elevatorSubsystem.move(true);
       else if (controller.getAButton()) this.elevatorSubsystem.move(false);
       else this.elevatorSubsystem.stop();
+
+      
   }
 
   // Called once the command ends or is interrupted.

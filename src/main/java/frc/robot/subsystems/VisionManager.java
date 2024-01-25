@@ -36,11 +36,6 @@ public class VisionManager extends SubsystemBase {
 
     public VisionManager() { }
 
-    @Override
-    public void periodic() {
-        SmartDashboard.putNumber("distance", getNoteDistance());
-    }
-
     public Transform3d getAprilTagRelative() {
         var bestCameraToTargetArray = tag_targetpose_robotspaceSub.get();
         Transform3d bestCameraToTarget = new Transform3d();
@@ -78,6 +73,10 @@ public class VisionManager extends SubsystemBase {
         return note_tvSub.get() != 0.0;
     }
 
-    boolean isFirstConnected = true;
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("distance", getNoteDistance());
+    }
 
+    boolean isFirstConnected = true;
 }
