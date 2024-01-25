@@ -101,12 +101,7 @@ public class SwerveModule implements IDashboardProvider {
         this.turningMotor.setRadPosition(this.getAbsTurningPosition());
     }
 
-    public void setDesiredState(SwerveModuleState desiredState, boolean hasStarted) {
-        if (!hasStarted) {
-            this.stop();
-            return;
-        }
-
+    public void setDesiredState(SwerveModuleState desiredState) {
         desiredState = SwerveModuleState.optimize(desiredState, this.getState().angle);
 
         final double desiredSpeed = desiredState.speedMetersPerSecond;

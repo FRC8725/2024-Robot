@@ -1,0 +1,7 @@
+2024/01/25 v1.0.0
+- Added changelog.txt
+- Added getTrigger methods for DriverJoystick
+- Added SwerveModuleList for SwerveSubsystem
+- Added SwerveHelper.ModuleIds for SwerveDriveKinematics' convenience
+- Renewed original SwerveSteeringLock mechanics with Command -> to be tested!
+- Renamed ...Cmd to ...Command

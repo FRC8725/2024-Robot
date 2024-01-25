@@ -6,13 +6,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionManager;
 
-public class AutoTrackNoteCmd extends Command {
+public class AutoTrackNoteCommand extends Command {
     private final SwerveSubsystem swerveSubsystem;
     private final PIDController autoTrackPidController = new PIDController(0.01, 0, 0);
     private final PIDController autoTrackThetaPidController = new PIDController(0.03, 0, 0);
     private final VisionManager visionManager;
 
-    public AutoTrackNoteCmd(SwerveSubsystem swerveSubsystem, VisionManager visionManager) {
+    public AutoTrackNoteCommand(SwerveSubsystem swerveSubsystem, VisionManager visionManager) {
         this.visionManager = visionManager;
         this.swerveSubsystem = swerveSubsystem;
         this.addRequirements(swerveSubsystem);

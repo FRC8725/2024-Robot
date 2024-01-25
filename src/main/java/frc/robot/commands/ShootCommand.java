@@ -8,11 +8,11 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ShooterSubsystem;
 
-public class ShootCmd extends Command {
+public class ShootCommand extends Command {
   private final ShooterSubsystem shooterSubsystem;
   private final XboxController controller;
   /** Creates a new ShootCmd. */
-  public ShootCmd(ShooterSubsystem shooterSubsystem, XboxController controller) {
+  public ShootCommand(ShooterSubsystem shooterSubsystem, XboxController controller) {
     this.shooterSubsystem = shooterSubsystem;
     this.controller = controller;
     addRequirements(this.shooterSubsystem);

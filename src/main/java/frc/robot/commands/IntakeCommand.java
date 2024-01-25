@@ -5,11 +5,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IntakeSubsystem;
 
 // TODO: Transform it into PIDControl :D:)
-public class IntakeCmd extends Command {
+public class IntakeCommand extends Command {
     private final IntakeSubsystem intakeSubsystem;
     private final XboxController controller;
 
-    public IntakeCmd(IntakeSubsystem intakeSubsystem, XboxController controller) {
+    public IntakeCommand(IntakeSubsystem intakeSubsystem, XboxController controller) {
         this.controller = controller;
         this.intakeSubsystem = intakeSubsystem;
         this.addRequirements(intakeSubsystem);

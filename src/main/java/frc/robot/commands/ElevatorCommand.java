@@ -5,11 +5,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ElevatorSubsystem;
 
 @SuppressWarnings("RedundantMethodOverride")
-public class ElevatorCmd extends Command {
+public class ElevatorCommand extends Command {
     private final ElevatorSubsystem elevatorSubsystem;
     private final XboxController controller;
 
-    public ElevatorCmd(ElevatorSubsystem elevatorSubsystem, XboxController controller) {
+    public ElevatorCommand(ElevatorSubsystem elevatorSubsystem, XboxController controller) {
         this.elevatorSubsystem = elevatorSubsystem;
         this.controller = controller;
         this.addRequirements(this.elevatorSubsystem);

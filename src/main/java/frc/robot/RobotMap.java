@@ -1,5 +1,6 @@
 package frc.robot;
 
+// TODO transfer this class to RobotCANPorts
 public final class RobotMap {
     public static class ShooterPort {
         public static final int kLeftShootMotor = 15;
