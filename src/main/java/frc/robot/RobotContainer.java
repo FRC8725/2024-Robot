@@ -11,10 +11,12 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.lib.helpers.IDashboardProvider;
 import frc.robot.commands.AutoTrackNoteCmd;
 import frc.robot.commands.ElevatorCmd;
+import frc.robot.commands.IntakeCmd;
 import frc.robot.commands.ShootCmd;
 import frc.robot.joysticks.DriverJoystick;
 import frc.robot.joysticks.SwerveJoystick;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionManager;
@@ -23,6 +25,7 @@ public class RobotContainer implements IDashboardProvider {
     private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
     private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
     private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
+    private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
     private final SwerveJoystick swerveJoystick = new SwerveJoystick(1);
     private final DriverJoystick controllerJoystick = new DriverJoystick(0);
     private final VisionManager visionManager = new VisionManager();
@@ -32,9 +35,12 @@ public class RobotContainer implements IDashboardProvider {
         this.swerveJoystick.setDefaultCommand(this.swerveSubsystem);
         ShootCmd shootCommand = new ShootCmd(shooterSubsystem, controllerJoystick);
         ElevatorCmd elevatorCmd = new ElevatorCmd(elevatorSubsystem, controllerJoystick);
+        IntakeCmd intakeCmd = new IntakeCmd(intakeSubsystem, controllerJoystick);
+
 
         this.shooterSubsystem.setDefaultCommand(shootCommand);
         this.elevatorSubsystem.setDefaultCommand(elevatorCmd);
+        this.intakeSubsystem.setDefaultCommand(intakeCmd);
         
         this.autoCommandChooser = AutoBuilder.buildAutoChooser();
         this.configureBindings();
