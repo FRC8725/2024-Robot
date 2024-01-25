@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -10,13 +9,12 @@ import frc.lib.ModuleTalonFX;
 import frc.robot.RobotMap.ElevatorPort;
 
 public class ElevatorSubsystem extends SubsystemBase {
+    private static final double LIMIT = 1200;
+    private static final double SPEED = 0.2;
     private final ModuleTalonFX rightMotor = new ModuleTalonFX(ElevatorPort.kRightMotor);
     private final ModuleTalonFX leftMotor = new ModuleTalonFX(ElevatorPort.kLeftMotor);
     private final DigitalInput limitSwitch = new DigitalInput(0);
-    private final PIDController elevatorPidController = new PIDController(0., 0., 0.);
-
-    private final double LIMIT = 1200;
-    private final double SPEED = 0.2;
+    private final PIDController elevatorPidController = new PIDController(0., 0., 0.); // TODO fill in values
 
     public ElevatorSubsystem() {
         rightMotor.setInverted(true);
@@ -59,7 +57,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Elevator Position right", rightMotor.getRadPosition());
         SmartDashboard.putNumber("Elevator Position left", leftMotor.getRadPosition());
-        SmartDashboard.putBoolean("Limit Switch", limitSwitch.get()); 
+        SmartDashboard.putBoolean("Limit Switch", limitSwitch.get());
         // This method will be called once per scheduler run
     }
 }

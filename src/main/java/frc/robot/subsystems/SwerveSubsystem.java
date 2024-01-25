@@ -20,8 +20,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.helpers.OutputUnit;
 import frc.lib.helpers.SwerveHelper;
 import frc.lib.helpers.UnitTypes;
-import frc.robot.Constants;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.constants.RobotCANPorts;
 
 public class SwerveSubsystem extends SubsystemBase {
@@ -76,9 +74,9 @@ public class SwerveSubsystem extends SubsystemBase {
     private boolean hasStarted = false;
 
     public SwerveSubsystem() {
-        this.xLimiter = new SlewRateLimiter(DriveConstants.TELEOP_MAX_ACCELERATION);
-        this.yLimiter = new SlewRateLimiter(DriveConstants.TELEOP_MAX_ACCELERATION);
-        this.turningLimiter = new SlewRateLimiter(DriveConstants.TELEOP_MAX_ANGULAR_ACCELERATION);
+        this.xLimiter = new SlewRateLimiter(SwerveSubsystem.TELEOP_MAX_ACCELERATION);
+        this.yLimiter = new SlewRateLimiter(SwerveSubsystem.TELEOP_MAX_ACCELERATION);
+        this.turningLimiter = new SlewRateLimiter(SwerveSubsystem.TELEOP_MAX_ANGULAR_ACCELERATION);
 
         new Thread(() -> {
             try {

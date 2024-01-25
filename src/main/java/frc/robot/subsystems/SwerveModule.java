@@ -16,6 +16,7 @@ import frc.lib.helpers.UnitTypes;
 import frc.robot.constants.RobotCANPorts;
 
 public class SwerveModule implements IDashboardProvider {
+    @OutputUnit(UnitTypes.METERS)
     public static final double WHEEL_RADIUS = Units.inchesToMeters(2.0);
     @OutputUnit(UnitTypes.METERS_PER_SECOND)
     public static final double MODULE_MAX_DRIVING_SPEED = 4.2; // TODO check for real value
@@ -31,7 +32,8 @@ public class SwerveModule implements IDashboardProvider {
     private final PIDController turningPIDController = new PIDController(0.35, 0.0, 0.0);
     private final String name;
 
-    public SwerveModule(String name, int driveMotorId, int turningMotorId, boolean driveMotorInverted, boolean turningMotorInverted, int absoluteEncoderID, double absEncoderOffset) {
+    public SwerveModule(String name, int driveMotorId, int turningMotorId, boolean driveMotorInverted,
+                        boolean turningMotorInverted, int absoluteEncoderID, double absEncoderOffset) {
         this.name = name;
         this.absEncoderOffset = absEncoderOffset;
         this.absoluteEncoder = new CANcoder(absoluteEncoderID);

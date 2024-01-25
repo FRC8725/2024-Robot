@@ -4,11 +4,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.Unit;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.ModuleTalonFX;
 import frc.robot.RobotMap.ShooterPort;
@@ -18,14 +15,14 @@ public class ShooterSubsystem extends SubsystemBase {
     private final ModuleTalonFX leftShootMotor = new ModuleTalonFX(ShooterPort.kLeftShootMotor);
     private final ModuleTalonFX loadMotor = new ModuleTalonFX(ShooterPort.kloadMotor);
 
-    private final ModuleTalonFX rightliftMotor = new ModuleTalonFX(ShooterPort.kRightLiftMotor);
-    private final ModuleTalonFX leftliftMotor = new ModuleTalonFX(ShooterPort.kLeftLiftMotor);
+    private final ModuleTalonFX rightLiftMotor = new ModuleTalonFX(ShooterPort.kRightLiftMotor);
+    private final ModuleTalonFX leftLiftMotor = new ModuleTalonFX(ShooterPort.kLeftLiftMotor);
     
     private final DutyCycleEncoder liftEncoder = new DutyCycleEncoder(1); // Shoot rotation without offset 0.98
     private final PIDController liftPID = new PIDController(0.1, 0, 0);
 
-    private final double ShootSpeed = 1;
-    private final double LoadSpeed = 0.9; 
+    private static final double SHOOT_SPEED = 1;
+    private static final double LOAD_SPEED = 0.9;
 
     private final double LiftSpeedRate = 0.07;
 
@@ -34,16 +31,16 @@ public class ShooterSubsystem extends SubsystemBase {
         leftShootMotor.setInverted(true);
         loadMotor.setInverted(false);
 
-        rightliftMotor.setInverted(true);
-        leftliftMotor.setInverted(false);
+        rightLiftMotor.setInverted(true);
+        leftLiftMotor.setInverted(false);
 
-        rightliftMotor.setNeutralMode(NeutralModeValue.Brake);
-        leftliftMotor.setNeutralMode(NeutralModeValue.Brake);
+        rightLiftMotor.setNeutralMode(NeutralModeValue.Brake);
+        leftLiftMotor.setNeutralMode(NeutralModeValue.Brake);
     }
 
     public void shoot() {
-        rightShootMotor.set(ShootSpeed);
-        // leftShootMotor.set(ShootSpeed);
+        rightShootMotor.set(SHOOT_SPEED);
+        leftShootMotor.set(SHOOT_SPEED);
         // loadMotor.set(LoadSpeed);
     }
 
@@ -54,7 +51,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void load() {
-        loadMotor.set(LoadSpeed);
+        loadMotor.set(LOAD_SPEED);
     }
 
     public void stopLoad() {
@@ -62,27 +59,29 @@ public class ShooterSubsystem extends SubsystemBase {
     }
     
     public void lift(double LiftSpeed) {
-        rightliftMotor.set(LiftSpeed * LiftSpeedRate);
-        leftliftMotor.set(LiftSpeed * LiftSpeedRate);
+        rightLiftMotor.set(LiftSpeed * LiftSpeedRate);
+        leftLiftMotor.set(LiftSpeed * LiftSpeedRate);
       }
     
     public void liftTo(double setpoint) {
         final double pidSpeed = liftPID.calculate(liftEncoder.getAbsolutePosition(), setpoint);
-        rightliftMotor.set(pidSpeed * LiftSpeedRate);
-        leftliftMotor.set(pidSpeed * LiftSpeedRate);
+        rightLiftMotor.set(pidSpeed * LiftSpeedRate);
+        leftLiftMotor.set(pidSpeed * LiftSpeedRate);
     }
 
     public void stopLift() {
-        rightliftMotor.set(0);
-        leftliftMotor.set(0);
+        rightLiftMotor.set(0);
+        leftLiftMotor.set(0);
     }
 
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
         SmartDashboard.putNumber("Shooter Position", liftEncoder.getAbsolutePosition());
-
-        SmartDashboard.putNumber("Shooter Speed", rightShootMotor.getVelocity().getValue() * Math.PI*Units.inchesToMeters(4) / 3);
-        SmartDashboard.putNumber("Loader Speed", loadMotor.getVelocity().getValue() * Math.PI*0.0485 / 3);
+        double mean = (this.leftShootMotor.getVelocity().getValue() + this.rightShootMotor.getVelocity().getValue()) / 2.0;
+        double error = Math.abs(this.leftShootMotor.getVelocity().getValue() - this.rightShootMotor.getVelocity().getValue());
+        SmartDashboard.putNumber("Shooter Speed", mean * Math.PI * Units.inchesToMeters(4));
+        SmartDashboard.putNumber("Shooter Error", error * Math.PI * Units.inchesToMeters(4));
+        SmartDashboard.putNumber("Loader Speed", loadMotor.getVelocity().getValue() * Math.PI * 0.0485 / 3);
     }
 }

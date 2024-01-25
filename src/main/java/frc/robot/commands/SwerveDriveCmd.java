@@ -1,15 +1,15 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.joysticks.SwerveJoystick;
+import frc.robot.joysticks.DriverJoystick;
 import frc.robot.subsystems.SwerveSubsystem;
 
 @SuppressWarnings("RedundantMethodOverride")
-public class SwerveDriveCommand extends Command {
+public class SwerveDriveCmd extends Command {
     private final SwerveSubsystem swerveSubsystem;
-    private final SwerveJoystick controller;
+    private final DriverJoystick controller;
 
-    public SwerveDriveCommand(SwerveSubsystem swerveSubsystem, SwerveJoystick controller) {
+    public SwerveDriveCmd(SwerveSubsystem swerveSubsystem, DriverJoystick controller) {
         this.swerveSubsystem = swerveSubsystem;
         this.controller = controller;
         this.addRequirements(swerveSubsystem);
