@@ -1,22 +1,20 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.ModuleTalonFX;
-import frc.robot.RobotMap.ShooterPort;
+import frc.robot.constants.RobotCANPorts;
 
 public class ShooterSubsystem extends SubsystemBase {
-    private final ModuleTalonFX rightShootMotor = new ModuleTalonFX(ShooterPort.kRightShootMotor);
-    private final ModuleTalonFX leftShootMotor = new ModuleTalonFX(ShooterPort.kLeftShootMotor);
-    private final ModuleTalonFX loadMotor = new ModuleTalonFX(ShooterPort.kloadMotor);
-
-    private final ModuleTalonFX rightLiftMotor = new ModuleTalonFX(ShooterPort.kRightLiftMotor);
-    private final ModuleTalonFX leftLiftMotor = new ModuleTalonFX(ShooterPort.kLeftLiftMotor);
+    private final ModuleTalonFX rightShootMotor = new ModuleTalonFX(RobotCANPorts.RIGHT_SHOOTER.get());
+    private final ModuleTalonFX leftShootMotor = new ModuleTalonFX(RobotCANPorts.LEFT_SHOOTER.get());
+    private final ModuleTalonFX loadMotor = new ModuleTalonFX(RobotCANPorts.ROLLER.get());
+    private final ModuleTalonFX rightLiftMotor = new ModuleTalonFX(RobotCANPorts.RIGHT_SHOOTER_LIFTER.get());
+    private final ModuleTalonFX leftLiftMotor = new ModuleTalonFX(RobotCANPorts.LEFT_SHOOTER_LIFTER.get());
     
     private final DutyCycleEncoder liftEncoder = new DutyCycleEncoder(1); // Shoot rotation without offset 0.98
     private final PIDController liftPID = new PIDController(0.1, 0, 0);

@@ -5,6 +5,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
@@ -24,6 +25,7 @@ public class SwerveModule implements IDashboardProvider {
     public static final double MODULE_MAX_STEERING_SPEED = 3.0 * Math.PI; // TODO check for real value
     private static final double DRIVING_GEAR_RATIO = 7.0 / 57.0;
     private static final double STEERING_GEAR_RATIO = 7.0 / 150.0;
+    private final Translation2d modulePosition;
     private final ChassisTalonFX driveMotor;
     private final ChassisTalonFX turningMotor;
     private final CANcoder absoluteEncoder;
@@ -33,8 +35,9 @@ public class SwerveModule implements IDashboardProvider {
     private final String name;
 
     public SwerveModule(String name, int driveMotorId, int turningMotorId, boolean driveMotorInverted,
-                        boolean turningMotorInverted, int absoluteEncoderID, double absEncoderOffset) {
+                        boolean turningMotorInverted, int absoluteEncoderID, double absEncoderOffset, Translation2d position) {
         this.name = name;
+        this.modulePosition = position;
         this.absEncoderOffset = absEncoderOffset;
         this.absoluteEncoder = new CANcoder(absoluteEncoderID);
 
@@ -69,6 +72,10 @@ public class SwerveModule implements IDashboardProvider {
 
     public SwerveModuleState getState() {
         return new SwerveModuleState(this.getDriveVelocity(), new Rotation2d(this.getAbsTurningPosition()));
+    }
+
+    public Translation2d getModulePosition() {
+        return this.modulePosition;
     }
 
     @OutputUnit(UnitTypes.METERS)

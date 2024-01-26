@@ -5,3 +5,10 @@
 - Added SwerveHelper.ModuleIds for SwerveDriveKinematics' convenience
 - Renewed original SwerveSteeringLock mechanics with Command -> to be tested!
 - Renamed ...Cmd to ...Command
+
+2024/01/26 v1.0.1
+- Moved contents from RobotMap to RobotCANPorts
+- Moved constants from SwerveSubsystem to SwerveDriveConstants
+- Added SwerveModuleGroup into SwerveSubsystem
+- Deleted SwerveHelper, mechanics replaced by SwerveModuleGroup
+- Added SwervePosition Translation2d into SwerveModule

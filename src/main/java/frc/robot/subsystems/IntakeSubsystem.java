@@ -9,11 +9,11 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.ModuleTalonFX;
-import frc.robot.RobotMap.IntakePort;
+import frc.robot.constants.RobotCANPorts;
 
 public class IntakeSubsystem extends SubsystemBase {
-    private final ModuleTalonFX intakeMotor = new ModuleTalonFX(IntakePort.kIntakeMotor);
-    private final CANSparkMax liftMotor = new CANSparkMax(IntakePort.kLiftMotor, MotorType.kBrushless);
+    private final ModuleTalonFX intakeMotor = new ModuleTalonFX(RobotCANPorts.INTAKE.get());
+    private final CANSparkMax liftMotor = new CANSparkMax(RobotCANPorts.INTAKE_LIFTER.get(), MotorType.kBrushless);
     private final AbsoluteEncoder liftEncoder = liftMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
 
     private final PIDController liftPID = new PIDController(0.1, 0, 0);

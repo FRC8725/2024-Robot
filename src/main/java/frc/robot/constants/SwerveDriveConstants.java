@@ -9,7 +9,7 @@ public final class SwerveDriveConstants {
     @OutputUnit(UnitTypes.RADIANS_PER_SECOND)
     public static final double TELEOP_MAX_ROBOT_ANGULAR_SPEED = Math.PI;
     @OutputUnit(UnitTypes.METERS_PER_SECOND_SQUARED)
-    public static final double TELEOP_MAX_ACCELERATION = 6.0;
+    public static final double TELEOP_MAX_ACCELERATION = TELEOP_MAX_ROBOT_SPEED * 3.0;
     @OutputUnit(UnitTypes.RADIANS_PER_SECOND_SQUARED)
     public static final double TELEOP_MAX_ANGULAR_ACCELERATION = 2.0 * Math.PI;
     @OutputUnit(UnitTypes.METERS_PER_SECOND)

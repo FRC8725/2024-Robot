@@ -6,23 +6,21 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.ModuleTalonFX;
-import frc.robot.RobotMap.ElevatorPort;
+import frc.robot.constants.RobotCANPorts;
 
 public class ElevatorSubsystem extends SubsystemBase {
     private static final double LIMIT = 1200;
     private static final double SPEED = 0.2;
-    private final ModuleTalonFX rightMotor = new ModuleTalonFX(ElevatorPort.kRightMotor);
-    private final ModuleTalonFX leftMotor = new ModuleTalonFX(ElevatorPort.kLeftMotor);
+    private final ModuleTalonFX rightMotor = new ModuleTalonFX(RobotCANPorts.RIGHT_ELEVATOR.get());
+    private final ModuleTalonFX leftMotor = new ModuleTalonFX(RobotCANPorts.LEFT_ELEVATOR.get());
     private final DigitalInput limitSwitch = new DigitalInput(0);
     private final PIDController elevatorPidController = new PIDController(0., 0., 0.); // TODO fill in values
 
     public ElevatorSubsystem() {
-        rightMotor.setInverted(true);
-        leftMotor.setInverted(false);
-
-        rightMotor.setNeutralMode(NeutralModeValue.Brake);
-        leftMotor.setNeutralMode(NeutralModeValue.Brake);
-
+        this.rightMotor.setInverted(true);
+        this.leftMotor.setInverted(false);
+        this.rightMotor.setNeutralMode(NeutralModeValue.Brake);
+        this.leftMotor.setNeutralMode(NeutralModeValue.Brake);
         this.resetPosition();
     }
 

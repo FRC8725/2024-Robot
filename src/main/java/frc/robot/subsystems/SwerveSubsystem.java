@@ -8,6 +8,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -16,20 +17,11 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.helpers.*;
+import frc.lib.motors.SwerveModuleGroup;
 import frc.robot.constants.RobotCANPorts;
-
-import java.util.List;
+import frc.robot.constants.SwerveDriveConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
-    // TODO use the ones in SwerveDriveConstants instead.
-    @OutputUnit(UnitTypes.METERS_PER_SECOND)
-    public static final double TELEOP_MAX_ROBOT_SPEED = 2.0;
-    @OutputUnit(UnitTypes.RADIANS_PER_SECOND)
-    public static final double TELEOP_MAX_ROBOT_ANGULAR_SPEED = Math.PI;
-    @OutputUnit(UnitTypes.METERS_PER_SECOND_SQUARED)
-    public static final double TELEOP_MAX_ACCELERATION = TELEOP_MAX_ROBOT_SPEED * 3.0;
-    @OutputUnit(UnitTypes.RADIANS_PER_SECOND_SQUARED)
-    public static final double TELEOP_MAX_ANGULAR_ACCELERATION = 2.0 * Math.PI;
     @OutputUnit(UnitTypes.METERS)
     private static final double TRACK_WIDTH = Units.inchesToMeters(24.0);
     @OutputUnit(UnitTypes.METERS)
@@ -41,41 +33,41 @@ public class SwerveSubsystem extends SubsystemBase {
             true,
             true,
             RobotCANPorts.FL_ABS_ENCODER.get(),
-            0.0);
+            0.0, new Translation2d(WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0));
     private final SwerveModule frontRight = new SwerveModule("FR Module",
             RobotCANPorts.FR_DRIVE.get(),
             RobotCANPorts.FR_STEER.get(),
             false,
             true,
             RobotCANPorts.FR_ABS_ENCODER.get(),
-            0.0);
+            0.0, new Translation2d(WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0));
     private final SwerveModule backLeft = new SwerveModule("BL Module",
             RobotCANPorts.BL_DRIVE.get(),
             RobotCANPorts.BL_STEER.get(),
             true,
             true,
             RobotCANPorts.BL_ABS_ENCODER.get(),
-            0.0);
+            0.0, new Translation2d(-WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0));
     private final SwerveModule backRight = new SwerveModule("BR Module",
             RobotCANPorts.BR_DRIVE.get(),
             RobotCANPorts.BR_STEER.get(),
             false,
             true,
             RobotCANPorts.BR_ABS_ENCODER.get(),
-            0.0);
-    private final List<SwerveModule> modules = List.of(this.frontLeft, this.frontRight, this.backLeft, this.backRight);
+            0.0, new Translation2d(-WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0));
+    private final SwerveModuleGroup modules = new SwerveModuleGroup(this.frontLeft, this.frontRight, this.backLeft, this.backRight);
     private final AHRS gyro = new AHRS(SPI.Port.kMXP);
     private final Field2d gameFieldSim = new Field2d();
-    private final SwerveDriveKinematics kinematics = SwerveHelper.constructKinematics(TRACK_WIDTH, WHEEL_BASE);
+    private final SwerveDriveKinematics kinematics = this.modules.constructKinematics();
     private final SwerveDriveOdometry odometry = new SwerveDriveOdometry(
             this.kinematics, this.getHeading(), this.getModulePositions()
     );
     private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
 
     public SwerveSubsystem() {
-        this.xLimiter = new SlewRateLimiter(SwerveSubsystem.TELEOP_MAX_ACCELERATION);
-        this.yLimiter = new SlewRateLimiter(SwerveSubsystem.TELEOP_MAX_ACCELERATION);
-        this.turningLimiter = new SlewRateLimiter(SwerveSubsystem.TELEOP_MAX_ANGULAR_ACCELERATION);
+        this.xLimiter = new SlewRateLimiter(SwerveDriveConstants.TELEOP_MAX_ACCELERATION);
+        this.yLimiter = new SlewRateLimiter(SwerveDriveConstants.TELEOP_MAX_ACCELERATION);
+        this.turningLimiter = new SlewRateLimiter(SwerveDriveConstants.TELEOP_MAX_ANGULAR_ACCELERATION);
 
         new Thread(() -> {
             try {
@@ -127,29 +119,16 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public SwerveModuleState[] getModuleStates() {
-        return new SwerveModuleState[]{
-                this.frontLeft.getState(),
-                this.frontRight.getState(),
-                this.backLeft.getState(),
-                this.backRight.getState()
-        };
+        return this.modules.getStates();
     }
 
     public void setModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, SwerveModule.MODULE_MAX_DRIVING_SPEED);
-        this.frontLeft.setDesiredState(desiredStates[SwerveHelper.ModuleIds.FL.get()]);
-        this.frontRight.setDesiredState(desiredStates[SwerveHelper.ModuleIds.FR.get()]);
-        this.backLeft.setDesiredState(desiredStates[SwerveHelper.ModuleIds.BL.get()]);
-        this.backRight.setDesiredState(desiredStates[SwerveHelper.ModuleIds.BR.get()]);
+        this.modules.setDesiredStates(desiredStates);
     }
 
     public SwerveModulePosition[] getModulePositions() {
-        return new SwerveModulePosition[]{
-                this.frontLeft.getPosition(),
-                this.frontRight.getPosition(),
-                this.backLeft.getPosition(),
-                this.backRight.getPosition()
-        };
+        return this.modules.getPositions();
     }
 
     public void resetOdometry(Pose2d pose) {
