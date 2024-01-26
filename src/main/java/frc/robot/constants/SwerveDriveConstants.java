@@ -17,7 +17,7 @@ public final class SwerveDriveConstants {
     @OutputUnit(UnitTypes.RADIANS_PER_SECOND)
     public static final double AUTO_MAX_ROBOT_ANGULAR_SPEED = Math.PI;
     @OutputUnit(UnitTypes.METERS_PER_SECOND_SQUARED)
-    public static final double AUTO_MAX_ACCELERATION = 6.0;
+    public static final double AUTO_MAX_ACCELERATION = AUTO_MAX_ROBOT_SPEED * 3.0;
     @OutputUnit(UnitTypes.RADIANS_PER_SECOND_SQUARED)
     public static final double AUTO_MAX_ANGULAR_ACCELERATION = 2.0 * Math.PI;
 }

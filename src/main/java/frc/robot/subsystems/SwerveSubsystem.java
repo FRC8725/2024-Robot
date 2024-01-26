@@ -5,7 +5,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -19,9 +18,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.helpers.*;
 import frc.lib.motors.SwerveModuleGroup;
 import frc.robot.constants.RobotCANPorts;
-import frc.robot.constants.SwerveDriveConstants;
 
-public class SwerveSubsystem extends SubsystemBase {
+public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider {
     @OutputUnit(UnitTypes.METERS)
     private static final double TRACK_WIDTH = Units.inchesToMeters(24.0);
     @OutputUnit(UnitTypes.METERS)
@@ -59,16 +57,14 @@ public class SwerveSubsystem extends SubsystemBase {
     private final AHRS gyro = new AHRS(SPI.Port.kMXP);
     private final Field2d gameFieldSim = new Field2d();
     private final SwerveDriveKinematics kinematics = this.modules.constructKinematics();
-    private final SwerveDriveOdometry odometry = new SwerveDriveOdometry(
-            this.kinematics, this.getHeading(), this.getModulePositions()
-    );
-    private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
+    private final SwerveDriveOdometry odometry = new SwerveDriveOdometry(this.kinematics, this.getHeading(), this.getModulePositions());
 
     public SwerveSubsystem() {
-        this.xLimiter = new SlewRateLimiter(SwerveDriveConstants.TELEOP_MAX_ACCELERATION);
-        this.yLimiter = new SlewRateLimiter(SwerveDriveConstants.TELEOP_MAX_ACCELERATION);
-        this.turningLimiter = new SlewRateLimiter(SwerveDriveConstants.TELEOP_MAX_ANGULAR_ACCELERATION);
+        this.initialize();
+        this.configureAutoBuilder();
+    }
 
+    private void initialize() {
         new Thread(() -> {
             try {
                 Thread.sleep(1000);
@@ -77,12 +73,14 @@ public class SwerveSubsystem extends SubsystemBase {
             } catch (Exception ignored) {
             }
         }).start();
+    }
 
+    private void configureAutoBuilder() {
         AutoBuilder.configureHolonomic(
                 this::getRobotPosition,
                 this::resetOdometry,
                 this::getChassisSpeeds,
-                this::driveChassis,
+                this::drive,
                 new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
                         new PIDConstants(5.0, 0.05, 0.),
                         new PIDConstants(5.0, 0., 0.),
@@ -95,13 +93,23 @@ public class SwerveSubsystem extends SubsystemBase {
         );
     }
 
+    public void drive(double xSpeed, double ySpeed, double rotation, boolean fieldOriented) {
+        ChassisSpeeds chassisSpeeds = fieldOriented
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotation, this.getHeading())
+                : new ChassisSpeeds(xSpeed, ySpeed, rotation);
+
+        this.drive(chassisSpeeds);
+    }
+
+    private void drive(ChassisSpeeds chassisSpeeds) {
+        SwerveModuleState[] desiredStates = this.kinematics.toSwerveModuleStates(chassisSpeeds);
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, SwerveModule.MODULE_MAX_DRIVING_SPEED);
+        this.modules.setDesiredStates(desiredStates);
+    }
+
     @CoordinateSystem(CoordinationPolicy.ROBOT_COORDINATION)
     private ChassisSpeeds getChassisSpeeds() {
         return this.kinematics.toChassisSpeeds(this.getModuleStates());
-    }
-
-    public void resetGyro() {
-        this.gyro.reset();
     }
 
     @OutputUnit(UnitTypes.DEGREES)
@@ -109,8 +117,12 @@ public class SwerveSubsystem extends SubsystemBase {
         return Math.IEEEremainder(this.gyro.getAngle(), 360);
     }
 
+    public void resetGyro() {
+        this.gyro.reset();
+    }
+
     public Rotation2d getHeading() {
-        return Rotation2d.fromDegrees(getGyroAngle());
+        return Rotation2d.fromDegrees(this.getGyroAngle());
     }
 
     @OutputUnit(UnitTypes.METERS)
@@ -122,17 +134,12 @@ public class SwerveSubsystem extends SubsystemBase {
         return this.modules.getStates();
     }
 
-    public void setModuleStates(SwerveModuleState[] desiredStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, SwerveModule.MODULE_MAX_DRIVING_SPEED);
-        this.modules.setDesiredStates(desiredStates);
-    }
-
     public SwerveModulePosition[] getModulePositions() {
         return this.modules.getPositions();
     }
 
     public void resetOdometry(Pose2d pose) {
-        this.odometry.resetPosition(getHeading(), getModulePositions(), pose);
+        this.odometry.resetPosition(this.getHeading(), this.getModulePositions(), pose);
     }
 
     public void stopModules() {
@@ -143,40 +150,23 @@ public class SwerveSubsystem extends SubsystemBase {
         this.modules.forEach(SwerveModule::resetRelativeEncoders);
     }
 
-    public void drive(double xSpeed, double ySpeed, double rotation, boolean fieldOriented) {
-        constructAndSetModuleStates(xSpeed, ySpeed, rotation, fieldOriented);
-    }
-
-    public void move(double xSpeed, double ySpeed, double rotation, boolean fieldOriented) {
-        xSpeed = xLimiter.calculate(xSpeed);
-        ySpeed = yLimiter.calculate(ySpeed);
-        rotation = turningLimiter.calculate(rotation);
-        constructAndSetModuleStates(xSpeed, ySpeed, rotation, fieldOriented);
-    }
-
-    private void constructAndSetModuleStates(Double xSpeed, Double ySpeed, Double rotation, boolean fieldOriented) {
-        ChassisSpeeds chassisSpeeds = fieldOriented
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotation, this.getHeading())
-                : new ChassisSpeeds(xSpeed, ySpeed, rotation);
-
-        this.driveChassis(chassisSpeeds);
-    }
-
-    private void driveChassis(ChassisSpeeds chassisSpeeds) {
-        SwerveModuleState[] moduleStates = this.kinematics.toSwerveModuleStates(chassisSpeeds);
-        setModuleStates(moduleStates);
-    }
-
     public void lockModules() {
         this.modules.forEach(SwerveModule::lockModule);
     }
 
     @Override
     public void periodic() {
-        odometry.update(this.gyro.getRotation2d(), getModulePositions());
+        this.odometry.update(this.gyro.getRotation2d(), this.getModulePositions());
+        this.gameFieldSim.setRobotPose(this.getRobotPosition());
+    }
 
-        SmartDashboard.putNumber("Robot Heading", getGyroAngle());
-        SmartDashboard.putData(gameFieldSim);
-        gameFieldSim.setRobotPose(getRobotPosition());
+    @Override
+    public void putDashboard() {
+        SmartDashboard.putNumber("RobotHeading", this.getGyroAngle());
+        SmartDashboard.putData(this.gameFieldSim);
+    }
+
+    @Override
+    public void putDashboardOnce() {
     }
 }

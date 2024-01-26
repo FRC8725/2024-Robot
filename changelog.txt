@@ -12,3 +12,8 @@
 - Added SwerveModuleGroup into SwerveSubsystem
 - Deleted SwerveHelper, mechanics replaced by SwerveModuleGroup
 - Added SwervePosition Translation2d into SwerveModule
+
+2024/01/26 v1.0.2
+- Moved SlewRateLimiters from SwerveSubsystem to AutoTrackNoteCommand
+- Added ControllerJoystick mechanics
+- Tidied up some codes
