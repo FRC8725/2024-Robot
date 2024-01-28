@@ -20,3 +20,6 @@
 
 2024/01/26 v1.0.3
 - Added README.md
+
+2024/01/28 v1.0.4
+- Fixed ClassCastException on SwerveModuleGroup

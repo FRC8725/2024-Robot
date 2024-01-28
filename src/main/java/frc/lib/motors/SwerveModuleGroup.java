@@ -18,15 +18,15 @@ public class SwerveModuleGroup {
     }
 
     public SwerveModuleState[] getStates() {
-        return (SwerveModuleState[]) this.modules.stream().map(SwerveModule::getState).toArray();
+        return this.modules.stream().map(SwerveModule::getState).toArray(SwerveModuleState[]::new);
     }
 
     public SwerveModulePosition[] getPositions() {
-        return (SwerveModulePosition[]) this.modules.stream().map(SwerveModule::getPosition).toArray();
+        return this.modules.stream().map(SwerveModule::getPosition).toArray(SwerveModulePosition[]::new);
     }
 
     public SwerveDriveKinematics constructKinematics() {
-        return new SwerveDriveKinematics((Translation2d[]) this.modules.stream().map(SwerveModule::getModulePosition).toArray());
+        return new SwerveDriveKinematics(this.modules.stream().map(SwerveModule::getModulePosition).toArray(Translation2d[]::new));
     }
 
     public void setDesiredStates(SwerveModuleState[] desiredStates) {
