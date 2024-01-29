@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.ModuleTalonFX;
 import frc.robot.constants.RobotCANPorts;
 
+
+// TODO：　Change to TelescpoeSubsystem (similar to ElevatorSubsystem)
 public class ElevatorSubsystem extends SubsystemBase {
     private static final double LIMIT = 1200;
     private static final double SPEED = 0.2;

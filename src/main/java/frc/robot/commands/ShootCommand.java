@@ -21,23 +21,13 @@ public class ShootCommand extends Command {
 
     @Override
     public void execute() {
-        if (this.joystick.isShootButtonDown()) {
-            this.shooterSubsystem.shoot();
-        } else {
-            this.shooterSubsystem.stopShooters();
-        }
+        if (this.joystick.isShootButtonDown()) this.shooterSubsystem.shoot();
+        else this.shooterSubsystem.stopShooters();
+            
 
-        if (this.joystick.isLoadButtonDown()) {
-            this.shooterSubsystem.load();
-        } else {
-            this.shooterSubsystem.stopLoader();
-        }
-
-        if (this.joystick.isShooterLifting()) {
-            this.shooterSubsystem.lift(this.joystick.getShooterLiftingSpeed());
-        } else {
-            this.shooterSubsystem.stopLifters();
-        }
+        final double angleTogglerDirection = this.joystick.getAngleTogglerDirection();
+        if (angleTogglerDirection != 0) this.shooterSubsystem.toggleAngle(angleTogglerDirection);
+        else this.shooterSubsystem.stopAngleToggler();
     }
 
     @Override

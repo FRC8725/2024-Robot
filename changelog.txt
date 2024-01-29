@@ -23,3 +23,7 @@
 
 2024/01/28 v1.0.4
 - Fixed ClassCastException on SwerveModuleGroup
+
+2024/01/29 v1.0.5
+- Remove shooterLifter
+- Added angleToggler

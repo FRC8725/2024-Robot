@@ -8,7 +8,7 @@ import frc.lib.helpers.UnitTypes;
 // TODO complete this Class
 public class ControllerJoystick extends XboxController {
     private static final int PORT = 0;
-    private static final double LIFT_DEADBAND = 0.1;
+    private static final double MUSHROOM_HEAD_DEADBAND = 0.1;
 
     public ControllerJoystick() {
         super(PORT);
@@ -22,14 +22,8 @@ public class ControllerJoystick extends XboxController {
         return this.getRightBumper();
     }
 
-    @OutputUnit(UnitTypes.PERCENTAGES)
-    public double getShooterLiftingSpeed() {
-        double speed = this.getRightTriggerAxis() - this.getLeftTriggerAxis();
-        return MathUtil.applyDeadband(speed, LIFT_DEADBAND);
-    }
-
-    public boolean isShooterLifting() {
-        return this.getShooterLiftingSpeed() != 0.0;
+    public double getAngleTogglerDirection() {
+        return MathUtil.applyDeadband(this.getRightY(), MUSHROOM_HEAD_DEADBAND); 
     }
 
     public boolean isIntakeButtonDown() {
