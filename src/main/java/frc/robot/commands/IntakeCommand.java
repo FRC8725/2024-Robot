@@ -22,16 +22,13 @@ public class IntakeCommand extends Command {
 
     @Override
     public void execute() {
-        // TODO find other way to control it
-//        if (this.joystick.getLeftTriggerAxis() > 0.1) this.intakeSubsystem.lift(-joystick.getLeftTriggerAxis());
-//        else if (joystick.getRightTriggerAxis() > 0.1) this.intakeSubsystem.lift(joystick.getRightTriggerAxis());
-//        else this.intakeSubsystem.stopLift();
+        final double angleTogglerDirection = this.joystick.getIntakeLiftDirection();
+        if (angleTogglerDirection != 0) this.intakeSubsystem.lift(angleTogglerDirection);
+        else this.intakeSubsystem.stopLift();
 
-        if (this.joystick.isIntakeButtonDown()) {
-            this.intakeSubsystem.intake();
-        } else {
-            this.intakeSubsystem.stopIntake();
-        }
+        if (this.joystick.isIntakeButtonDown()) this.intakeSubsystem.intake(true);
+        else if (this.joystick.isReleaseButtonDown()) this.intakeSubsystem.intake(false);
+        else this.intakeSubsystem.stopIntake();
     }
 
     @Override

@@ -16,7 +16,7 @@ public class RobotContainer implements IDashboardProvider {
     private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
     private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
     // private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
-    private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+    // private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
     private final DriverJoystick driverJoystick = new DriverJoystick();
     private final ControllerJoystick controllerJoystick = new ControllerJoystick();
     private final VisionManager visionManager = new VisionManager();
@@ -33,7 +33,7 @@ public class RobotContainer implements IDashboardProvider {
         this.swerveSubsystem.setDefaultCommand(new SwerveDriveCommand(this.swerveSubsystem, this.driverJoystick));
         this.shooterSubsystem.setDefaultCommand(new ShootCommand(this.shooterSubsystem, this.controllerJoystick));
         // this.elevatorSubsystem.setDefaultCommand(new ElevatorCommand(this.elevatorSubsystem, this.controllerJoystick));
-        this.intakeSubsystem.setDefaultCommand(new IntakeCommand(this.intakeSubsystem, this.controllerJoystick));
+        // this.intakeSubsystem.setDefaultCommand(new IntakeCommand(this.intakeSubsystem, this.controllerJoystick));
     }
 
     private void configureBindings() {

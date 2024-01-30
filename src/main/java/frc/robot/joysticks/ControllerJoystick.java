@@ -18,16 +18,20 @@ public class ControllerJoystick extends XboxController {
         return this.getLeftBumper();
     }
 
-    public boolean isLoadButtonDown() {
-        return this.getRightBumper();
-    }
-
     public double getAngleTogglerDirection() {
         return MathUtil.applyDeadband(this.getRightY(), MUSHROOM_HEAD_DEADBAND); 
     }
 
     public boolean isIntakeButtonDown() {
         return this.getBButton();
+    }
+
+    public boolean isReleaseButtonDown() {
+        return this.getXButton();
+    }
+
+    public double getIntakeLiftDirection() {
+        return MathUtil.applyDeadband(this.getLeftY(), MUSHROOM_HEAD_DEADBAND);
     }
 
     public boolean isElevating() {

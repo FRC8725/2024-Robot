@@ -1,11 +1,8 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkAbsoluteEncoder;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.ModuleTalonFX;
@@ -15,36 +12,51 @@ import frc.robot.constants.RobotCANPorts;
 public class IntakeSubsystem extends SubsystemBase implements IDashboardProvider {
     private static final double INTAKE_SPEED = 0.07;
     private static final double LIFT_COEFFICIENT = 0.07;
-    private final ModuleTalonFX intakeMotor = new ModuleTalonFX(RobotCANPorts.INTAKE.get());
-    private final CANSparkMax liftMotor = new CANSparkMax(RobotCANPorts.INTAKE_LIFTER.get(), MotorType.kBrushless);
-    private final AbsoluteEncoder liftEncoder = this.liftMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
+    private final ModuleTalonFX rightIntakeMotor = new ModuleTalonFX(RobotCANPorts.RIGHT_INTAKE.get());
+    private final ModuleTalonFX leftIntakeMotor = new ModuleTalonFX(RobotCANPorts.LEFT_INTAKE.get());
+
+    private final ModuleTalonFX rightLiftMotor = new ModuleTalonFX(RobotCANPorts.RIGTH_INTAKE_LIFTER.get());
+    private final ModuleTalonFX leftLiftMotor = new ModuleTalonFX(RobotCANPorts.LEFT_INTAKE_LIFTER.get());
+
+    private final DutyCycleEncoder liftEncoder = new DutyCycleEncoder(1);
     private final PIDController liftPIDController = new PIDController(0.1, 0, 0);
 
     public IntakeSubsystem() {
-        this.intakeMotor.setInverted(true);
-        this.liftMotor.setIdleMode(IdleMode.kBrake);
-        this.liftEncoder.setZeroOffset(0.907);
-        this.liftEncoder.setInverted(true);
+        this.rightIntakeMotor.setInverted(true);
+        this.leftIntakeMotor.setInverted(false);
+
+        this.rightLiftMotor.setInverted(true);
+        this.leftLiftMotor.setInverted(false);
+        
+        this.rightLiftMotor.setNeutralMode(NeutralModeValue.Brake);
+        this.leftLiftMotor.setNeutralMode(NeutralModeValue.Brake);
     }
 
-    public void intake() {
-        this.intakeMotor.set(INTAKE_SPEED);
+    public void intake(boolean direction) {
+        this.rightIntakeMotor.set(INTAKE_SPEED * (direction ? 1 : -1));
+        this.leftIntakeMotor.set(INTAKE_SPEED * (direction ? 1 : -1));
     }
 
     public void stopIntake() {
-        this.intakeMotor.stopMotor();
+        this.rightIntakeMotor.stopMotor();
+        this.leftIntakeMotor.stopMotor();
     }
 
-    public void lift(double speed) {
-        this.liftMotor.set(speed * LIFT_COEFFICIENT);
+    public void lift(double activeDirection) {
+        activeDirection /= Math.abs(activeDirection);
+        this.rightLiftMotor.set(activeDirection * LIFT_COEFFICIENT);
+        this.leftLiftMotor.set(activeDirection * LIFT_COEFFICIENT);
     }
 
     public void liftTo(double setpoint) {
-        this.lift(this.liftPIDController.calculate(this.liftEncoder.getPosition(), setpoint));
+        final double output = this.liftPIDController.calculate(this.liftEncoder.getAbsolutePosition(), setpoint);
+        this.rightLiftMotor.set(output);
+        this.leftLiftMotor.set(output);
     }
 
     public void stopLift() {
-        this.liftMotor.stopMotor();
+        this.rightLiftMotor.stopMotor();
+        this.leftLiftMotor.stopMotor();
     }
 
     public void stopAll() {
@@ -54,7 +66,7 @@ public class IntakeSubsystem extends SubsystemBase implements IDashboardProvider
 
     @Override
     public void putDashboard() {
-        SmartDashboard.putNumber("IntakePos", this.liftEncoder.getPosition());
+        SmartDashboard.putNumber("IntakePos", this.liftEncoder.getAbsolutePosition());
     }
 
     @Override
