@@ -25,9 +25,12 @@
 - Fixed ClassCastException on SwerveModuleGroup
 
 2024/01/29 v1.0.5
-- Remove shooterLifter
+- Removed shooterLifter
 - Added angleToggler
 
-2024/01/29 v1.0.6
+2024/01/30 v1.0.6
 - Added another motor to intake and intake_lifter
 - Added control method to intake_lifter
+
+2024/01/31 v1.0.7
+- Toggled turning direction for ShooterSubsystem motor.

@@ -10,8 +10,8 @@ import frc.lib.helpers.IDashboardProvider;
 import frc.robot.constants.RobotCANPorts;
 
 public class IntakeSubsystem extends SubsystemBase implements IDashboardProvider {
-    private static final double INTAKE_SPEED = 0.07;
-    private static final double LIFT_COEFFICIENT = 0.07;
+    private static final double INTAKE_SPEED = 0.6;
+    private static final double LIFT_COEFFICIENT = 0.1;
     private final ModuleTalonFX rightIntakeMotor = new ModuleTalonFX(RobotCANPorts.RIGHT_INTAKE.get());
     private final ModuleTalonFX leftIntakeMotor = new ModuleTalonFX(RobotCANPorts.LEFT_INTAKE.get());
 
@@ -23,7 +23,7 @@ public class IntakeSubsystem extends SubsystemBase implements IDashboardProvider
 
     public IntakeSubsystem() {
         this.rightIntakeMotor.setInverted(true);
-        this.leftIntakeMotor.setInverted(false);
+        this.leftIntakeMotor.setInverted(true);
 
         this.rightLiftMotor.setInverted(true);
         this.leftLiftMotor.setInverted(false);

@@ -21,7 +21,7 @@ public class ShooterSubsystem extends SubsystemBase implements IDashboardProvide
     private final PIDController angleTogglerPID = new PIDController(0.1, 0, 0);
 
     public ShooterSubsystem() {
-        this.rightShootMotor.setInverted(false);
+        this.rightShootMotor.setInverted(true);
         this.leftShootMotor.setInverted(true);
 
         this.angleTogglerMotor.setNeutralMode(NeutralModeValue.Brake);
