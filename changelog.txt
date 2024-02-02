@@ -46,4 +46,7 @@
 - Added TelescopeSubsystem, TelescopeCommand mechanics
 
 2024/02/02 v1.0.10
-- Make LEFT_TELESCOPE motor follow RIGHT_TELESCOPE motor 
+- Made LEFT_TELESCOPE motor follow RIGHT_TELESCOPE motor
+
+2024/02/02 v1.0.11
+- Updated README.md
