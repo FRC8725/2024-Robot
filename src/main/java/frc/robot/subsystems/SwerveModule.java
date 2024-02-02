@@ -30,8 +30,8 @@ public class SwerveModule implements IDashboardProvider {
     private final ChassisTalonFX turningMotor;
     private final CANcoder absoluteEncoder;
     private final double absEncoderOffset;
-    private final PIDController drivePIDController = new PIDController(0.0, 6.0, 0.0);
-    private final PIDController turningPIDController = new PIDController(0.35, 0.0, 0.0);
+    private final PIDController drivePIDController = new PIDController(0.3, 60.0, 0.0, 0.01);
+    private final PIDController turningPIDController = new PIDController(5.5, 0.0, 0.0, 0.01);
     private final String name;
 
     public SwerveModule(String name, int driveMotorId, int turningMotorId, boolean driveMotorInverted,
@@ -46,6 +46,7 @@ public class SwerveModule implements IDashboardProvider {
         this.configDriveMotor(driveMotorInverted);
         this.configTurningMotor(turningMotorInverted);
 
+        this.drivePIDController.setIntegratorRange(-100.0, 100.0);
         this.turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
 
         this.resetRelativeEncoders();
@@ -113,16 +114,11 @@ public class SwerveModule implements IDashboardProvider {
 
         final double desiredSpeed = desiredState.speedMetersPerSecond;
         final double currentSpeed = this.getState().speedMetersPerSecond;
-        final double output = this.drivePIDController.calculate(currentSpeed, desiredSpeed);
-        this.driveMotor.set(output);
-        // this.driveMotor.set(desiredState.speedMetersPerSecond / Constants.DriveConstants.PHYSICAL_MAX_SPEED);
+        this.driveMotor.setVoltage(this.drivePIDController.calculate(currentSpeed, desiredSpeed));
 
         final double desiredAngle = desiredState.angle.getRadians();
         final double currentAngle = this.getState().angle.getRadians();
-        this.turningMotor.set(this.turningPIDController.calculate(currentAngle, desiredAngle));
-
-        // SmartDashboard.putString(this.name + " desiredState", desiredState.toString());
-        // SmartDashboard.putNumber(this.name + " Pid", output);
+        this.turningMotor.setVoltage(this.turningPIDController.calculate(currentAngle, desiredAngle));
     }
 
     public void stop() {
