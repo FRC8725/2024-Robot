@@ -10,12 +10,13 @@ import frc.lib.helpers.IDashboardProvider;
 import frc.robot.constants.RobotCANPorts;
 
 public class IntakeSubsystem extends SubsystemBase implements IDashboardProvider {
-    private static final double INTAKE_SPEED = 0.6;
-    private static final double LIFT_COEFFICIENT = 0.1;
+    private static final double INTAKE_SPEED = 0.4;
+    private static final double RELEASE_SPEED = -1;
+    private static final double LIFT_COEFFICIENT = 0.25;
     private final ModuleTalonFX rightIntakeMotor = new ModuleTalonFX(RobotCANPorts.RIGHT_INTAKE.get());
     private final ModuleTalonFX leftIntakeMotor = new ModuleTalonFX(RobotCANPorts.LEFT_INTAKE.get());
 
-    private final ModuleTalonFX rightLiftMotor = new ModuleTalonFX(RobotCANPorts.RIGTH_INTAKE_LIFTER.get());
+    private final ModuleTalonFX rightLiftMotor = new ModuleTalonFX(RobotCANPorts.RIGHT_INTAKE_LIFTER.get());
     private final ModuleTalonFX leftLiftMotor = new ModuleTalonFX(RobotCANPorts.LEFT_INTAKE_LIFTER.get());
 
     private final DutyCycleEncoder liftEncoder = new DutyCycleEncoder(1);
@@ -25,6 +26,9 @@ public class IntakeSubsystem extends SubsystemBase implements IDashboardProvider
         this.rightIntakeMotor.setInverted(true);
         this.leftIntakeMotor.setInverted(true);
 
+        this.leftIntakeMotor.setNeutralMode(NeutralModeValue.Coast);
+        this.rightLiftMotor.setNeutralMode(NeutralModeValue.Coast);
+
         this.rightLiftMotor.setInverted(true);
         this.leftLiftMotor.setInverted(false);
         
@@ -32,9 +36,14 @@ public class IntakeSubsystem extends SubsystemBase implements IDashboardProvider
         this.leftLiftMotor.setNeutralMode(NeutralModeValue.Brake);
     }
 
-    public void intake(boolean direction) {
-        this.rightIntakeMotor.set(INTAKE_SPEED * (direction ? 1 : -1));
-        this.leftIntakeMotor.set(INTAKE_SPEED * (direction ? 1 : -1));
+    public void intake() {
+        this.rightIntakeMotor.set(INTAKE_SPEED);
+        this.leftIntakeMotor.set(INTAKE_SPEED);
+    }
+
+    public void release() {
+        this.rightIntakeMotor.set(RELEASE_SPEED);
+        this.leftIntakeMotor.set(RELEASE_SPEED);
     }
 
     public void stopIntake() {

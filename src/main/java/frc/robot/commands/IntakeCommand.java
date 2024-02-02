@@ -26,8 +26,8 @@ public class IntakeCommand extends Command {
         if (angleTogglerDirection != 0) this.intakeSubsystem.lift(angleTogglerDirection);
         else this.intakeSubsystem.stopLift();
 
-        if (this.joystick.isIntakeButtonDown()) this.intakeSubsystem.intake(true);
-        else if (this.joystick.isReleaseButtonDown()) this.intakeSubsystem.intake(false);
+        if (this.joystick.isIntakeButtonDown()) this.intakeSubsystem.intake();
+        else if (this.joystick.isReleaseButtonDown()) this.intakeSubsystem.release();
         else this.intakeSubsystem.stopIntake();
     }
 

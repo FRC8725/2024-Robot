@@ -33,4 +33,10 @@
 - Added control method to intake_lifter
 
 2024/01/31 v1.0.7
-- Toggled turning direction for ShooterSubsystem motor.
+- Toggled turning direction for ShooterSubsystem motor
+
+2024/02/02 v1.0.8
+- Added IntakeSubsystem#release() mechanics
+- Fixed SwerveSubsystem cannot put Dashboard problem
+- Adjusted some constants
+- Renamed some fields

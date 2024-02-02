@@ -12,6 +12,7 @@ import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -55,11 +56,13 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
             0.0, new Translation2d(-WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0));
     private final SwerveModuleGroup modules = new SwerveModuleGroup(this.frontLeft, this.frontRight, this.backLeft, this.backRight);
     private final AHRS gyro = new AHRS(SPI.Port.kMXP);
+//    private final AHRS gyro = new AHRS(SerialPort.Port.kUSB);
     private final Field2d gameFieldSim = new Field2d();
     private final SwerveDriveKinematics kinematics = this.modules.constructKinematics();
     private final SwerveDriveOdometry odometry = new SwerveDriveOdometry(this.kinematics, this.getHeading(), this.getModulePositions());
 
     public SwerveSubsystem() {
+        this.registerDashboard();
         this.initialize();
         this.configureAutoBuilder();
     }
@@ -114,7 +117,7 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
 
     @OutputUnit(UnitTypes.DEGREES)
     public double getGyroAngle() {
-        return Math.IEEEremainder(this.gyro.getAngle(), 360);
+        return Math.IEEEremainder(-this.gyro.getAngle(), 360);
     }
 
     public void resetGyro() {

@@ -16,13 +16,13 @@ public class ShooterSubsystem extends SubsystemBase implements IDashboardProvide
     private final ModuleTalonFX rightShootMotor = new ModuleTalonFX(RobotCANPorts.RIGHT_SHOOTER.get());
     private final ModuleTalonFX leftShootMotor = new ModuleTalonFX(RobotCANPorts.LEFT_SHOOTER.get());
 
-    private final ModuleTalonFX angleTogglerMotor = new ModuleTalonFX(RobotCANPorts.ANGLETOGGLER.get());
+    private final ModuleTalonFX angleTogglerMotor = new ModuleTalonFX(RobotCANPorts.SLOPE_TOGGLER.get());
     private final DutyCycleEncoder angleTogglerEncoder = new DutyCycleEncoder(0);
     private final PIDController angleTogglerPID = new PIDController(0.1, 0, 0);
 
     public ShooterSubsystem() {
-        this.rightShootMotor.setInverted(true);
-        this.leftShootMotor.setInverted(true);
+        this.rightShootMotor.setInverted(false);
+        this.leftShootMotor.setInverted(false);
 
         this.angleTogglerMotor.setNeutralMode(NeutralModeValue.Brake);
         this.angleTogglerEncoder.setPositionOffset(0);
