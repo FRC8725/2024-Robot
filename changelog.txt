@@ -24,29 +24,31 @@
 2024/01/28 v1.0.4
 - Fixed ClassCastException on SwerveModuleGroup
 
-2024/01/29 v1.0.5
+2024/01/29 v1.1.0 **
+- Replaced elevator mechanics with telescope mechanics **
 - Removed shooterLifter
 - Added angleToggler
 
-2024/01/30 v1.0.6
+2024/01/30 v1.1.1
 - Added another motor to intake and intake_lifter
 - Added control method to intake_lifter
 
-2024/01/31 v1.0.7
+2024/01/31 v1.1.2
 - Toggled turning direction for ShooterSubsystem motor
 
-2024/02/02 v1.0.8
+2024/02/02 v1.1.3
 - Added IntakeSubsystem#release() mechanics
 - Fixed SwerveSubsystem cannot put Dashboard problem
 - Adjusted some constants
 - Renamed some fields
 
-2024/02/02 v1.0.9
+2024/02/02 v1.1.4
 - Removed ElevatorSubsystem, ElevatorCommand mechanics
 - Added TelescopeSubsystem, TelescopeCommand mechanics
 
-2024/02/02 v1.0.10
+2024/02/02 v1.1.5
 - Made LEFT_TELESCOPE motor follow RIGHT_TELESCOPE motor
 
-2024/02/02 v1.0.11
+2024/02/02 v1.1.6
 - Updated README.md
+- Fixed changelog.txt
