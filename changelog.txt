@@ -44,3 +44,6 @@
 2024/02/02 v1.0.9
 - Removed ElevatorSubsystem, ElevatorCommand mechanics
 - Added TelescopeSubsystem, TelescopeCommand mechanics
+
+2024/02/02 v1.0.10
+- Make LEFT_TELESCOPE motor follow RIGHT_TELESCOPE motor 

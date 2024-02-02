@@ -33,6 +33,7 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
             true,
             RobotCANPorts.FL_ABS_ENCODER.get(),
             0.0, new Translation2d(WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0));
+            
     private final SwerveModule frontRight = new SwerveModule("FR Module",
             RobotCANPorts.FR_DRIVE.get(),
             RobotCANPorts.FR_STEER.get(),
@@ -40,6 +41,7 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
             true,
             RobotCANPorts.FR_ABS_ENCODER.get(),
             0.0, new Translation2d(WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0));
+
     private final SwerveModule backLeft = new SwerveModule("BL Module",
             RobotCANPorts.BL_DRIVE.get(),
             RobotCANPorts.BL_STEER.get(),
@@ -47,6 +49,7 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
             true,
             RobotCANPorts.BL_ABS_ENCODER.get(),
             0.0, new Translation2d(-WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0));
+            
     private final SwerveModule backRight = new SwerveModule("BR Module",
             RobotCANPorts.BR_DRIVE.get(),
             RobotCANPorts.BR_STEER.get(),
@@ -54,6 +57,7 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
             true,
             RobotCANPorts.BR_ABS_ENCODER.get(),
             0.0, new Translation2d(-WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0));
+
     private final SwerveModuleGroup modules = new SwerveModuleGroup(this.frontLeft, this.frontRight, this.backLeft, this.backRight);
     private final AHRS gyro = new AHRS(SPI.Port.kMXP);
 //    private final AHRS gyro = new AHRS(SerialPort.Port.kUSB);
