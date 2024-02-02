@@ -25,9 +25,9 @@ public class ShootCommand extends Command {
         else this.shooterSubsystem.stopShooters();
             
 
-        final double angleTogglerDirection = this.joystick.getAngleTogglerDirection();
-        if (angleTogglerDirection != 0) this.shooterSubsystem.toggleAngle(angleTogglerDirection);
-        else this.shooterSubsystem.stopAngleToggler();
+        final double slopeTogglerDirection = this.joystick.getSlopeTogglerDirection();
+        if (slopeTogglerDirection != 0) this.shooterSubsystem.toggleSlope(slopeTogglerDirection);
+        else this.shooterSubsystem.stopSlopeToggler();
     }
 
     @Override

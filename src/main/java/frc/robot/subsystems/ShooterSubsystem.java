@@ -16,16 +16,16 @@ public class ShooterSubsystem extends SubsystemBase implements IDashboardProvide
     private final ModuleTalonFX rightShootMotor = new ModuleTalonFX(RobotCANPorts.RIGHT_SHOOTER.get());
     private final ModuleTalonFX leftShootMotor = new ModuleTalonFX(RobotCANPorts.LEFT_SHOOTER.get());
 
-    private final ModuleTalonFX angleTogglerMotor = new ModuleTalonFX(RobotCANPorts.SLOPE_TOGGLER.get());
-    private final DutyCycleEncoder angleTogglerEncoder = new DutyCycleEncoder(0);
-    private final PIDController angleTogglerPID = new PIDController(0.1, 0, 0);
+    private final ModuleTalonFX slopeTogglerMotor = new ModuleTalonFX(RobotCANPorts.SLOPE_TOGGLER.get());
+    private final DutyCycleEncoder slopeTogglerEncoder = new DutyCycleEncoder(0);
+    private final PIDController slopeTogglerPIDController = new PIDController(0.1, 0, 0);
 
     public ShooterSubsystem() {
         this.rightShootMotor.setInverted(false);
         this.leftShootMotor.setInverted(false);
 
-        this.angleTogglerMotor.setNeutralMode(NeutralModeValue.Brake);
-        this.angleTogglerEncoder.setPositionOffset(0);
+        this.slopeTogglerMotor.setNeutralMode(NeutralModeValue.Brake);
+        this.slopeTogglerEncoder.setPositionOffset(0);
     }
 
     public void shoot() {
@@ -38,27 +38,27 @@ public class ShooterSubsystem extends SubsystemBase implements IDashboardProvide
         this.leftShootMotor.stopMotor();
     }
 
-    public void toggleAngle(double activeDirection) {
+    public void toggleSlope(double activeDirection) {
         activeDirection /= Math.abs(activeDirection);
-        this.angleTogglerMotor.set(activeDirection * LIFT_COEFFICIENT);
+        this.slopeTogglerMotor.set(activeDirection * LIFT_COEFFICIENT);
     }
 
-    public void toggleAngleTo(double setpoint) {
-        this.angleTogglerMotor.set(this.angleTogglerPID.calculate(this.angleTogglerEncoder.getAbsolutePosition(), setpoint));
+    public void toggleSlopeTo(double setpoint) {
+        this.slopeTogglerMotor.set(this.slopeTogglerPIDController.calculate(this.slopeTogglerEncoder.getAbsolutePosition(), setpoint));
     }
 
-    public void stopAngleToggler() {
-        this.angleTogglerMotor.stopMotor();
+    public void stopSlopeToggler() {
+        this.slopeTogglerMotor.stopMotor();
     }
 
     public void stopAll() {
         this.stopShooters();
-        this.stopAngleToggler();
+        this.stopSlopeToggler();
     }
 
     @Override
     public void putDashboard() {
-        SmartDashboard.putNumber("Shooter Position", angleTogglerEncoder.getAbsolutePosition());
+        SmartDashboard.putNumber("Shooter Position", slopeTogglerEncoder.getAbsolutePosition());
     }
 
     @Override

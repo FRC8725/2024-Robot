@@ -2,8 +2,6 @@ package frc.robot.joysticks;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.lib.helpers.OutputUnit;
-import frc.lib.helpers.UnitTypes;
 
 // TODO complete this Class
 public class ControllerJoystick extends XboxController {
@@ -18,7 +16,7 @@ public class ControllerJoystick extends XboxController {
         return this.getLeftBumper();
     }
 
-    public double getAngleTogglerDirection() {
+    public double getSlopeTogglerDirection() {
         return MathUtil.applyDeadband(this.getRightY(), MUSHROOM_HEAD_DEADBAND); 
     }
 
@@ -34,11 +32,11 @@ public class ControllerJoystick extends XboxController {
         return MathUtil.applyDeadband(this.getLeftY(), MUSHROOM_HEAD_DEADBAND);
     }
 
-    public boolean isElevating() {
-        return this.getElevatorDirection() != 0;
+    public boolean isTelescoping() {
+        return this.getTelescopeDirection() != 0;
     }
 
-    public int getElevatorDirection() {
+    public int getTelescopeDirection() {
         if (this.getYButton() && this.getAButton()) {
             return 0;
         } else if (this.getYButton()) {

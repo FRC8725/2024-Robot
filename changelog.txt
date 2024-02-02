@@ -40,3 +40,7 @@
 - Fixed SwerveSubsystem cannot put Dashboard problem
 - Adjusted some constants
 - Renamed some fields
+
+2024/02/02 v1.0.9
+- Removed ElevatorSubsystem, ElevatorCommand mechanics
+- Added TelescopeSubsystem, TelescopeCommand mechanics

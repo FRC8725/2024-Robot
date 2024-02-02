@@ -2,23 +2,21 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.ModuleTalonFX;
 import frc.robot.constants.RobotCANPorts;
 
 
-// TODO：　Change to TelescpoeSubsystem (similar to ElevatorSubsystem)
-public class ElevatorSubsystem extends SubsystemBase {
+// TODO：　Change to TelescopeSubsystem (similar to ElevatorSubsystem)
+public class TelescopeSubsystem extends SubsystemBase {
     private static final double LIMIT = 1200;
     private static final double SPEED = 0.2;
-    private final ModuleTalonFX rightMotor = new ModuleTalonFX(RobotCANPorts.RIGHT_ELEVATOR.get());
-    private final ModuleTalonFX leftMotor = new ModuleTalonFX(RobotCANPorts.LEFT_ELEVATOR.get());
-    private final DigitalInput limitSwitch = new DigitalInput(0);
-    private final PIDController elevatorPidController = new PIDController(0., 0., 0.); // TODO fill in values
+    private final ModuleTalonFX rightMotor = new ModuleTalonFX(RobotCANPorts.RIGHT_TELESCOPE.get());
+    private final ModuleTalonFX leftMotor = new ModuleTalonFX(RobotCANPorts.LEFT_TELESCOPE.get());
+    private final PIDController elevatorPidController = new PIDController(0.2, 0., 0.); // TODO fill in values
 
-    public ElevatorSubsystem() {
+    public TelescopeSubsystem() {
         this.rightMotor.setInverted(true);
         this.leftMotor.setInverted(false);
         this.rightMotor.setNeutralMode(NeutralModeValue.Brake);
@@ -30,7 +28,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         if (direction && rightMotor.getRadPosition() < LIMIT && leftMotor.getRadPosition() < LIMIT) {
             rightMotor.set(SPEED);
             leftMotor.set(SPEED);
-        } else if (!direction) {
+        } else if (!direction && rightMotor.getRadPosition() > 0 && leftMotor.getRadPosition() > 0) {
             rightMotor.set(-SPEED);
             leftMotor.set(-SPEED);
         } else {
@@ -57,7 +55,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Elevator Position right", rightMotor.getRadPosition());
         SmartDashboard.putNumber("Elevator Position left", leftMotor.getRadPosition());
-        SmartDashboard.putBoolean("Limit Switch", limitSwitch.get());
         // This method will be called once per scheduler run
     }
 }
