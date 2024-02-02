@@ -52,3 +52,6 @@
 2024/02/02 v1.1.6
 - Updated README.md
 - Fixed changelog.txt
+
+2024/02/02 v1.1.7
+- Updated README.md
