@@ -19,12 +19,12 @@ public class VisionManager extends SubsystemBase {
     private static final double LIMELIGHT_HEIGHT = 45.0;
     @OutputUnit(UnitTypes.DEGREES)
     private static final double LIMELIGHT_MOUNT = 0;
+
     DoubleSubscriber tag_tidSub = NetworkTableInstance.getDefault().getTable("limelight").getDoubleTopic("tid").subscribe(-1);
     DoubleArraySubscriber tag_targetpose_robotspaceSub = NetworkTableInstance.getDefault().getTable("limelight").getDoubleArrayTopic("targetpose_robotspace").subscribe(new double[6]);
     DoubleSubscriber note_tvSub = NetworkTableInstance.getDefault().getTable("limelight-note").getDoubleTopic("tv").subscribe(-1);
     DoubleSubscriber note_tySub = NetworkTableInstance.getDefault().getTable("limelight-note").getDoubleTopic("ty").subscribe(-1);
     DoubleSubscriber note_txSub = NetworkTableInstance.getDefault().getTable("limelight-note").getDoubleTopic("tx").subscribe(-1);
-    boolean isFirstConnected = true;
 
     public VisionManager() {
     }
@@ -66,12 +66,16 @@ public class VisionManager extends SubsystemBase {
         return tag_tidSub.get() != -1.;
     }
 
+    public boolean hasSpecTagTarget(int tag) {
+        return tag_tidSub.get() == tag;
+    }
+
     public boolean hasNoteTarget() {
         return note_tvSub.get() != 0.0;
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("distance", getNoteDistance());
+        // SmartDashboard.putNumber("distance", getNoteDistance());
     }
 }

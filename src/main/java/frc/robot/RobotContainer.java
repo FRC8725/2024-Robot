@@ -15,7 +15,7 @@ import frc.robot.subsystems.*;
 public class RobotContainer implements IDashboardProvider {
     private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
     private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
-    private final TelescopeSubsystem telescopeSubsystem = new TelescopeSubsystem();
+    //private final TelescopeSubsystem telescopeSubsystem = new TelescopeSubsystem();
     private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
     private final DriverJoystick driverJoystick = new DriverJoystick();
     private final ControllerJoystick controllerJoystick = new ControllerJoystick();
@@ -32,7 +32,7 @@ public class RobotContainer implements IDashboardProvider {
     private void setDefaultCommands() {
         this.swerveSubsystem.setDefaultCommand(new SwerveDriveCommand(this.swerveSubsystem, this.driverJoystick));
         this.shooterSubsystem.setDefaultCommand(new ShootCommand(this.shooterSubsystem, this.controllerJoystick));
-        this.telescopeSubsystem.setDefaultCommand(new TelescopeCommand(this.telescopeSubsystem, this.controllerJoystick));
+        //this.telescopeSubsystem.setDefaultCommand(new TelescopeCommand(this.telescopeSubsystem, this.controllerJoystick));
         this.intakeSubsystem.setDefaultCommand(new IntakeCommand(this.intakeSubsystem, this.controllerJoystick));
     }
 

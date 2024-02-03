@@ -59,3 +59,7 @@
 2024/02/02 v1.1.8
 - Tuned DrivePIDController and TurningPIDController using graphs
 - Changed TimedRobot, PIDController period from 0.02 to 0.01 seconds
+
+2024/02/03 v1.1.9
+- Added AutoAimCommand
+- Removed IDashboardProvider from ShooterSubsystem due to an unknow issue
