@@ -7,6 +7,8 @@ import frc.robot.subsystems.IntakeSubsystem;
 // TODO: Transform it into PIDControl :D:)
 @SuppressWarnings("RedundantMethodOverride")
 public class IntakeCommand extends Command {
+    private static final double LIFTER_MAX_TARGET = 173.0;
+    private static final double LIFTER_MIN_TARGET = 13.0;
     private final IntakeSubsystem intakeSubsystem;
     private final ControllerJoystick joystick;
 
@@ -22,13 +24,16 @@ public class IntakeCommand extends Command {
 
     @Override
     public void execute() {
-        final double angleTogglerDirection = this.joystick.getIntakeLiftDirection();
-        if (angleTogglerDirection != 0) this.intakeSubsystem.lift(angleTogglerDirection);
+        final double lifterDirection = this.joystick.getIntakeLiftDirection();
+        if (lifterDirection < 0) this.intakeSubsystem.liftTo(LIFTER_MAX_TARGET);
+        else if (lifterDirection > 0) this.intakeSubsystem.liftTo(LIFTER_MIN_TARGET);
         else this.intakeSubsystem.stopLift();
 
         if (this.joystick.isIntakeButtonDown()) this.intakeSubsystem.intake();
         else if (this.joystick.isReleaseButtonDown()) this.intakeSubsystem.release();
         else this.intakeSubsystem.stopIntake();
+
+
     }
 
     @Override

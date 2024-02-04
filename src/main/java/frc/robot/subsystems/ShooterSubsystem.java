@@ -14,15 +14,18 @@ public class ShooterSubsystem extends SubsystemBase{
     private static final double SHOOT_SPEED = 1.0;
     private static final double LIFT_COEFFICIENT = 0.07;
 
-    private static final double SLOPE_TOGGLER_OFFSET = 245.64;
+    private static final double SLOPE_TOGGLER_OFFSET = 351.23;
     private static final boolean SLOPE_TOGGLER_REVERSED = true;
     private static final double SLOPE_TOGGLER_GEAR_RATIO = 10.0/22.0;
+
+    private static final double SLOPE_TOGGLER_MAX_LIMIT = 60.0;
+    private static final double SLOPE_TOGGLER_MIN_LIMIT = 0.0;
 
     private final ModuleTalonFX rightShootMotor = new ModuleTalonFX(RobotCANPorts.RIGHT_SHOOTER.get());
     private final ModuleTalonFX leftShootMotor = new ModuleTalonFX(RobotCANPorts.LEFT_SHOOTER.get());
 
     private final ModuleTalonFX slopeTogglerMotor = new ModuleTalonFX(RobotCANPorts.SLOPE_TOGGLER.get());
-    private final DutyCycleEncoder slopeTogglerEncoder = new DutyCycleEncoder(9);
+    private final DutyCycleEncoder slopeTogglerEncoder = new DutyCycleEncoder(0);
 
 
     private final PIDController slopeTogglerPIDController = new PIDController(0.1, 0, 0);
@@ -50,7 +53,11 @@ public class ShooterSubsystem extends SubsystemBase{
 
     public void toggleSlope(double activeDirection) {
         activeDirection /= Math.abs(activeDirection);
-        this.slopeTogglerMotor.set(activeDirection * LIFT_COEFFICIENT);
+        final boolean atMaxLimit = this.getSlopeTogglerDegrees() >= SLOPE_TOGGLER_MAX_LIMIT;
+        final boolean atMinLimit = this.getSlopeTogglerDegrees() <= SLOPE_TOGGLER_MIN_LIMIT;
+
+        if (!((atMaxLimit && activeDirection < 0) || (atMinLimit && activeDirection > 0))) this.slopeTogglerMotor.set(activeDirection * LIFT_COEFFICIENT);
+        else this.stopSlopeToggler();
     }
 
     public void toggleSlopeTo(double setpoint) {

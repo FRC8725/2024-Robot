@@ -30,8 +30,8 @@
 - Added angleToggler
 
 2024/01/30 v1.1.1
-- Added another motor to intake and intake_lifter
-- Added control method to intake_lifter
+- Added another motor to intake and intakeLifter
+- Added control method to intakeLifter
 
 2024/01/31 v1.1.2
 - Toggled turning direction for ShooterSubsystem motor
@@ -63,3 +63,7 @@
 2024/02/03 v1.1.9
 - Added AutoAimCommand
 - Removed IDashboardProvider from ShooterSubsystem due to an unknow issue
+
+2024/02/04 v1.1.10
+- Transformed intakeLifter to PID Controll
+- Removed IDashboardProvider from IntakeSubsystem due to an unknow issue
