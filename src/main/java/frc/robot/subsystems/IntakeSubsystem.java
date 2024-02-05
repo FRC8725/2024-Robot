@@ -3,12 +3,10 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.Unit;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.ModuleTalonFX;
-import frc.lib.helpers.IDashboardProvider;
 import frc.robot.constants.RobotCANPorts;
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -16,7 +14,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private static final double RELEASE_SPEED = -1;
     private static final double LIFT_COEFFICIENT = 0.07;
 
-    private static final double LIFTER_ZERE_OFFSET = 147.1;
+    private static final double LIFTER_ZERO_OFFSET = 147.1;
     private static final boolean LIFTER_REVERSED = false;
     private static final double LIFTER_GEAR_RATIO = 18.0/22.0;
 
@@ -48,7 +46,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     private double getLifterDegrees() {
-        return ((Units.rotationsToDegrees(liftEncoder.getAbsolutePosition()) + LIFTER_ZERE_OFFSET) % 360) * (LIFTER_REVERSED ? -1 : 1) * LIFTER_GEAR_RATIO;
+        return ((Units.rotationsToDegrees(liftEncoder.getAbsolutePosition()) + LIFTER_ZERO_OFFSET) % 360) * (LIFTER_REVERSED ? -1 : 1) * LIFTER_GEAR_RATIO;
     }
 
     public void intake() {
