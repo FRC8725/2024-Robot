@@ -30,7 +30,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private final ModuleTalonFX leftLiftMotor = new ModuleTalonFX(RobotCANPorts.LEFT_INTAKE_LIFTER.get());
 
     private final DutyCycleEncoder liftEncoder = new DutyCycleEncoder(1);
-    private final PIDController liftPIDController = new PIDController(0.03, 0, 0);
+    private final PIDController liftPIDController = new PIDController(0.033, 0, 0);
 
 
     public IntakeSubsystem() {

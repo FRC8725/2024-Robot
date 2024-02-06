@@ -62,8 +62,13 @@
 
 2024/02/03 v1.1.9
 - Added AutoAimCommand
-- Removed IDashboardProvider from ShooterSubsystem due to an unknow issue
+- Removed IDashboardProvider from ShooterSubsystem due to an unknown issue
 
 2024/02/04 v1.1.10
 - Transformed intakeLifter to PID Controll
-- Removed IDashboardProvider from IntakeSubsystem due to an unknow issue
+- Removed IDashboardProvider from IntakeSubsystem due to an unknown issue
+
+2024/02/06 v1.1.11
+- Reset SLOPE_TOGGLER_ZERO_OFFSET
+- Added new position to intakeLifter for AMP
+- Tested telescope

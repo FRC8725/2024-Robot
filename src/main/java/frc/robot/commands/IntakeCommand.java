@@ -27,6 +27,7 @@ public class IntakeCommand extends Command {
         final double lifterDirection = this.joystick.getIntakeLiftDirection();
         if (lifterDirection < 0) this.intakeSubsystem.liftTo(LIFTER_MAX_TARGET);
         else if (lifterDirection > 0) this.intakeSubsystem.liftTo(LIFTER_MIN_TARGET);
+        else if (this.joystick.getRightBumper()) this.intakeSubsystem.liftTo(103.86);
         else this.intakeSubsystem.stopLift();
 
         if (this.joystick.isIntakeButtonDown()) this.intakeSubsystem.intake();

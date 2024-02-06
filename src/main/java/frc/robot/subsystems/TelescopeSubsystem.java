@@ -8,8 +8,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.ModuleTalonFX;
 import frc.robot.constants.RobotCANPorts;
 public class TelescopeSubsystem extends SubsystemBase {
-    private static final double LIMIT = 1200;
-    private static final double SPEED = 0.2;
+    private static final double LIMIT = 2598.91;
+    private static final double SPEED = 0.8;
     private final ModuleTalonFX rightMotor = new ModuleTalonFX(RobotCANPorts.RIGHT_TELESCOPE.get());
     private final ModuleTalonFX leftMotor = new ModuleTalonFX(RobotCANPorts.LEFT_TELESCOPE.get());
     private final Follower follower = new Follower(RobotCANPorts.RIGHT_TELESCOPE.get(), true); // Make left motor follow right motor
@@ -25,10 +25,12 @@ public class TelescopeSubsystem extends SubsystemBase {
     }
 
     public void move(boolean direction) {
-        if (direction && rightMotor.getRadPosition() < LIMIT && leftMotor.getRadPosition() < LIMIT) rightMotor.set(SPEED);        
-        else if (!direction && rightMotor.getRadPosition() > 0 && leftMotor.getRadPosition() > 0) rightMotor.set(-SPEED);
-        else this.stop();
+        // if (direction && rightMotor.getRadPosition() < LIMIT && leftMotor.getRadPosition() < LIMIT) rightMotor.set(SPEED);        
+        // else if (!direction && rightMotor.getRadPosition() > 0 && leftMotor.getRadPosition() > 0) rightMotor.set(-SPEED);
+        // else this.stop();
 
+
+        rightMotor.set(SPEED * (direction ? 1 : -1));
         leftMotor.setControl(this.follower);
     }
 
