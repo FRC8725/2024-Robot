@@ -14,12 +14,12 @@ public class ShooterSubsystem extends SubsystemBase{
     private static final double SHOOT_SPEED = 1.0;
     private static final double LIFT_COEFFICIENT = 0.07;
 
-    private static final double SLOPE_TOGGLER_OFFSET = 351.23;
+    private static final double SLOPE_TOGGLER_ZERO_OFFSET = 233.52;//;
     private static final boolean SLOPE_TOGGLER_REVERSED = true;
     private static final double SLOPE_TOGGLER_GEAR_RATIO = 10.0/22.0;
 
-    private static final double SLOPE_TOGGLER_MAX_LIMIT = 60.0;
-    private static final double SLOPE_TOGGLER_MIN_LIMIT = 0.0;
+    private static final double SLOPE_TOGGLER_MAX_LIMIT = 50.0;
+    private static final double SLOPE_TOGGLER_MIN_LIMIT = 2.0;
 
     private final ModuleTalonFX rightShootMotor = new ModuleTalonFX(RobotCANPorts.RIGHT_SHOOTER.get());
     private final ModuleTalonFX leftShootMotor = new ModuleTalonFX(RobotCANPorts.LEFT_SHOOTER.get());
@@ -29,9 +29,10 @@ public class ShooterSubsystem extends SubsystemBase{
 
 
     private final PIDController slopeTogglerPIDController = new PIDController(0.1, 0, 0);
+    private final PIDController shooterPIDController = new PIDController(0.1, 1, 0);
 
     public double getSlopeTogglerDegrees() {
-        return (Units.rotationsToDegrees(slopeTogglerEncoder.getAbsolutePosition()) - SLOPE_TOGGLER_OFFSET) * SLOPE_TOGGLER_GEAR_RATIO * (SLOPE_TOGGLER_REVERSED ? -1 : 1);
+        return (Units.rotationsToDegrees(slopeTogglerEncoder.getAbsolutePosition()) - SLOPE_TOGGLER_ZERO_OFFSET) * (SLOPE_TOGGLER_REVERSED ? -1 : 1) * SLOPE_TOGGLER_GEAR_RATIO;
     }
 
     public ShooterSubsystem() {
@@ -42,8 +43,13 @@ public class ShooterSubsystem extends SubsystemBase{
     }
 
     public void shoot() {
-        this.rightShootMotor.set(SHOOT_SPEED);
-        this.leftShootMotor.set(SHOOT_SPEED);
+        final double currentSpeed = ((this.rightShootMotor.getVelocity().getValue() + this.leftShootMotor.getVelocity().getValue()) / 2) / 90;
+        final double output = shooterPIDController.calculate(currentSpeed, SHOOT_SPEED); 
+        this.rightShootMotor.set(output);
+        this.leftShootMotor.set(output);
+        
+        SmartDashboard.putNumber("Shooter Speed", currentSpeed);
+        SmartDashboard.putNumber("Shooter Output", output);
     }
 
     public void stopShooters() {
@@ -55,6 +61,8 @@ public class ShooterSubsystem extends SubsystemBase{
         activeDirection /= Math.abs(activeDirection);
         final boolean atMaxLimit = this.getSlopeTogglerDegrees() >= SLOPE_TOGGLER_MAX_LIMIT;
         final boolean atMinLimit = this.getSlopeTogglerDegrees() <= SLOPE_TOGGLER_MIN_LIMIT;
+
+        //this.slopeTogglerMotor.set(activeDirection * LIFT_COEFFICIENT);
 
         if (!((atMaxLimit && activeDirection < 0) || (atMinLimit && activeDirection > 0))) this.slopeTogglerMotor.set(activeDirection * LIFT_COEFFICIENT);
         else this.stopSlopeToggler();
