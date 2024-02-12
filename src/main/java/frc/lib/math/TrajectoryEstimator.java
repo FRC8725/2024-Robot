@@ -1,62 +1,23 @@
 package frc.lib.math;
 
 import edu.wpi.first.math.util.Units;
-import frc.lib.helpers.OutputUnit;
-import frc.lib.helpers.UnitTypes;
+import org.apache.commons.math4.core.jdkmath.JdkMath;
+import org.apache.commons.math4.legacy.exception.NumberIsTooSmallException;
+import org.apache.commons.math4.legacy.ode.nonstiff.DormandPrince853Integrator;
 
 public class TrajectoryEstimator {
-    /**
-     * The horizontal shift of the shooter shaft with respect to the edge of the robot.
-     */
-    @OutputUnit(UnitTypes.METERS)
-    private static final double x_s = 0.26;
-    /**
-     * The vertical shift of the shooter shaft with respect to the edge of the robot.
-     */
-    @OutputUnit(UnitTypes.METERS)
-    private static final double y_s = 0.335;
-    /**
-     * The horizontal shift of the camera with respect to the edge of the robot.
-     */
-    @OutputUnit(UnitTypes.METERS)
-    private static final double x_sl = 0.0; // TODO fill in correct value
-    // TODO fill in correct value
-    /**
-     * The gravitational acceleration constant. Fixed.
-     */
-    @OutputUnit(UnitTypes.METERS_PER_SECOND_SQUARED)
-    private static final double g = 9.8;
-    /**
-     * The initial shooting speed of the note upon leaving the shooter.
-     */
-    @OutputUnit(UnitTypes.METERS_PER_SECOND)
-    private static final double v_0 = 18.4; // 12.0
-    /**
-     * The first order air drag constant of the note.
-     * <b>DO NOT SET THIS TO ZERO!!!!</b>
-     */
-    @OutputUnit(UnitTypes.ONE_OVER_SECOND)
-    private static final double b = 1.05; // 0.7
-    /**
-     * The angle of elevation of the shooter when the shaft encoder's value is 0. Should be close to 0.
-     */
-    @OutputUnit(UnitTypes.DEGREES)
-    private static final double phi_0 = 1.5; // 6.35
-    /**
-     * The length from the shooter shaft to the shooter exit.
-     */
-    @OutputUnit(UnitTypes.METERS)
-    private static final double l = 0.21; // 0.3
+    private final DormandPrince853Integrator integrator = new DormandPrince853Integrator(
+            1.0e-8, 100.0, 1.0e-10, 1.0e-10);
+    private final MixedAirDragODE ode = new MixedAirDragODE(TrajectoryConstants.a, TrajectoryConstants.b);
 
-    public static double getAngleOfElevation1(double distanceFromCamera) {
-        double prevError = Integer.MAX_VALUE, error;
-        for (double outputAngle = 0.0; outputAngle <= 90.0; outputAngle++) {
-            double exitX = distanceFromCamera - x_sl + x_s - l * Math.cos(Units.degreesToRadians(outputAngle + phi_0));
-            double exitY = y_s + l * Math.sin(Units.degreesToRadians(outputAngle + phi_0));
-            double y = q(0.2286, Units.degreesToRadians(outputAngle + phi_0), exitX, exitY);
-            error = Math.abs(y - 2.0431125);
+    public double getAngleOfElevation12(double distanceFromCamera) {
+        double prevError = Integer.MAX_VALUE;
+
+        for (double angle = 0.0; angle < 90.0; angle += 0.5) {
+            double error = this.getTargetError(angle, distanceFromCamera);
+
             if (error > prevError) {
-                return outputAngle - 1;
+                return angle - 0.5;
             }
 
             prevError = error;
@@ -65,15 +26,19 @@ public class TrajectoryEstimator {
         return 90.0;
     }
 
-    private static double t(double x, double phi) {
-        return -1.0 / b * Math.log(1.0 - b / v_0 / Math.cos(phi) * -x);
-    }
+    private double getTargetError(double encoderAngle, double distanceFromCamera) {
+        double degree = Units.degreesToRadians(encoderAngle + TrajectoryConstants.phi_0);
+        double exitX = distanceFromCamera - TrajectoryConstants.x_sl + TrajectoryConstants.x_s;
+        exitX -= TrajectoryConstants.l * JdkMath.cos(degree);
+        double exitY = TrajectoryConstants.y_s + TrajectoryConstants.l * JdkMath.sin(degree);
+        double[] y0 = {exitY, -TrajectoryConstants.v_0 * JdkMath.cos(degree),
+                TrajectoryConstants.v_0 * JdkMath.sin(degree)};
 
-    private static double y(double t, double phi) {
-        return 1.0 / b * (g / b + v_0 * Math.sin(phi)) * (1.0 - Math.exp(-b * t)) - g / b * t;
-    }
-
-    private static double q(double x, double phi, double x_0, double y_0) {
-        return y(t(x - x_0, phi), phi) + y_0;
+        try {
+            this.integrator.integrate(this.ode, exitX, y0, 0.2286, y0);
+            return Math.abs(y0[0] - 2.0431125);
+        } catch (NumberIsTooSmallException e) {
+            return Integer.MAX_VALUE;
+        }
     }
 }

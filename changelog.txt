@@ -76,3 +76,10 @@
 2024/02/06 v1.1.12
 - Added TrajectoryEstimator for shooter angle estimation
 - Renamed some typos
+
+2024/02/12 v1.1.13
+- Fixed gradle repo error (add repo definition)
+- Added Apache Commons Math library for solving ODE numerically
+- Added MixedAirDragODE for defining air drag of the note
+- Seperated constants from TrajectoryEstimator to TrajectoryConstants.
+- Moved the estimation process into ShooterSubsystem.
