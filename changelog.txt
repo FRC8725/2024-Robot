@@ -83,3 +83,6 @@
 - Added MixedAirDragODE for defining air drag of the note
 - Seperated constants from TrajectoryEstimator to TrajectoryConstants.
 - Moved the estimation process into ShooterSubsystem.
+
+2024/02/13 v1.1.14
+- Tidied up VisionManager

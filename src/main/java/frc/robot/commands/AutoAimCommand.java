@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.math.TrajectoryEstimator;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -28,8 +29,10 @@ public class AutoAimCommand extends Command {
     @Override
     public void execute() {
         if (this.visionManager.hasSpecTagTarget(4) || this.visionManager.hasSpecTagTarget(7)) {
-            var bestCameraToTarget = this.visionManager.getAprilTagRelative();
+            Transform3d bestCameraToTarget = this.visionManager.getAprilTagRelative();
 
+            // Z should be the vertical distance, I want the horizontal one, so this should be
+            // sqrt(x^2 + y^2)
             double targetDistance = bestCameraToTarget.getTranslation().getZ();
             double targetAngle = bestCameraToTarget.getRotation().toRotation2d().getDegrees();
 
