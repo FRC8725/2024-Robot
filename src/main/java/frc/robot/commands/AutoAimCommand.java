@@ -25,10 +25,6 @@ public class AutoAimCommand extends Command {
     public void initialize() {
     }
 
-    private double getShootingSlope(double distance) {
-        return TrajectoryEstimator.getAngleOfElevation1(distance);
-    }
-
     @Override
     public void execute() {
         if (this.visionManager.hasSpecTagTarget(4) || this.visionManager.hasSpecTagTarget(7)) {
@@ -37,7 +33,7 @@ public class AutoAimCommand extends Command {
             double targetDistance = bestCameraToTarget.getTranslation().getZ();
             double targetAngle = bestCameraToTarget.getRotation().toRotation2d().getDegrees();
 
-            this.shooterSubsystem.toggleSlopeTo(this.getShootingSlope(targetDistance));
+            this.shooterSubsystem.toggleSlopeWithDistance(targetDistance);
             // I think ...this.drivePIDController.calculate(this.swerveSubsystem.getGyroAngle(), targetAngle)... is better
             this.swerveSubsystem.drive(0, 0, this.drivePIDController.calculate(targetAngle, 0), false);
 
