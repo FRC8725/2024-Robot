@@ -26,25 +26,28 @@ public class AutoAimCommand extends Command {
     }
 
     private double getShootingSlope(double distance) {
-        return TrajectoryEstimator.getAngleOfElevation1(distance);
+        // return TrajectoryEstimator.getAngleOfElevation1(distance);
+        return (TrajectoryEstimator.getAngleOfElevation1(distance) - 40.0) * 2.5 + 40.0;
     }
 
     @Override
     public void execute() {
-        if (this.visionManager.hasSpecTagTarget(4) || this.visionManager.hasSpecTagTarget(7)) {
-            var bestCameraToTarget = this.visionManager.getAprilTagRelative();
+        this.shooterSubsystem.toggleSlopeTo(this.getShootingSlope(4.0));
 
-            double targetDistance = bestCameraToTarget.getTranslation().getZ();
-            double targetAngle = bestCameraToTarget.getRotation().toRotation2d().getDegrees();
+        // if (this.visionManager.hasSpecTagTarget(4) || this.visionManager.hasSpecTagTarget(7)) {
+        //     // var bestCameraToTarget = this.visionManager.getAprilTagRelative();
 
-            this.shooterSubsystem.toggleSlopeTo(this.getShootingSlope(targetDistance));
-            // I think ...this.drivePIDController.calculate(this.swerveSubsystem.getGyroAngle(), targetAngle)... is better
-            this.swerveSubsystem.drive(0, 0, this.drivePIDController.calculate(targetAngle, 0), false);
+        //     // double targetDistance = bestCameraToTarget.getTranslation().getZ();
+        //     // double targetAngle = bestCameraToTarget.getRotation().toRotation2d().getDegrees();
 
-        } else {
-            this.shooterSubsystem.stopSlopeToggler();
-            this.swerveSubsystem.drive(0, 0, 0, false);
-        }
+        //     this.shooterSubsystem.toggleSlopeTo(this.getShootingSlope(3.0));
+        //     // I think ...this.drivePIDController.calculate(this.swerveSubsystem.getGyroAngle(), targetAngle)... is better
+        //     // this.swerveSubsystem.drive(0, 0, this.drivePIDController.calculate(targetAngle, 0), false);
+
+        // } else {
+        //     this.shooterSubsystem.stopSlopeToggler();
+        //     this.swerveSubsystem.drive(0, 0, 0, false);
+        // }
     }
 
     @Override

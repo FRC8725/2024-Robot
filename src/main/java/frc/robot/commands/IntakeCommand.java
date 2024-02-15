@@ -8,7 +8,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 @SuppressWarnings("RedundantMethodOverride")
 public class IntakeCommand extends Command {
     private static final double LIFTER_MAX_TARGET = 173.0;
-    private static final double LIFTER_MIN_TARGET = 13.0;
+    private static final double LIFTER_MIN_TARGET = 11.0;
     private final IntakeSubsystem intakeSubsystem;
     private final ControllerJoystick joystick;
 
@@ -33,8 +33,6 @@ public class IntakeCommand extends Command {
         if (this.joystick.isIntakeButtonDown()) this.intakeSubsystem.intake();
         else if (this.joystick.isReleaseButtonDown()) this.intakeSubsystem.release();
         else this.intakeSubsystem.stopIntake();
-
-
     }
 
     @Override

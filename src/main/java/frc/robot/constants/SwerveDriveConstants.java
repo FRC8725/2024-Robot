@@ -5,9 +5,9 @@ import frc.lib.helpers.UnitTypes;
 
 public final class SwerveDriveConstants {
     @OutputUnit(UnitTypes.METERS_PER_SECOND)
-    public static final double TELEOP_MAX_ROBOT_SPEED = 1.0; // 2.0
+    public static final double TELEOP_MAX_ROBOT_SPEED = 2.5; // 2.0
     @OutputUnit(UnitTypes.RADIANS_PER_SECOND)
-    public static final double TELEOP_MAX_ROBOT_ANGULAR_SPEED = 0.5 * Math.PI; // Math.PI
+    public static final double TELEOP_MAX_ROBOT_ANGULAR_SPEED = 1 * Math.PI; // Math.PI
     @OutputUnit(UnitTypes.METERS_PER_SECOND_SQUARED)
     public static final double TELEOP_MAX_ACCELERATION = TELEOP_MAX_ROBOT_SPEED * 3.0;
     @OutputUnit(UnitTypes.RADIANS_PER_SECOND_SQUARED)

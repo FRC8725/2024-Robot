@@ -28,7 +28,7 @@ public class ShooterSubsystem extends SubsystemBase{
     private final DutyCycleEncoder slopeTogglerEncoder = new DutyCycleEncoder(0);
 
 
-    private final PIDController slopeTogglerPIDController = new PIDController(0.1, 0, 0);
+    private final PIDController slopeTogglerPIDController = new PIDController(0.06, 0, 0);
     private final PIDController shooterPIDController = new PIDController(0.1, 1, 0);
 
     public double getSlopeTogglerDegrees() {
@@ -42,14 +42,18 @@ public class ShooterSubsystem extends SubsystemBase{
         this.slopeTogglerMotor.setNeutralMode(NeutralModeValue.Brake);
     }
 
+    private double getShooterSpeed() {
+        return ((this.rightShootMotor.getVelocity().getValue() + this.leftShootMotor.getVelocity().getValue()) / 2) / 90;
+    }
+
     public void shoot() {
-        final double currentSpeed = ((this.rightShootMotor.getVelocity().getValue() + this.leftShootMotor.getVelocity().getValue()) / 2) / 90;
+        final double currentSpeed = getShooterSpeed();
         final double output = shooterPIDController.calculate(currentSpeed, SHOOT_SPEED); 
         this.rightShootMotor.set(output);
         this.leftShootMotor.set(output);
         
-        SmartDashboard.putNumber("Shooter Speed", currentSpeed);
-        SmartDashboard.putNumber("Shooter Output", output);
+        // SmartDashboard.putNumber("Shooter Speed", currentSpeed);
+        // SmartDashboard.putNumber("Shooter Output", output);
     }
 
     public void stopShooters() {
@@ -62,14 +66,17 @@ public class ShooterSubsystem extends SubsystemBase{
         final boolean atMaxLimit = this.getSlopeTogglerDegrees() >= SLOPE_TOGGLER_MAX_LIMIT;
         final boolean atMinLimit = this.getSlopeTogglerDegrees() <= SLOPE_TOGGLER_MIN_LIMIT;
 
-        //this.slopeTogglerMotor.set(activeDirection * LIFT_COEFFICIENT);
+        // this.slopeTogglerMotor.set(activeDirection * LIFT_COEFFICIENT);
 
         if (!((atMaxLimit && activeDirection < 0) || (atMinLimit && activeDirection > 0))) this.slopeTogglerMotor.set(activeDirection * LIFT_COEFFICIENT);
         else this.stopSlopeToggler();
     }
 
     public void toggleSlopeTo(double setpoint) {
-        this.slopeTogglerMotor.set(this.slopeTogglerPIDController.calculate(this.getSlopeTogglerDegrees(), setpoint));
+        final double output = this.slopeTogglerPIDController.calculate(this.getSlopeTogglerDegrees(), setpoint) * (SLOPE_TOGGLER_REVERSED ? -1 : 1);
+        SmartDashboard.putNumber("slope setpoint", setpoint);
+        SmartDashboard.putNumber("slope output", output);
+        this.slopeTogglerMotor.set(output);
     }
 
     public void stopSlopeToggler() {
@@ -84,5 +91,6 @@ public class ShooterSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Shooter Elevation", this.getSlopeTogglerDegrees());
+        SmartDashboard.putNumber("Shooter Speed", this.getShooterSpeed());
     }
 }

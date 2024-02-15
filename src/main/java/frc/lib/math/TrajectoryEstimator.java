@@ -9,12 +9,12 @@ public class TrajectoryEstimator {
      * The horizontal shift of the shooter shaft with respect to the edge of the robot.
      */
     @OutputUnit(UnitTypes.METERS)
-    private static final double x_s = 0.26;
+    private static final double x_s = 0.165;
     /**
      * The vertical shift of the shooter shaft with respect to the edge of the robot.
      */
     @OutputUnit(UnitTypes.METERS)
-    private static final double y_s = 0.335;
+    private static final double y_s = 0.345;
     /**
      * The horizontal shift of the camera with respect to the edge of the robot.
      */
@@ -30,36 +30,32 @@ public class TrajectoryEstimator {
      * The initial shooting speed of the note upon leaving the shooter.
      */
     @OutputUnit(UnitTypes.METERS_PER_SECOND)
-    private static final double v_0 = 18.4; // 12.0
+    private static final double v_0 = 11.4; // 12.0
     /**
      * The first order air drag constant of the note.
      * <b>DO NOT SET THIS TO ZERO!!!!</b>
      */
     @OutputUnit(UnitTypes.ONE_OVER_SECOND)
-    private static final double b = 1.05; // 0.7
+    private static final double b = 0.69; // 0.7
     /**
      * The angle of elevation of the shooter when the shaft encoder's value is 0. Should be close to 0.
      */
     @OutputUnit(UnitTypes.DEGREES)
-    private static final double phi_0 = 1.5; // 6.35
+    private static final double phi_0 = 0.0; // 6.35
     /**
      * The length from the shooter shaft to the shooter exit.
      */
     @OutputUnit(UnitTypes.METERS)
-    private static final double l = 0.21; // 0.3
+    private static final double l = 0.2; // 0.3
 
     public static double getAngleOfElevation1(double distanceFromCamera) {
-        double prevError = Integer.MAX_VALUE, error;
-        for (double outputAngle = 0.0; outputAngle <= 90.0; outputAngle++) {
+        for (double outputAngle = 0.0; outputAngle <= 90.0; outputAngle += 0.5) {
             double exitX = distanceFromCamera - x_sl + x_s - l * Math.cos(Units.degreesToRadians(outputAngle + phi_0));
             double exitY = y_s + l * Math.sin(Units.degreesToRadians(outputAngle + phi_0));
-            double y = q(0.2286, Units.degreesToRadians(outputAngle + phi_0), exitX, exitY);
-            error = Math.abs(y - 2.0431125);
-            if (error > prevError) {
-                return outputAngle - 1;
+            double y = q(0.0, Units.degreesToRadians(outputAngle + phi_0), exitX, exitY);
+            if (y - 1.98 > 0) {
+                return outputAngle;
             }
-
-            prevError = error;
         }
 
         return 90.0;
