@@ -92,3 +92,6 @@
 
 2024/02/16 v1.1.16
 - Fixed AutoAimCommand Translation2d error.
+
+2024/02/16 v1.1.17
+- Replaced IS_BLUE with isBlue method

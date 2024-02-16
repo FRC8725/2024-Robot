@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.math.TrajectoryEstimator;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -15,7 +16,6 @@ import frc.robot.subsystems.VisionManager;
 public class AutoAimCommand extends Command {
     private static final Translation2d BLUE_SHOOTER = new Translation2d(0.0, 218.42).times(Units.inchesToMeters(1.0));
     private static final Translation2d RED_SHOOTER = new Translation2d(652.73, 218.42).times(Units.inchesToMeters(1.0));
-    private static final boolean IS_BLUE = true;
     private final ShooterSubsystem shooterSubsystem;
     private final VisionManager visionManager;
     private final SwerveSubsystem swerveSubsystem;
@@ -32,10 +32,14 @@ public class AutoAimCommand extends Command {
     public void initialize() {
     }
 
+    public boolean isBlue() {
+        return DriverStation.getAlliance().filter(value -> value == DriverStation.Alliance.Blue).isPresent();
+    }
+
     @Override
     public void execute() {
         Translation2d robotPos = this.swerveSubsystem.getRobotPosition().getTranslation();
-        if (IS_BLUE) {
+        if (this.isBlue()) {
             this.shooterSubsystem.toggleSlopeWithDistance(robotPos.plus(new Translation2d(-0.33, 0.0)).getDistance(BLUE_SHOOTER));
         } else {
             this.shooterSubsystem.toggleSlopeWithDistance(robotPos.plus(new Translation2d(0.33, 0.0)).getDistance(RED_SHOOTER));
