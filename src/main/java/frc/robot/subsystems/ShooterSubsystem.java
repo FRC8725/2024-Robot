@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.ModuleTalonFX;
 import frc.lib.helpers.IDashboardProvider;
+import frc.lib.math.TrajectoryEstimator;
 import frc.robot.constants.RobotCANPorts;
 
 public class ShooterSubsystem extends SubsystemBase{
@@ -20,6 +21,8 @@ public class ShooterSubsystem extends SubsystemBase{
 
     private static final double SLOPE_TOGGLER_MAX_LIMIT = 50.0;
     private static final double SLOPE_TOGGLER_MIN_LIMIT = 2.0;
+
+    private final TrajectoryEstimator trajectoryEstimator = new TrajectoryEstimator();
 
     private final ModuleTalonFX rightShootMotor = new ModuleTalonFX(RobotCANPorts.RIGHT_SHOOTER.get());
     private final ModuleTalonFX leftShootMotor = new ModuleTalonFX(RobotCANPorts.LEFT_SHOOTER.get());
@@ -70,6 +73,10 @@ public class ShooterSubsystem extends SubsystemBase{
 
         if (!((atMaxLimit && activeDirection < 0) || (atMinLimit && activeDirection > 0))) this.slopeTogglerMotor.set(activeDirection * LIFT_COEFFICIENT);
         else this.stopSlopeToggler();
+    }
+
+    public void toggleSlopeWithDistance(double distanceFromCamera) {
+        this.toggleSlopeTo(this.trajectoryEstimator.getAngleOfElevation12(distanceFromCamera));
     }
 
     public void toggleSlopeTo(double setpoint) {

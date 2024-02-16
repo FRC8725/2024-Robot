@@ -8,6 +8,7 @@ import frc.robot.constants.SwerveDriveConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionManager;
 
+@SuppressWarnings("RedundantMethodOverride")
 public class AutoTrackNoteCommand extends Command {
     private final SwerveSubsystem swerveSubsystem;
     private final VisionManager visionManager;
@@ -22,16 +23,14 @@ public class AutoTrackNoteCommand extends Command {
         this.addRequirements(swerveSubsystem, visionManager);
     }
 
-    // Called when the command is initially scheduled.
     @Override
     public void initialize() {
     }
 
-    // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        final double noteDistance = this.visionManager.getNoteDistance();
-        final double noteHorizontal = this.visionManager.getNoteHorizontal();
+        final double noteDistance = this.visionManager.getNoteHorizontalDistance();
+        final double noteHorizontal = this.visionManager.getNoteHorizontalAngle();
 
         final double targetDistance = 120.0;
         final double targetHorizontal = 9.2;
@@ -39,7 +38,7 @@ public class AutoTrackNoteCommand extends Command {
         double verticalSpeed = this.drivePIDController.calculate(targetDistance, noteDistance);
         double rotationSpeed = MathUtil.applyDeadband(this.steerPIDController.calculate(targetHorizontal, noteHorizontal), 0.15);
 
-        if (!this.visionManager.hasNoteTarget()) {
+        if (this.visionManager.noNoteTarget()) {
             verticalSpeed = 0.0;
             rotationSpeed = 0.0;
         }
@@ -58,13 +57,11 @@ public class AutoTrackNoteCommand extends Command {
 //        else this.swerveSubsystem.move(0.0, 0.0, this.visionManager.hasNoteTarget() ? rotationSpeed : 0.0, false);
     }
 
-    // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
         this.swerveSubsystem.stopModules();
     }
 
-    // Returns true when the command should end.
     @Override
     public boolean isFinished() {
         return false;

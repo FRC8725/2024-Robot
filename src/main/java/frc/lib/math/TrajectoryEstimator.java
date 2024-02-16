@@ -1,8 +1,9 @@
 package frc.lib.math;
 
 import edu.wpi.first.math.util.Units;
-import frc.lib.helpers.OutputUnit;
-import frc.lib.helpers.UnitTypes;
+import org.apache.commons.math3.exception.NumberIsTooSmallException;
+import org.apache.commons.math3.ode.nonstiff.DormandPrince853Integrator;
+import org.apache.commons.math3.util.FastMath;
 
 public class TrajectoryEstimator {
     /**
@@ -55,21 +56,37 @@ public class TrajectoryEstimator {
             double y = q(0.0, Units.degreesToRadians(outputAngle + phi_0), exitX, exitY);
             if (y - 1.98 > 0) {
                 return outputAngle;
+    private final DormandPrince853Integrator integrator = new DormandPrince853Integrator(
+            1.0e-8, 100.0, 1.0e-10, 1.0e-10);
+    private final MixedAirDragODE ode = new MixedAirDragODE(TrajectoryConstants.a, TrajectoryConstants.b);
+
+    public double getAngleOfElevation12(double distanceFromCamera) {
+        double prevError = Integer.MAX_VALUE;
+
+        for (double angle = 0.0; angle < 90.0; angle += 0.5) {
+            double error = this.getTargetError(angle, distanceFromCamera);
+
+            if (error > prevError) {
+                return angle - 0.5;
             }
         }
 
         return 90.0;
     }
 
-    private static double t(double x, double phi) {
-        return -1.0 / b * Math.log(1.0 - b / v_0 / Math.cos(phi) * -x);
-    }
+    private double getTargetError(double encoderAngle, double distanceFromCamera) {
+        double degree = Units.degreesToRadians(encoderAngle + TrajectoryConstants.phi_0);
+        double exitX = distanceFromCamera - TrajectoryConstants.x_sl + TrajectoryConstants.x_s;
+        exitX -= TrajectoryConstants.l * FastMath.cos(degree);
+        double exitY = TrajectoryConstants.y_s + TrajectoryConstants.l * FastMath.sin(degree);
+        double[] y0 = {exitY, -TrajectoryConstants.v_0 * FastMath.cos(degree),
+                TrajectoryConstants.v_0 * FastMath.sin(degree)};
 
-    private static double y(double t, double phi) {
-        return 1.0 / b * (g / b + v_0 * Math.sin(phi)) * (1.0 - Math.exp(-b * t)) - g / b * t;
-    }
-
-    private static double q(double x, double phi, double x_0, double y_0) {
-        return y(t(x - x_0, phi), phi) + y_0;
+        try {
+            this.integrator.integrate(this.ode, exitX, y0, 0.2286, y0);
+            return Math.abs(y0[0] - 2.0431125);
+        } catch (NumberIsTooSmallException e) {
+            return Integer.MAX_VALUE;
+        }
     }
 }
