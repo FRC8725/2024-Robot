@@ -15,7 +15,7 @@ import frc.robot.subsystems.*;
 public class RobotContainer implements IDashboardProvider {
     private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
     private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
-    private final TelescopeSubsystem telescopeSubsystem = new TelescopeSubsystem();
+    //private final TelescopeSubsystem telescopeSubsystem = new TelescopeSubsystem();
     private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
     private final DriverJoystick driverJoystick = new DriverJoystick();
     private final ControllerJoystick controllerJoystick = new ControllerJoystick();
@@ -32,14 +32,14 @@ public class RobotContainer implements IDashboardProvider {
     private void setDefaultCommands() {
         this.swerveSubsystem.setDefaultCommand(new SwerveDriveCommand(this.swerveSubsystem, this.driverJoystick));
         this.shooterSubsystem.setDefaultCommand(new ShootCommand(this.shooterSubsystem, this.controllerJoystick));
-        this.telescopeSubsystem.setDefaultCommand(new TelescopeCommand(this.telescopeSubsystem, this.controllerJoystick));
+        //this.telescopeSubsystem.setDefaultCommand(new TelescopeCommand(this.telescopeSubsystem, this.controllerJoystick));
         this.intakeSubsystem.setDefaultCommand(new IntakeCommand(this.intakeSubsystem, this.controllerJoystick));
     }
 
     private void configureBindings() {
         this.driverJoystick.getZeroHeadingTrigger().onTrue(new InstantCommand(this.swerveSubsystem::resetGyro, this.swerveSubsystem));
         this.driverJoystick.getModuleLockingTrigger().whileTrue(new RunCommand(this.swerveSubsystem::lockModules, this.swerveSubsystem));
-        this.driverJoystick.getNoteTrackingTrigger().whileTrue(new AutoTrackNoteCommand(this.swerveSubsystem, this.visionManager));
+        this.driverJoystick.getNoteTrackingTrigger().whileTrue(new AutoAimCommand(this.swerveSubsystem, this.shooterSubsystem, this.visionManager));
     }
 
     public Command getAutonomousCommand() {
