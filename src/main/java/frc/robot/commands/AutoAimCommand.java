@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.math.TrajectoryEstimator;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -39,6 +40,7 @@ public class AutoAimCommand extends Command {
     @Override
     public void execute() {
         Translation2d robotPos = this.swerveSubsystem.getRobotPosition().getTranslation();
+        SmartDashboard.putString("robotPos", robotPos.toString());
         if (this.isBlue()) {
             this.shooterSubsystem.toggleSlopeWithDistance(robotPos.plus(new Translation2d(-0.33, 0.0)).getDistance(BLUE_SHOOTER));
         } else {

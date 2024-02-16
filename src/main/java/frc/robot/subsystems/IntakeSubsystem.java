@@ -14,7 +14,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private static final double RELEASE_SPEED = -1;
     private static final double LIFT_COEFFICIENT = 0.1;
 
-    private static final double LIFTER_ZERO_OFFSET = 147.1;
+    private static final double LIFTER_ZERO_OFFSET = 162.1;
     private static final boolean LIFTER_REVERSED = false;
     private static final double LIFTER_GEAR_RATIO = 18.0/22.0;
 
@@ -28,7 +28,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private final ModuleTalonFX leftLiftMotor = new ModuleTalonFX(RobotCANPorts.LEFT_INTAKE_LIFTER.get());
 
     private final DutyCycleEncoder liftEncoder = new DutyCycleEncoder(1);
-    private final PIDController liftPIDController = new PIDController(0.05, 0, 0);
+    private final PIDController liftPIDController = new PIDController(0.10, 0, 0);
 
 
     public IntakeSubsystem() {

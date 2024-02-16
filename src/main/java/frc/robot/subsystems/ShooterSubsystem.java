@@ -73,6 +73,7 @@ public class ShooterSubsystem extends SubsystemBase{
     }
 
     public void toggleSlopeWithDistance(double distance) {
+        SmartDashboard.putNumber("Speaker dis", distance);
         this.toggleSlopeTo(TrajectoryEstimator.getAngleOfElevation(distance));
     }
 

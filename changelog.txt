@@ -95,3 +95,6 @@
 
 2024/02/16 v1.1.17
 - Replaced IS_BLUE with isBlue method
+
+2024/02/16 v1.1.18
+- Fixed intakeLifter encoder error
