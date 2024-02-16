@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.helpers.*;
+import frc.lib.math.FieldPositions;
 import frc.lib.motors.SwerveModuleGroup;
 import frc.robot.constants.RobotCANPorts;
 
@@ -108,10 +109,32 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
         this.drive(chassisSpeeds);
     }
 
-    private void drive(ChassisSpeeds chassisSpeeds) {
+    public void drive(SwerveModuleState[] states) {
+        this.modules.setDesiredStates(states);
+    }
+
+    public void drive(ChassisSpeeds chassisSpeeds) {
         SwerveModuleState[] desiredStates = this.kinematics.toSwerveModuleStates(chassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, SwerveModule.MODULE_MAX_DRIVING_SPEED);
-        this.modules.setDesiredStates(desiredStates);
+        this.drive(desiredStates);
+    }
+
+    public double getSpeakerDistance() {
+        return this.getSpeakerPosition().getNorm();
+    }
+
+    private Translation2d getSpeakerPosition() {
+        boolean isBlue = DriverStation.getAlliance().isPresent() &&
+                DriverStation.getAlliance().get() == DriverStation.Alliance.Blue;
+
+        Translation2d robotPos = this.getRobotPosition().getTranslation();
+        Translation2d edgePos = robotPos.plus(new Translation2d(isBlue ? -0.33 : 0.33, 0.0));
+        return (isBlue ? FieldPositions.BLUE_SHOOTER : FieldPositions.RED_SHOOTER).minus(edgePos);
+    }
+
+    public double getSpeakerAngle() {
+        double value = this.getSpeakerPosition().getAngle().getDegrees();
+        return value > 90.0 ? value - 180.0 : value;
     }
 
     @CoordinateSystem(CoordinationPolicy.ROBOT_COORDINATION)
@@ -170,6 +193,8 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
     @Override
     public void putDashboard() {
         SmartDashboard.putNumber("RobotHeading", this.getGyroAngle());
+        SmartDashboard.putNumber("DistanceToSpeaker", this.getSpeakerDistance());
+        SmartDashboard.putNumber("AngleToSpeaker", this.getSpeakerAngle());
         SmartDashboard.putData(this.gameFieldSim);
     }
 

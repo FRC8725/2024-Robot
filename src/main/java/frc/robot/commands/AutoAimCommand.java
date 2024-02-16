@@ -1,26 +1,17 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.lib.math.TrajectoryEstimator;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionManager;
 
 @SuppressWarnings("RedundantMethodOverride")
 public class AutoAimCommand extends Command {
-    private static final Translation2d BLUE_SHOOTER = new Translation2d(0.0, 218.42).times(Units.inchesToMeters(1.0));
-    private static final Translation2d RED_SHOOTER = new Translation2d(652.73, 218.42).times(Units.inchesToMeters(1.0));
     private final ShooterSubsystem shooterSubsystem;
     private final VisionManager visionManager;
     private final SwerveSubsystem swerveSubsystem;
-    private final PIDController drivePIDController = new PIDController(0.01, 0, 0);
+    private final PIDController steerPIDController = new PIDController(0.01, 0, 0);
 
     public AutoAimCommand(SwerveSubsystem swerveSubsystem, ShooterSubsystem shooterSubsystem, VisionManager visionManager) {
         this.swerveSubsystem = swerveSubsystem;
@@ -31,21 +22,15 @@ public class AutoAimCommand extends Command {
 
     @Override
     public void initialize() {
-    }
-
-    public boolean isBlue() {
-        return DriverStation.getAlliance().filter(value -> value == DriverStation.Alliance.Blue).isPresent();
+        this.steerPIDController.enableContinuousInput(-180.0, 180.0);
     }
 
     @Override
     public void execute() {
-        Translation2d robotPos = this.swerveSubsystem.getRobotPosition().getTranslation();
-        SmartDashboard.putString("robotPos", robotPos.toString());
-        if (this.isBlue()) {
-            this.shooterSubsystem.toggleSlopeWithDistance(robotPos.plus(new Translation2d(-0.33, 0.0)).getDistance(BLUE_SHOOTER));
-        } else {
-            this.shooterSubsystem.toggleSlopeWithDistance(robotPos.plus(new Translation2d(0.33, 0.0)).getDistance(RED_SHOOTER));
-        }
+        this.shooterSubsystem.toggleSlopeWithDistance(this.swerveSubsystem.getSpeakerDistance());
+        double angle = this.swerveSubsystem.getSpeakerAngle();
+        this.swerveSubsystem.drive(0.0, 0.0,
+                this.steerPIDController.calculate(this.swerveSubsystem.getGyroAngle(), angle), true);
 
 //        if (this.visionManager.hasSpecTagTarget(4) || this.visionManager.hasSpecTagTarget(7)) {
 //            Transform3d bestCameraToTarget = this.visionManager.getAprilTagRelative();
