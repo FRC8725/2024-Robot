@@ -86,3 +86,6 @@
 
 2024/02/13 v1.1.14
 - Tidied up VisionManager
+
+2024/02/16 v1.1.15
+- Replaced ODE evaluation with experimental data with polynomial approximation model.

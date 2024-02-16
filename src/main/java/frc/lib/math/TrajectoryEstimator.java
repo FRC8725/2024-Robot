@@ -1,44 +1,20 @@
 package frc.lib.math;
 
-import edu.wpi.first.math.util.Units;
-import org.apache.commons.math3.exception.NumberIsTooSmallException;
-import org.apache.commons.math3.ode.nonstiff.DormandPrince853Integrator;
+import edu.wpi.first.math.geometry.Translation2d;
 import org.apache.commons.math3.util.FastMath;
 
 public class TrajectoryEstimator {
-    private final DormandPrince853Integrator integrator = new DormandPrince853Integrator(
-            1.0e-8, 100.0, 1.0e-10, 1.0e-10);
-    private final MixedAirDragODE ode = new MixedAirDragODE(TrajectoryConstants.a, TrajectoryConstants.b);
-
-    public double getAngleOfElevation12(double distanceFromCamera) {
-        double prevError = Integer.MAX_VALUE;
-
-        for (double angle = 0.0; angle < 90.0; angle += 0.5) {
-            double error = this.getTargetError(angle, distanceFromCamera);
-
-            if (error > prevError) {
-                return angle - 0.5;
-            }
-
-            prevError = error;
+    public static double getAngleOfElevation(double distanceFromEdge) {
+        if (distanceFromEdge >= 3.5) {
+            return 25.51;
         }
 
-        return 90.0;
-    }
-
-    private double getTargetError(double encoderAngle, double distanceFromCamera) {
-        double degree = Units.degreesToRadians(encoderAngle + TrajectoryConstants.phi_0);
-        double exitX = distanceFromCamera - TrajectoryConstants.x_sl + TrajectoryConstants.x_s;
-        exitX -= TrajectoryConstants.l * FastMath.cos(degree);
-        double exitY = TrajectoryConstants.y_s + TrajectoryConstants.l * FastMath.sin(degree);
-        double[] y0 = {exitY, -TrajectoryConstants.v_0 * FastMath.cos(degree),
-                TrajectoryConstants.v_0 * FastMath.sin(degree)};
-
-        try {
-            this.integrator.integrate(this.ode, exitX, y0, 0.2286, y0);
-            return Math.abs(y0[0] - 2.0431125);
-        } catch (NumberIsTooSmallException e) {
-            return Integer.MAX_VALUE;
-        }
+        double a = -(3.096 + 1.0 / 3.0) * FastMath.pow(distanceFromEdge, 5);
+        double b = 47.1 * FastMath.pow(distanceFromEdge, 4);
+        double c = -(251.2 + 1.0 / 3.0) * FastMath.pow(distanceFromEdge, 3);
+        double d = 656.325 * FastMath.pow(distanceFromEdge, 2);
+        double e = -(853.159 + 1.0 / 3.0) * distanceFromEdge;
+        double f = 490.45;
+        return a + b + c + d + e + f;
     }
 }

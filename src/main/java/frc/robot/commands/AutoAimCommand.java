@@ -1,7 +1,10 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.math.TrajectoryEstimator;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -10,6 +13,9 @@ import frc.robot.subsystems.VisionManager;
 
 @SuppressWarnings("RedundantMethodOverride")
 public class AutoAimCommand extends Command {
+    private static final Translation2d BLUE_SHOOTER = new Translation2d(0.0, 218.42).times(Units.inchesToMeters(1.0));
+    private static final Translation2d RED_SHOOTER = new Translation2d(652.73, 218.42).times(Units.inchesToMeters(1.0));
+    private static final boolean IS_BLUE = true;
     private final ShooterSubsystem shooterSubsystem;
     private final VisionManager visionManager;
     private final SwerveSubsystem swerveSubsystem;
@@ -19,7 +25,7 @@ public class AutoAimCommand extends Command {
         this.swerveSubsystem = swerveSubsystem;
         this.shooterSubsystem = shooterSubsystem;
         this.visionManager = visionManager;
-        addRequirements(swerveSubsystem, shooterSubsystem, visionManager);
+        this.addRequirements(swerveSubsystem, shooterSubsystem, visionManager);
     }
 
     @Override
@@ -28,22 +34,29 @@ public class AutoAimCommand extends Command {
 
     @Override
     public void execute() {
-        if (this.visionManager.hasSpecTagTarget(4) || this.visionManager.hasSpecTagTarget(7)) {
-            Transform3d bestCameraToTarget = this.visionManager.getAprilTagRelative();
-
-            // Z should be the vertical distance, I want the horizontal one, so this should be
-            // sqrt(x^2 + y^2)
-            double targetDistance = bestCameraToTarget.getTranslation().getZ();
-            double targetAngle = bestCameraToTarget.getRotation().toRotation2d().getDegrees();
-
-            this.shooterSubsystem.toggleSlopeWithDistance(targetDistance);
-            // I think ...this.drivePIDController.calculate(this.swerveSubsystem.getGyroAngle(), targetAngle)... is better
-            this.swerveSubsystem.drive(0, 0, this.drivePIDController.calculate(targetAngle, 0), false);
-
+        Translation2d robotPos = this.swerveSubsystem.getRobotPosition().getTranslation();
+        if (IS_BLUE) {
+            this.shooterSubsystem.toggleSlopeWithDistance(robotPos.getDistance(BLUE_SHOOTER));
         } else {
-            this.shooterSubsystem.stopSlopeToggler();
-            this.swerveSubsystem.drive(0, 0, 0, false);
+            this.shooterSubsystem.toggleSlopeWithDistance(robotPos.getDistance(RED_SHOOTER));
         }
+
+//        if (this.visionManager.hasSpecTagTarget(4) || this.visionManager.hasSpecTagTarget(7)) {
+//            Transform3d bestCameraToTarget = this.visionManager.getAprilTagRelative();
+//
+//            // Z should be the vertical distance, I want the horizontal one, so this should be
+//            // sqrt(x^2 + y^2)
+//            double targetDistance = bestCameraToTarget.getTranslation().getZ();
+//            double targetAngle = bestCameraToTarget.getRotation().toRotation2d().getDegrees();
+//
+//            this.shooterSubsystem.toggleSlopeWithDistance(targetDistance);
+//            // I think ...this.drivePIDController.calculate(this.swerveSubsystem.getGyroAngle(), targetAngle)... is better
+//            this.swerveSubsystem.drive(0, 0, this.drivePIDController.calculate(targetAngle, 0), false);
+//
+//        } else {
+//            this.shooterSubsystem.stopSlopeToggler();
+//            this.swerveSubsystem.drive(0, 0, 0, false);
+//        }
     }
 
     @Override
