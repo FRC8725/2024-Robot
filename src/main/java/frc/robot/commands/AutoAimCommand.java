@@ -36,9 +36,9 @@ public class AutoAimCommand extends Command {
     public void execute() {
         Translation2d robotPos = this.swerveSubsystem.getRobotPosition().getTranslation();
         if (IS_BLUE) {
-            this.shooterSubsystem.toggleSlopeWithDistance(robotPos.getDistance(BLUE_SHOOTER));
+            this.shooterSubsystem.toggleSlopeWithDistance(robotPos.plus(new Translation2d(-0.33, 0.0)).getDistance(BLUE_SHOOTER));
         } else {
-            this.shooterSubsystem.toggleSlopeWithDistance(robotPos.getDistance(RED_SHOOTER));
+            this.shooterSubsystem.toggleSlopeWithDistance(robotPos.plus(new Translation2d(0.33, 0.0)).getDistance(RED_SHOOTER));
         }
 
 //        if (this.visionManager.hasSpecTagTarget(4) || this.visionManager.hasSpecTagTarget(7)) {

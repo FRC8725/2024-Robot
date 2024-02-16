@@ -89,3 +89,6 @@
 
 2024/02/16 v1.1.15
 - Replaced ODE evaluation with experimental data with polynomial approximation model.
+
+2024/02/16 v1.1.16
+- Fixed AutoAimCommand Translation2d error.
