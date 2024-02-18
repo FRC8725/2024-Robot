@@ -14,11 +14,11 @@ public class IntakeSubsystem extends SubsystemBase {
     private static final double RELEASE_SPEED = -1;
     private static final double LIFT_COEFFICIENT = 0.1;
 
-    private static final double LIFTER_ZERO_OFFSET = 162.1;
+    private static final double LIFTER_ZERO_OFFSET = 172.1;
     private static final boolean LIFTER_REVERSED = false;
     private static final double LIFTER_GEAR_RATIO = 18.0/22.0;
 
-    private static final double LIFTER_MAX_LIMIT = 173.0;
+    private static final double LIFTER_MAX_LIMIT = 170.0;
     private static final double LIFTER_MIN_LIMIT = 12.0;
 
     private final ModuleTalonFX rightIntakeMotor = new ModuleTalonFX(RobotCANPorts.RIGHT_INTAKE.get());
@@ -28,7 +28,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private final ModuleTalonFX leftLiftMotor = new ModuleTalonFX(RobotCANPorts.LEFT_INTAKE_LIFTER.get());
 
     private final DutyCycleEncoder liftEncoder = new DutyCycleEncoder(1);
-    private final PIDController liftPIDController = new PIDController(0.10, 0, 0);
+    private final PIDController liftPIDController = new PIDController(0.05, 0, 0);
 
 
     public IntakeSubsystem() {
@@ -78,7 +78,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void liftTo(double setpoint) {
         final double output = this.liftPIDController.calculate(this.getLifterDegrees(), setpoint) * LIFT_COEFFICIENT;
-        SmartDashboard.putNumber("output", output);
+        // SmartDashboard.putNumber("output", output);
         this.rightLiftMotor.set(output);
         this.leftLiftMotor.set(output);
     }

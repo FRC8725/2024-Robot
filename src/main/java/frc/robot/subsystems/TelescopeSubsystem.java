@@ -51,8 +51,8 @@ public class TelescopeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Elevator Position right", rightMotor.getRadPosition());
-        SmartDashboard.putNumber("Elevator Position left", leftMotor.getRadPosition());
+        SmartDashboard.putNumber("Telescope Position right", rightMotor.getRadPosition());
+        SmartDashboard.putNumber("Telescope Position left", leftMotor.getRadPosition());
         // This method will be called once per scheduler run
     }
 }

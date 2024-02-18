@@ -33,12 +33,12 @@ public class AutoTrackNoteCommand extends Command {
         final double noteHorizontal = this.visionManager.getNoteHorizontalAngle();
 
         final double targetDistance = 120.0;
-        final double targetHorizontal = 9.2;
+        final double targetHorizontal = 17.5;
 
         double verticalSpeed = this.drivePIDController.calculate(targetDistance, noteDistance);
         double rotationSpeed = MathUtil.applyDeadband(this.steerPIDController.calculate(targetHorizontal, noteHorizontal), 0.15);
 
-        if (this.visionManager.noNoteTarget()) {
+        if (this.visionManager.noNoteTarget() && noteDistance < targetDistance) {
             verticalSpeed = 0.0;
             rotationSpeed = 0.0;
         }
@@ -50,7 +50,7 @@ public class AutoTrackNoteCommand extends Command {
         // SmartDashboard.putNumber("Rotation_speed", rotationSpeed);
 
         // TODO strange: vertical speed should correspond to xSpeed, not ySpeed
-        this.swerveSubsystem.drive(0.0, verticalSpeed, rotationSpeed, false);
+        this.swerveSubsystem.drive(verticalSpeed, 0.0, rotationSpeed, false);
 
 //        if (this.visionManager.hasNoteTarget() && verticalSpeed > 0)
 //            this.swerveSubsystem.move(0.0, verticalSpeed, rotationSpeed, false);

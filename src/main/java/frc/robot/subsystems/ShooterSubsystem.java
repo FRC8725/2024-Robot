@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import org.apache.commons.math3.util.FastMath;
+
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -15,7 +17,7 @@ public class ShooterSubsystem extends SubsystemBase{
     private static final double SHOOT_SPEED = 1.0;
     private static final double LIFT_COEFFICIENT = 0.07;
 
-    private static final double SLOPE_TOGGLER_ZERO_OFFSET = 233.52;//;
+    private static final double SLOPE_TOGGLER_ZERO_OFFSET = 280.52;//;
     private static final boolean SLOPE_TOGGLER_REVERSED = true;
     private static final double SLOPE_TOGGLER_GEAR_RATIO = 10.0/22.0;
 
@@ -30,7 +32,7 @@ public class ShooterSubsystem extends SubsystemBase{
 
 
     private final PIDController slopeTogglerPIDController = new PIDController(0.06, 0, 0);
-    private final PIDController shooterPIDController = new PIDController(0.1, 1, 0);
+    private final PIDController shooterPIDController = new PIDController(0.1, 3, 0);
 
     public double getSlopeTogglerDegrees() {
         return (Units.rotationsToDegrees(slopeTogglerEncoder.getAbsolutePosition()) - SLOPE_TOGGLER_ZERO_OFFSET) * (SLOPE_TOGGLER_REVERSED ? -1 : 1) * SLOPE_TOGGLER_GEAR_RATIO;
@@ -45,6 +47,10 @@ public class ShooterSubsystem extends SubsystemBase{
 
     private double getShooterSpeed() {
         return ((this.rightShootMotor.getVelocity().getValue() + this.leftShootMotor.getVelocity().getValue()) / 2) / 90;
+    }
+
+    private boolean canShoot() {
+        return FastMath.abs(SHOOT_SPEED - this.getShooterSpeed()) < 0.13;
     }
 
     public void shoot() {
@@ -75,13 +81,13 @@ public class ShooterSubsystem extends SubsystemBase{
 
     public void toggleSlopeWithDistance(double distance) {
         SmartDashboard.putNumber("Speaker dis", distance);
-        this.toggleSlopeTo(TrajectoryEstimator.getAngleOfElevation(distance));
+        this.toggleSlopeTo(TrajectoryEstimator.getAngleOfElevation(distance) + 10);
     }
 
     public void toggleSlopeTo(double setpoint) {
         final double output = this.slopeTogglerPIDController.calculate(this.getSlopeTogglerDegrees(), setpoint) * (SLOPE_TOGGLER_REVERSED ? -1 : 1);
         SmartDashboard.putNumber("slope setpoint", setpoint);
-        SmartDashboard.putNumber("slope output", output);
+        // SmartDashboard.putNumber("slope output", output);
         this.slopeTogglerMotor.set(output);
     }
 
@@ -98,5 +104,6 @@ public class ShooterSubsystem extends SubsystemBase{
     public void periodic() {
         SmartDashboard.putNumber("Shooter Elevation", this.getSlopeTogglerDegrees());
         SmartDashboard.putNumber("Shooter Speed", this.getShooterSpeed());
+        SmartDashboard.putBoolean("Can Shoot", this.canShoot());
     }
 }

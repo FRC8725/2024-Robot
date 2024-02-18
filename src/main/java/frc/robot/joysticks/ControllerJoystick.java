@@ -32,6 +32,10 @@ public class ControllerJoystick extends XboxController {
         return MathUtil.applyDeadband(this.getLeftY(), MUSHROOM_HEAD_DEADBAND);
     }
 
+    public boolean getIntakeToAMP() {
+        return this.getRightBumper();
+    }
+
     public boolean isTelescoping() {
         return this.getTelescopeDirection() != 0;
     }

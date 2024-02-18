@@ -1,6 +1,12 @@
 {
   "version": 1.0,
-  "startingPose": null,
+  "startingPose": {
+    "position": {
+      "x": 0.4,
+      "y": 7.0
+    },
+    "rotation": 0
+  },
   "command": {
     "type": "sequential",
     "data": {
@@ -14,44 +20,31 @@
         {
           "type": "named",
           "data": {
-            "name": null
+            "name": "StopSwerve"
           }
         },
         {
-          "type": "parallel",
+          "type": "wait",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": null
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "npath-2"
-                }
-              }
-            ]
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoShoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "npath-2"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "npath-3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": null
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "npath-4"
           }
         }
       ]

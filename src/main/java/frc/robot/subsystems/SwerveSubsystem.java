@@ -5,6 +5,9 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -13,6 +16,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -64,7 +68,7 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
 //    private final AHRS gyro = new AHRS(SerialPort.Port.kUSB);
     private final Field2d gameFieldSim = new Field2d();
     private final SwerveDriveKinematics kinematics = this.modules.constructKinematics();
-    private final SwerveDriveOdometry odometry = new SwerveDriveOdometry(this.kinematics, this.getHeading(), this.getModulePositions());
+    private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(this.kinematics, this.getHeading(), this.getModulePositions(), new Pose2d());
 
     public SwerveSubsystem() {
         this.registerDashboard();
@@ -94,8 +98,7 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
                         new PIDConstants(5.0, 0., 0.),
                         SwerveModule.MODULE_MAX_DRIVING_SPEED, // Max module speed, in m/s
                         0.3, // Drive base radius in meters. Distance from robot center to the furthest module.
-                        new ReplanningConfig(true, true,
-                                5, 5)
+                        new ReplanningConfig(false, false)
                 ), () -> DriverStation.getAlliance().filter(value -> value == DriverStation.Alliance.Red).isPresent()
                 , this
         );
@@ -134,7 +137,7 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
 
     public double getSpeakerAngle() {
         double value = this.getSpeakerPosition().getAngle().getDegrees();
-        return value > 90.0 ? value - 180.0 : value;
+        return value > 90.0 ? value - 180.0 : (value < -90.0 ? value + 180.0 : value);
     }
 
     @CoordinateSystem(CoordinationPolicy.ROBOT_COORDINATION)
@@ -157,7 +160,7 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
 
     @OutputUnit(UnitTypes.METERS)
     public Pose2d getRobotPosition() {
-        return this.odometry.getPoseMeters();
+        return this.poseEstimator.getEstimatedPosition();
     }
 
     public SwerveModuleState[] getModuleStates() {
@@ -169,7 +172,7 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
     }
 
     public void resetOdometry(Pose2d pose) {
-        this.odometry.resetPosition(this.getHeading(), this.getModulePositions(), pose);
+        this.poseEstimator.resetPosition(this.getHeading(), this.getModulePositions(), pose);
     }
 
     public void stopModules() {
@@ -184,9 +187,13 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
         this.modules.forEach(SwerveModule::lockModule);
     }
 
+    public void adjustPoseEstimator(Pose2d pose2d) {
+        this.poseEstimator.addVisionMeasurement(pose2d, Timer.getFPGATimestamp());
+    }
+
     @Override
     public void periodic() {
-        this.odometry.update(this.gyro.getRotation2d(), this.getModulePositions());
+        this.poseEstimator.update(this.getHeading(), this.getModulePositions());
         this.gameFieldSim.setRobotPose(this.getRobotPosition());
     }
 

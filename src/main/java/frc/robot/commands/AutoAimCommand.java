@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import org.apache.commons.math3.util.FastMath;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -9,15 +11,13 @@ import frc.robot.subsystems.VisionManager;
 @SuppressWarnings("RedundantMethodOverride")
 public class AutoAimCommand extends Command {
     private final ShooterSubsystem shooterSubsystem;
-    private final VisionManager visionManager;
     private final SwerveSubsystem swerveSubsystem;
-    private final PIDController steerPIDController = new PIDController(0.01, 0, 0);
+    private final PIDController steerPIDController = new PIDController(0.02, 0, 0);
 
-    public AutoAimCommand(SwerveSubsystem swerveSubsystem, ShooterSubsystem shooterSubsystem, VisionManager visionManager) {
+    public AutoAimCommand(SwerveSubsystem swerveSubsystem, ShooterSubsystem shooterSubsystem) {
         this.swerveSubsystem = swerveSubsystem;
         this.shooterSubsystem = shooterSubsystem;
-        this.visionManager = visionManager;
-        this.addRequirements(swerveSubsystem, shooterSubsystem, visionManager);
+        this.addRequirements(swerveSubsystem, shooterSubsystem);
     }
 
     @Override
@@ -59,5 +59,6 @@ public class AutoAimCommand extends Command {
     @Override
     public boolean isFinished() {
         return false;
+        // return FastMath.abs(this.swerveSubsystem.getGyroAngle() - this.swerveSubsystem.getSpeakerAngle()) < 2.0;
     }
 }

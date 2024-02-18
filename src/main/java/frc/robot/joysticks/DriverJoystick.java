@@ -32,8 +32,12 @@ public class DriverJoystick extends XboxController implements IDashboardProvider
         return new Trigger(this::getXButton);
     }
 
-    public Trigger getNoteTrackingTrigger() {
+    public Trigger getSpeakerAimingTrigger() {
         return new Trigger(this::getYButton);
+    }
+
+    public Trigger getNoteTrackingTrigger() {
+        return new Trigger(this::getAButton);
     }
 
     @CoordinateSystem(CoordinationPolicy.ROBOT_COORDINATION)

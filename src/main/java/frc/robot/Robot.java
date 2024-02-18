@@ -26,6 +26,7 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
         DashboardHelper.putAllRegistriesPeriodic();
+        this.robotContainer.robotPeriodic();
     }
 
     @Override

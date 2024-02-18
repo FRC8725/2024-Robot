@@ -4,11 +4,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.joysticks.ControllerJoystick;
 import frc.robot.subsystems.IntakeSubsystem;
 
-// TODO: Transform it into PIDControl :D:)
 @SuppressWarnings("RedundantMethodOverride")
 public class IntakeCommand extends Command {
-    private static final double LIFTER_MAX_TARGET = 173.0;
-    private static final double LIFTER_MIN_TARGET = 11.0;
+    private static final double LIFTER_MAX_SETPOINT = 170.0;
+    private static final double LIFTER_MIN_SETPOINT = 11.0;
+    private static final double LIFTER_AMP_SETPOINT = 103.86; //5cm to AMP, note to bumper, 
+
     private final IntakeSubsystem intakeSubsystem;
     private final ControllerJoystick joystick;
 
@@ -25,9 +26,9 @@ public class IntakeCommand extends Command {
     @Override
     public void execute() {
         final double lifterDirection = this.joystick.getIntakeLiftDirection();
-        if (lifterDirection < 0) this.intakeSubsystem.liftTo(LIFTER_MAX_TARGET);
-        else if (lifterDirection > 0) this.intakeSubsystem.liftTo(LIFTER_MIN_TARGET);
-        else if (this.joystick.getRightBumper()) this.intakeSubsystem.liftTo(103.86);
+        if (lifterDirection < 0) this.intakeSubsystem.liftTo(LIFTER_MAX_SETPOINT);
+        else if (lifterDirection > 0) this.intakeSubsystem.liftTo(LIFTER_MIN_SETPOINT);
+        else if (this.joystick.getIntakeToAMP()) this.intakeSubsystem.liftTo(LIFTER_AMP_SETPOINT);
         else this.intakeSubsystem.stopLift();
 
         if (this.joystick.isIntakeButtonDown()) this.intakeSubsystem.intake();

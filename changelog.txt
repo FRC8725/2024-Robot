@@ -102,4 +102,8 @@
 2024/02/16 v1.1.19
 - Added Auto steer to speaker when auto aiming mechanics.
 - Created FieldPositions to store important position on the field.
--
+
+2024/02/17 v1.1.20
+- Added AutoShootCommand to automatically shoot note
+- Added poseEstimator to calibration pose2d when LL3 has apriltag target
+- Added MiddleAuto in pathplanner
