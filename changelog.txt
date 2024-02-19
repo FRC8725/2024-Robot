@@ -107,3 +107,6 @@
 - Added AutoShootCommand to automatically shoot note
 - Added poseEstimator to calibration pose2d when LL3 has apriltag target
 - Added MiddleAuto in pathplanner
+
+2024/02/19 v1.1.21
+- Added setRobotHeading quickly rotate robot to specific heading

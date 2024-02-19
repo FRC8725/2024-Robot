@@ -29,8 +29,10 @@ public class AutoAimCommand extends Command {
     public void execute() {
         this.shooterSubsystem.toggleSlopeWithDistance(this.swerveSubsystem.getSpeakerDistance());
         double angle = this.swerveSubsystem.getSpeakerAngle();
-        this.swerveSubsystem.drive(0.0, 0.0,
-                this.steerPIDController.calculate(this.swerveSubsystem.getGyroAngle(), angle), true);
+        this.swerveSubsystem.setRobotHeading(angle);
+        
+        // this.swerveSubsystem.drive(0.0, 0.0,
+        //         this.steerPIDController.calculate(this.swerveSubsystem.getGyroAngle(), angle), true);
 
 //        if (this.visionManager.hasSpecTagTarget(4) || this.visionManager.hasSpecTagTarget(7)) {
 //            Transform3d bestCameraToTarget = this.visionManager.getAprilTagRelative();

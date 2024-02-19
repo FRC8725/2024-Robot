@@ -43,6 +43,13 @@ public class RobotContainer implements IDashboardProvider {
             Commands.runOnce(this.swerveSubsystem::stopModules, this.swerveSubsystem)
         );
 
+        NamedCommands.registerCommand(
+            "ZeroRobotHeading",
+            new ParallelDeadlineGroup(new WaitCommand(2.0),
+                Commands.run(this.swerveSubsystem::zeroRobotHeading, this.swerveSubsystem)
+            )
+        );
+
         this.autoCommandChooser = AutoBuilder.buildAutoChooser();
 
         this.setDefaultCommands();

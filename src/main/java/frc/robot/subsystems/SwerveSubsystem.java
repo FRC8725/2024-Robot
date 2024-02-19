@@ -7,6 +7,7 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -69,6 +70,8 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
     private final Field2d gameFieldSim = new Field2d();
     private final SwerveDriveKinematics kinematics = this.modules.constructKinematics();
     private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(this.kinematics, this.getHeading(), this.getModulePositions(), new Pose2d());
+
+    private final PIDController steerPIDController = new PIDController(0.02, 0, 0);
 
     public SwerveSubsystem() {
         this.registerDashboard();
@@ -154,6 +157,15 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
         this.gyro.reset();
     }
 
+
+    public void zeroRobotHeading() {
+        this.setRobotHeading(0.0);
+    }
+
+    public void setRobotHeading(double angle) {
+        this.drive(0.0, 0.0, this.steerPIDController.calculate(this.getGyroAngle(), angle), true);
+    }
+
     public Rotation2d getHeading() {
         return Rotation2d.fromDegrees(this.getGyroAngle());
     }
@@ -175,20 +187,20 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
         this.poseEstimator.resetPosition(this.getHeading(), this.getModulePositions(), pose);
     }
 
-    public void stopModules() {
-        this.modules.forEach(SwerveModule::stop);
+    public void adjustPoseEstimator(Pose2d pose2d) {
+        this.poseEstimator.addVisionMeasurement(pose2d, Timer.getFPGATimestamp());
     }
 
     public void resetRelativeEncoders() {
         this.modules.forEach(SwerveModule::resetRelativeEncoders);
     }
 
-    public void lockModules() {
-        this.modules.forEach(SwerveModule::lockModule);
+    public void stopModules() {
+        this.modules.forEach(SwerveModule::stop);
     }
 
-    public void adjustPoseEstimator(Pose2d pose2d) {
-        this.poseEstimator.addVisionMeasurement(pose2d, Timer.getFPGATimestamp());
+    public void lockModules() {
+        this.modules.forEach(SwerveModule::lockModule);
     }
 
     @Override
