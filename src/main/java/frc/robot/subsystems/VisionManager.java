@@ -16,12 +16,11 @@ import frc.lib.helpers.OutputUnit;
 import frc.lib.helpers.UnitTypes;
 import org.apache.commons.math3.util.FastMath;
 
-// TODO tidy this Class
 public class VisionManager extends SubsystemBase {
     @OutputUnit(UnitTypes.CENTIMETERS)
     private static final double LIMELIGHT_HEIGHT = 60.0;
     @OutputUnit(UnitTypes.DEGREES)
-    private static final double LIMELIGHT_MOUNT = -26.0;
+    private static final double LIMELIGHT_MOUNT = -45.0;
 
     DoubleSubscriber primaryAprilTagId = NetworkTableInstance.getDefault().getTable("limelight").getDoubleTopic("tid").subscribe(-1);
     DoubleArraySubscriber primaryAprilTagTransform = NetworkTableInstance.getDefault().getTable("limelight").getDoubleArrayTopic("targetpose_robotspace").subscribe(new double[6]);

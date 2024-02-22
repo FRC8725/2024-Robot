@@ -110,3 +110,7 @@
 
 2024/02/19 v1.1.21
 - Added setRobotHeading quickly rotate robot to specific heading
+
+2024/02/22 v1.1.22
+- Added auto intake while auto tracking note
+- Added auto release since shooter CanShoot

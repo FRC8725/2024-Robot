@@ -49,7 +49,7 @@ public class ShooterSubsystem extends SubsystemBase{
         return ((this.rightShootMotor.getVelocity().getValue() + this.leftShootMotor.getVelocity().getValue()) / 2) / 90;
     }
 
-    private boolean canShoot() {
+    public boolean canShoot() {
         return FastMath.abs(SHOOT_SPEED - this.getShooterSpeed()) < 0.13;
     }
 

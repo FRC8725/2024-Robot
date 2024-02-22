@@ -67,14 +67,15 @@ public class RobotContainer implements IDashboardProvider {
         this.swerveSubsystem.setDefaultCommand(new SwerveDriveCommand(this.swerveSubsystem, this.driverJoystick));
         this.shooterSubsystem.setDefaultCommand(new ShootCommand(this.shooterSubsystem, this.controllerJoystick));
         this.telescopeSubsystem.setDefaultCommand(new TelescopeCommand(this.telescopeSubsystem, this.controllerJoystick));
-        this.intakeSubsystem.setDefaultCommand(new IntakeCommand(this.intakeSubsystem, this.controllerJoystick));
+        this.intakeSubsystem.setDefaultCommand(new IntakeCommand(this.intakeSubsystem, this.shooterSubsystem::canShoot, this.controllerJoystick));
     }
 
     private void configureBindings() {
         this.driverJoystick.getZeroHeadingTrigger().onTrue(new InstantCommand(this.swerveSubsystem::resetGyro, this.swerveSubsystem));
-        this.driverJoystick.getModuleLockingTrigger().whileTrue(new RunCommand(this.swerveSubsystem::lockModules, this.swerveSubsystem));
         this.driverJoystick.getSpeakerAimingTrigger().whileTrue(new AutoAimCommand(this.swerveSubsystem, this.shooterSubsystem));
-        this.driverJoystick.getNoteTrackingTrigger().whileTrue(new AutoTrackNoteCommand(swerveSubsystem, visionManager));
+        this.driverJoystick.getNoteTrackingTrigger().whileTrue(new AutoTrackNoteCommand(this.swerveSubsystem, this.intakeSubsystem, this.visionManager));
+
+        //this.driverJoystick.getModuleLockingTrigger().whileTrue(new RunCommand(this.swerveSubsystem::lockModules, this.swerveSubsystem));
     }
     public Command getAutonomousCommand() {
         return this.autoCommandChooser.getSelected();

@@ -10,6 +10,10 @@ import frc.lib.ModuleTalonFX;
 import frc.robot.constants.RobotCANPorts;
 
 public class IntakeSubsystem extends SubsystemBase {
+    public static final double LIFTER_MAX_SETPOINT = 170.0;
+    public static final double LIFTER_MIN_SETPOINT = 11.0;
+    public static final double LIFTER_AMP_SETPOINT = 103.86;  //5cm to AMP, note to bumper, 
+
     private static final double INTAKE_SPEED = 0.4;
     private static final double RELEASE_SPEED = -1;
     private static final double LIFT_COEFFICIENT = 0.1;
@@ -18,7 +22,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private static final boolean LIFTER_REVERSED = false;
     private static final double LIFTER_GEAR_RATIO = 18.0/22.0;
 
-    private static final double LIFTER_MAX_LIMIT = 170.0;
+    private static final double LIFTER_MAX_LIMIT = 166.5;
     private static final double LIFTER_MIN_LIMIT = 12.0;
 
     private final ModuleTalonFX rightIntakeMotor = new ModuleTalonFX(RobotCANPorts.RIGHT_INTAKE.get());
@@ -28,7 +32,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private final ModuleTalonFX leftLiftMotor = new ModuleTalonFX(RobotCANPorts.LEFT_INTAKE_LIFTER.get());
 
     private final DutyCycleEncoder liftEncoder = new DutyCycleEncoder(1);
-    private final PIDController liftPIDController = new PIDController(0.05, 0, 0);
+    private final PIDController liftPIDController = new PIDController(0.04, 0, 0);
 
 
     public IntakeSubsystem() {

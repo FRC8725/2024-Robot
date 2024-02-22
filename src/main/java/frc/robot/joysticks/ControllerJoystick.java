@@ -41,14 +41,9 @@ public class ControllerJoystick extends XboxController {
     }
 
     public int getTelescopeDirection() {
-        if (this.getYButton() && this.getAButton()) {
-            return 0;
-        } else if (this.getYButton()) {
-            return 1;
-        } else if (this.getAButton()) {
-            return -1;
-        } else {
-            return 0;
-        }
+        if (this.getYButton() && this.getAButton()) return 0;
+        else if (this.getYButton()) return 1;
+        else if (this.getAButton()) return -1;
+        return 0;
     }
 }

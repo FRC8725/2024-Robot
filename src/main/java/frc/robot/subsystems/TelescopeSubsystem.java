@@ -34,8 +34,8 @@ public class TelescopeSubsystem extends SubsystemBase {
         leftMotor.setControl(this.follower);
     }
 
-    public void move(double position) {
-        rightMotor.set(telescopePidController.calculate(rightMotor.getRadPosition(), position));
+    public void move(double setpoint) {
+        rightMotor.set(telescopePidController.calculate(rightMotor.getRadPosition(), setpoint));
         leftMotor.setControl(this.follower);
     }
 
