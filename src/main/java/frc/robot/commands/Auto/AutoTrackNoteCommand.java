@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.Auto;
 
 import org.apache.commons.math3.util.FastMath;
 
@@ -41,7 +41,6 @@ public class AutoTrackNoteCommand extends Command {
 
     }
 
-    // TODO: Test if can execute properly
     @Override
     public void execute() {
         final double noteDistance = this.visionManager.getNoteHorizontalDistance();

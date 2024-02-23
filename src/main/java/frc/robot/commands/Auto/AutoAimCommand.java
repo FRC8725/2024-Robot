@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.Auto;
 
 import org.apache.commons.math3.util.FastMath;
 

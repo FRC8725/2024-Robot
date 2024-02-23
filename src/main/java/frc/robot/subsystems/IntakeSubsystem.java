@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import org.apache.commons.math3.util.FastMath;
+
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
@@ -85,6 +87,10 @@ public class IntakeSubsystem extends SubsystemBase {
         // SmartDashboard.putNumber("output", output);
         this.rightLiftMotor.set(output);
         this.leftLiftMotor.set(output);
+    }
+
+    public boolean isLifterAt(double setpoint, double threshold) {
+        return FastMath.abs(this.getLifterDegrees() - setpoint) < threshold;
     }
 
     public void stopLift() {

@@ -18,6 +18,10 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.lib.helpers.IDashboardProvider;
 import frc.robot.commands.*;
+import frc.robot.commands.Auto.AutoAMPCommand;
+import frc.robot.commands.Auto.AutoShootCommand;
+import frc.robot.commands.Auto.AutoSituateRobotCommand;
+import frc.robot.commands.Auto.AutoTrackNoteCommand;
 import frc.robot.joysticks.ControllerJoystick;
 import frc.robot.joysticks.DriverJoystick;
 import frc.robot.subsystems.*;
@@ -74,6 +78,7 @@ public class RobotContainer implements IDashboardProvider {
         this.driverJoystick.getZeroHeadingTrigger().onTrue(new InstantCommand(this.swerveSubsystem::resetGyro, this.swerveSubsystem));
         this.driverJoystick.getSpeakerAimingTrigger().whileTrue(new AutoSituateRobotCommand(this.swerveSubsystem, this.shooterSubsystem));
         this.driverJoystick.getNoteTrackingTrigger().whileTrue(new AutoTrackNoteCommand(this.swerveSubsystem, this.visionManager));
+        this.driverJoystick.getAMPTrigger().whileTrue(new AutoAMPCommand(this.swerveSubsystem, this.intakeSubsystem));
 
         //this.driverJoystick.getModuleLockingTrigger().whileTrue(new RunCommand(this.swerveSubsystem::lockModules, this.swerveSubsystem));
     }

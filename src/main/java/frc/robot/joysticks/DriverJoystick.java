@@ -10,7 +10,10 @@ import frc.robot.constants.SwerveDriveConstants;
 
 public class DriverJoystick extends XboxController implements IDashboardProvider {
     private static final int PORT = 1;
-    public static final double DEADBAND = 0.05;
+    private static final double MUSHROOM_HEAD_DEADBAND = 0.05;
+    private static final double MAX_BREAK_VALUE = 0.5;
+
+
     private final SlewRateLimiter xSpeedLimiter = new SlewRateLimiter(SwerveDriveConstants.TELEOP_MAX_ACCELERATION);
     private final SlewRateLimiter ySpeedLimiter = new SlewRateLimiter(SwerveDriveConstants.TELEOP_MAX_ACCELERATION);
     private final SlewRateLimiter rotationLimiter = new SlewRateLimiter(SwerveDriveConstants.TELEOP_MAX_ANGULAR_ACCELERATION);
@@ -28,7 +31,7 @@ public class DriverJoystick extends XboxController implements IDashboardProvider
         return new Trigger(this::getBButton);
     }
 
-    public Trigger getModuleLockingTrigger() {
+    public Trigger getAMPTrigger() {
         return new Trigger(this::getXButton);
     }
 
@@ -43,22 +46,26 @@ public class DriverJoystick extends XboxController implements IDashboardProvider
     @CoordinateSystem(CoordinationPolicy.ROBOT_COORDINATION)
     @OutputUnit(UnitTypes.METERS_PER_SECOND)
     public double getDesiredRobotXSpeed() {
-        double speed = -MathUtil.applyDeadband(this.getLeftY(), DEADBAND);
+        double speed = -MathUtil.applyDeadband(this.getLeftY(), MUSHROOM_HEAD_DEADBAND) * this.getBreaker();
         return this.xSpeedLimiter.calculate(speed * SwerveDriveConstants.TELEOP_MAX_ROBOT_SPEED);
     }
 
     @CoordinateSystem(CoordinationPolicy.ROBOT_COORDINATION)
     @OutputUnit(UnitTypes.METERS_PER_SECOND)
     public double getDesiredRobotYSpeed() {
-        double speed = -MathUtil.applyDeadband(this.getLeftX(), DEADBAND);
+        double speed = -MathUtil.applyDeadband(this.getLeftX(), MUSHROOM_HEAD_DEADBAND) * this.getBreaker();
         return this.ySpeedLimiter.calculate(speed * SwerveDriveConstants.TELEOP_MAX_ROBOT_SPEED);
     }
 
     @CoordinateSystem(CoordinationPolicy.ROBOT_COORDINATION)
     @OutputUnit(UnitTypes.RADIANS_PER_SECOND)
     public double getDesiredRobotRotation() {
-        double speed = -MathUtil.applyDeadband(this.getRightX(), DEADBAND);
+        double speed = -MathUtil.applyDeadband(this.getRightX(), MUSHROOM_HEAD_DEADBAND) * this.getBreaker();
         return this.rotationLimiter.calculate(speed * SwerveDriveConstants.TELEOP_MAX_ROBOT_ANGULAR_SPEED);
+    }
+
+    public double getBreaker() {
+        return 1 - (this.getLeftTriggerAxis() * MAX_BREAK_VALUE);
     }
 
     public boolean isFieldOriented() {

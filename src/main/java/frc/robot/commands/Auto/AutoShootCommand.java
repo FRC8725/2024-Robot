@@ -1,6 +1,6 @@
 
 
-package frc.robot.commands;
+package frc.robot.commands.Auto;
 
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
