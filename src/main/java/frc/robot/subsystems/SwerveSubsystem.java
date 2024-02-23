@@ -126,10 +126,10 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
     }
 
     public double getSpeakerDistance() {
-        return this.getSpeakerPosition().getNorm();
+        return this.getSpeakerVector().getNorm();
     }
 
-    private Translation2d getSpeakerPosition() {
+    private Translation2d getSpeakerVector() {
         boolean isBlue = DriverStation.getAlliance().isPresent() &&
                 DriverStation.getAlliance().get() == DriverStation.Alliance.Blue;
 
@@ -139,7 +139,7 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
     }
 
     public double getSpeakerAngle() {
-        double value = this.getSpeakerPosition().getAngle().getDegrees();
+        double value = this.getSpeakerVector().getAngle().getDegrees();
         return value > 90.0 ? value - 180.0 : (value < -90.0 ? value + 180.0 : value);
     }
 
@@ -159,11 +159,19 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
 
 
     public void zeroRobotHeading() {
-        this.setRobotHeading(0.0);
+        this.situateRobot(0.0);
     }
 
-    public void setRobotHeading(double angle) {
-        this.drive(0.0, 0.0, this.steerPIDController.calculate(this.getGyroAngle(), angle), true);
+    public void situateTowardSpeaker(double xSpeed, double ySpeed) {
+        this.situateRobot(xSpeed, ySpeed, this.getSpeakerAngle());
+    }
+
+    public void situateRobot(double angleSetpoint) {
+        this.situateRobot(0.0, 0.0, angleSetpoint);
+    }
+
+    public void situateRobot(double xSpeed, double ySpeed, double angleSetpoint) {
+        this.drive(xSpeed, ySpeed, this.steerPIDController.calculate(this.getGyroAngle(), angleSetpoint), true);
     }
 
     public Rotation2d getHeading() {

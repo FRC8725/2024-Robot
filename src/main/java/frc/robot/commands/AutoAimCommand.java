@@ -28,8 +28,7 @@ public class AutoAimCommand extends Command {
     @Override
     public void execute() {
         this.shooterSubsystem.toggleSlopeWithDistance(this.swerveSubsystem.getSpeakerDistance());
-        double angle = this.swerveSubsystem.getSpeakerAngle();
-        this.swerveSubsystem.setRobotHeading(angle);
+        this.swerveSubsystem.situateTowardSpeaker(0.0, 0.0);
         
         // this.swerveSubsystem.drive(0.0, 0.0,
         //         this.steerPIDController.calculate(this.swerveSubsystem.getGyroAngle(), angle), true);

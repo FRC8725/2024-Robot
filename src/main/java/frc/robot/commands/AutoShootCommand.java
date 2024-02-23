@@ -28,7 +28,7 @@ public class AutoShootCommand extends ParallelDeadlineGroup {
 					new AutoAimCommand(this.swerveSubsystem, this.shooterSubsystem)
 				),
 
-				new ParallelDeadlineGroup(new WaitCommand(2.5),
+				new ParallelDeadlineGroup(new WaitCommand(1.5),
 					Commands.run(this.shooterSubsystem::shoot, this.shooterSubsystem),
 					new SequentialCommandGroup(
 						Commands.waitUntil(this.shooterSubsystem::canShoot),

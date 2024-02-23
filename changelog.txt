@@ -114,3 +114,6 @@
 2024/02/22 v1.1.22
 - Added auto intake while auto tracking note
 - Added auto release since shooter CanShoot
+
+2024/02/23 v1.1.23
+- Added AutoSituateRobot Command

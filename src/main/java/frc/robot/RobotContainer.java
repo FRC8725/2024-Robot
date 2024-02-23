@@ -72,8 +72,8 @@ public class RobotContainer implements IDashboardProvider {
 
     private void configureBindings() {
         this.driverJoystick.getZeroHeadingTrigger().onTrue(new InstantCommand(this.swerveSubsystem::resetGyro, this.swerveSubsystem));
-        this.driverJoystick.getSpeakerAimingTrigger().whileTrue(new AutoAimCommand(this.swerveSubsystem, this.shooterSubsystem));
-        this.driverJoystick.getNoteTrackingTrigger().whileTrue(new AutoTrackNoteCommand(this.swerveSubsystem, this.intakeSubsystem, this.visionManager));
+        this.driverJoystick.getSpeakerAimingTrigger().whileTrue(new AutoSituateRobotCommand(this.swerveSubsystem, this.shooterSubsystem));
+        this.driverJoystick.getNoteTrackingTrigger().whileTrue(new AutoTrackNoteCommand(this.swerveSubsystem, this.visionManager));
 
         //this.driverJoystick.getModuleLockingTrigger().whileTrue(new RunCommand(this.swerveSubsystem::lockModules, this.swerveSubsystem));
     }

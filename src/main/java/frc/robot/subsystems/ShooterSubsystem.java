@@ -85,7 +85,8 @@ public class ShooterSubsystem extends SubsystemBase{
     }
 
     public void toggleSlopeTo(double setpoint) {
-        final double output = this.slopeTogglerPIDController.calculate(this.getSlopeTogglerDegrees(), setpoint) * (SLOPE_TOGGLER_REVERSED ? -1 : 1);
+        setpoint = (setpoint >= SLOPE_TOGGLER_MAX_LIMIT) ? SLOPE_TOGGLER_MAX_LIMIT : (setpoint <= SLOPE_TOGGLER_MIN_LIMIT) ? SLOPE_TOGGLER_MIN_LIMIT : setpoint;
+        double output = this.slopeTogglerPIDController.calculate(this.getSlopeTogglerDegrees(), setpoint) * (SLOPE_TOGGLER_REVERSED ? -1 : 1);
         SmartDashboard.putNumber("slope setpoint", setpoint);
         // SmartDashboard.putNumber("slope output", output);
         this.slopeTogglerMotor.set(output);
