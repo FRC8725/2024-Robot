@@ -27,13 +27,14 @@ public class IntakeCommand extends Command {
     @Override
     public void execute() {
         final double lifterDirection = this.joystick.getIntakeLiftDirection();
-        if (lifterDirection < 0) this.intakeSubsystem.liftTo(IntakeSubsystem.LIFTER_MAX_SETPOINT);
-        else if (lifterDirection > 0) this.intakeSubsystem.liftTo(IntakeSubsystem.LIFTER_MIN_SETPOINT);
+        if (lifterDirection < 0) this.intakeSubsystem.liftToMax();
+        else if (lifterDirection > 0) this.intakeSubsystem.liftToMin();
         else if (this.joystick.getIntakeToAMP()) this.intakeSubsystem.liftTo(IntakeSubsystem.LIFTER_AMP_SETPOINT);
         else this.intakeSubsystem.stopLift();
 
         if (this.joystick.isIntakeButtonDown()) this.intakeSubsystem.intake();
         else if (this.joystick.isReleaseButtonDown() || this.canShootSupplier.get()) this.intakeSubsystem.release();
+        else if (lifterDirection < 0 && !this.intakeSubsystem.isLifterAtMax()) this.intakeSubsystem.adjustNote();
         else this.intakeSubsystem.stopIntake();
     }
 

@@ -60,6 +60,11 @@ public class IntakeSubsystem extends SubsystemBase {
         this.leftIntakeMotor.set(INTAKE_SPEED);
     }
 
+    public void adjustNote() {
+        this.rightIntakeMotor.set(0.03);
+        this.leftIntakeMotor.set(0.03);
+    }
+
     public void release() {
         this.rightIntakeMotor.set(RELEASE_SPEED);
         this.leftIntakeMotor.set(RELEASE_SPEED);
@@ -89,8 +94,24 @@ public class IntakeSubsystem extends SubsystemBase {
         this.leftLiftMotor.set(output);
     }
 
+    public void liftToMin() {
+        this.liftTo(LIFTER_MIN_SETPOINT);
+    }
+
+    public void liftToMax() {
+        this.liftTo(LIFTER_MAX_SETPOINT);
+    }
+
     public boolean isLifterAt(double setpoint, double threshold) {
         return FastMath.abs(this.getLifterDegrees() - setpoint) < threshold;
+    }
+
+    public boolean isLifterAtMin() {
+        return this.isLifterAt(LIFTER_MIN_SETPOINT, 1.0);
+    }
+
+    public boolean isLifterAtMax() {
+        return this.isLifterAt(LIFTER_MAX_SETPOINT, 1.0);
     }
 
     public void stopLift() {

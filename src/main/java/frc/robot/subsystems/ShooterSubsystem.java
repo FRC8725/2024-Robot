@@ -14,7 +14,7 @@ import frc.lib.math.TrajectoryEstimator;
 import frc.robot.constants.RobotCANPorts;
 
 public class ShooterSubsystem extends SubsystemBase{
-    private static final double SHOOT_SPEED = 1.0;
+    private static final double SHOOT_SPEED = 0.9;
     private static final double LIFT_COEFFICIENT = 0.07;
 
     private static final double SLOPE_TOGGLER_ZERO_OFFSET = 280.52;//;
@@ -24,8 +24,8 @@ public class ShooterSubsystem extends SubsystemBase{
     private static final double SLOPE_TOGGLER_MAX_LIMIT = 50.0;
     private static final double SLOPE_TOGGLER_MIN_LIMIT = 2.0;
 
-    private final ModuleTalonFX rightShootMotor = new ModuleTalonFX(RobotCANPorts.RIGHT_SHOOTER.get());
-    private final ModuleTalonFX leftShootMotor = new ModuleTalonFX(RobotCANPorts.LEFT_SHOOTER.get());
+    private final ModuleTalonFX rightShootMotor = new ModuleTalonFX(RobotCANPorts.LEFT_SHOOTER.get());
+    private final ModuleTalonFX leftShootMotor = new ModuleTalonFX(RobotCANPorts.RIGHT_SHOOTER.get());
 
     private final ModuleTalonFX slopeTogglerMotor = new ModuleTalonFX(RobotCANPorts.SLOPE_TOGGLER.get());
     private final DutyCycleEncoder slopeTogglerEncoder = new DutyCycleEncoder(0);

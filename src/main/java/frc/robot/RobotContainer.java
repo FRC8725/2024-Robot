@@ -16,11 +16,11 @@ import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.lib.helpers.IDashboardProvider;
 import frc.robot.commands.*;
 import frc.robot.commands.Auto.AutoAMPCommand;
 import frc.robot.commands.Auto.AutoShootCommand;
-import frc.robot.commands.Auto.AutoSituateRobotCommand;
 import frc.robot.commands.Auto.AutoTrackNoteCommand;
 import frc.robot.joysticks.ControllerJoystick;
 import frc.robot.joysticks.DriverJoystick;
@@ -39,7 +39,7 @@ public class RobotContainer implements IDashboardProvider {
     public RobotContainer() {
         NamedCommands.registerCommand(
             "AutoShoot",
-            new AutoShootCommand(this.swerveSubsystem, this.intakeSubsystem, this.shooterSubsystem)
+            new AutoShootCommand(this.intakeSubsystem, this.shooterSubsystem)
         );
 
         NamedCommands.registerCommand(
@@ -54,6 +54,28 @@ public class RobotContainer implements IDashboardProvider {
             )
         );
 
+        NamedCommands.registerCommand(
+            "ToIntakePoint",
+            new SequentialCommandGroup(
+                new ParallelDeadlineGroup(Commands.waitUntil(this.intakeSubsystem::isLifterAtMin),
+                    Commands.run(this.intakeSubsystem::liftToMin, this.intakeSubsystem)
+                ),
+
+                Commands.run(this.intakeSubsystem::intake, this.intakeSubsystem)
+            )
+        );
+
+        NamedCommands.registerCommand(
+            "StopAndLiftIntake", 
+            new SequentialCommandGroup(
+                Commands.runOnce(this.intakeSubsystem::stopAll, this.intakeSubsystem),
+                new ParallelDeadlineGroup(Commands.waitUntil(this.intakeSubsystem::isLifterAtMax),
+                    Commands.run(this.intakeSubsystem::liftToMax, this.intakeSubsystem)
+                ),
+                Commands.runOnce(this.intakeSubsystem::stopAll, this.intakeSubsystem)
+            )
+        );
+
         this.autoCommandChooser = AutoBuilder.buildAutoChooser();
 
         this.setDefaultCommands();
@@ -61,7 +83,7 @@ public class RobotContainer implements IDashboardProvider {
         this.registerDashboard();
     }
 
-    public void robotPeriodic() {
+    public void teleopPeriodic() {
         if (this.visionManager.hasTagTarget()) {
             this.swerveSubsystem.adjustPoseEstimator(this.visionManager.getVisionRobotPose());
         }
@@ -76,11 +98,10 @@ public class RobotContainer implements IDashboardProvider {
 
     private void configureBindings() {
         this.driverJoystick.getZeroHeadingTrigger().onTrue(new InstantCommand(this.swerveSubsystem::resetGyro, this.swerveSubsystem));
-        this.driverJoystick.getSpeakerAimingTrigger().whileTrue(new AutoSituateRobotCommand(this.swerveSubsystem, this.shooterSubsystem));
+    
         this.driverJoystick.getNoteTrackingTrigger().whileTrue(new AutoTrackNoteCommand(this.swerveSubsystem, this.visionManager));
         this.driverJoystick.getAMPTrigger().whileTrue(new AutoAMPCommand(this.swerveSubsystem, this.intakeSubsystem));
 
-        //this.driverJoystick.getModuleLockingTrigger().whileTrue(new RunCommand(this.swerveSubsystem::lockModules, this.swerveSubsystem));
     }
     public Command getAutonomousCommand() {
         return this.autoCommandChooser.getSelected();

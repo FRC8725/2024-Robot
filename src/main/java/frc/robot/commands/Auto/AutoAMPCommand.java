@@ -4,10 +4,13 @@
 
 package frc.robot.commands.Auto;
 
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.constants.SwerveDriveConstants;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -15,9 +18,12 @@ import frc.robot.subsystems.SwerveSubsystem;
 public class AutoAMPCommand extends Command {
   private final SwerveSubsystem swerveSubsystem;
   private final IntakeSubsystem intakeSubsystem;
+  private final Pose2d BLUE_AMP_POSITION = new Pose2d(1.84, 8.07, Rotation2d.fromDegrees(-90.0));
+  private final Pose2d RED_AMP_POSITION = new Pose2d(14.701, 8.07, Rotation2d.fromDegrees(-90.0));
+  
+  private final ProfiledPIDController drivePIDController = new ProfiledPIDController(0.5, 0, 0,
+   new TrapezoidProfile.Constraints(SwerveDriveConstants.AUTO_MAX_ROBOT_SPEED, SwerveDriveConstants.AUTO_MAX_ACCELERATION));
 
-  private final Pose2d AMP_POSITION = new Pose2d(1.93, 7.77, Rotation2d.fromDegrees(-90.0));
-  private final PIDController drivePIDController = new PIDController(0.5, 0.0, 0.0);
   /** Creates a new AutoAMPCommand. */
   public AutoAMPCommand(SwerveSubsystem swerveSubsystem, IntakeSubsystem intakeSubsystem) {
     this.swerveSubsystem = swerveSubsystem;
@@ -33,19 +39,28 @@ public class AutoAMPCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double xSpeed = drivePIDController.calculate(this.swerveSubsystem.getRobotPosition().getX(), AMP_POSITION.getX());
-    double ySpeed = drivePIDController.calculate(this.swerveSubsystem.getRobotPosition().getY(), AMP_POSITION.getY());
+    boolean isBlue = DriverStation.getAlliance().isPresent() &&
+      DriverStation.getAlliance().get() == DriverStation.Alliance.Blue;
 
+    Pose2d ampPostion = isBlue ? BLUE_AMP_POSITION : RED_AMP_POSITION;
+
+    double xSpeed = drivePIDController.calculate(this.swerveSubsystem.getRobotPosition().getX(), ampPostion.getX());
+    double ySpeed = drivePIDController.calculate(this.swerveSubsystem.getRobotPosition().getY(), ampPostion.getY());
+
+    //.this.swerveSubsystem.situateRobot(0.0, 0.0, AMP_POSITION.getRotation().getDegrees());
     this.intakeSubsystem.liftTo(IntakeSubsystem.LIFTER_AMP_SETPOINT);
 
     if (this.intakeSubsystem.isLifterAt(IntakeSubsystem.LIFTER_AMP_SETPOINT, 5.0)) {
-      this.swerveSubsystem.situateRobot(xSpeed, ySpeed, AMP_POSITION.getRotation().getRadians());
+      this.swerveSubsystem.situateRobot(xSpeed, ySpeed, ampPostion.getRotation().getDegrees());
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    this.intakeSubsystem.stopAll();
+    this.swerveSubsystem.stopModules();
+  }
 
   // Returns true when the command should end.
   @Override

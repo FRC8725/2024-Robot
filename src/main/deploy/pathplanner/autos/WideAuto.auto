@@ -6,19 +6,32 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "wpath-1"
-          }
-        },
-        {
           "type": "named",
           "data": {
-            "name": null
+            "name": "AutoShoot"
           }
         },
         {
-          "type": "parallel",
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "wpath-1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ToIntakePoint"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
           "data": {
             "commands": [
               {
@@ -30,28 +43,22 @@
               {
                 "type": "named",
                 "data": {
-                  "name": null
+                  "name": "StopAndLiftIntake"
                 }
               }
             ]
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "AutoShoot"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "wpath-3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": null
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "wpath-4"
           }
         }
       ]

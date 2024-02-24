@@ -100,7 +100,7 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
                         new PIDConstants(5.0, 0.05, 0.),
                         new PIDConstants(5.0, 0., 0.),
                         SwerveModule.MODULE_MAX_DRIVING_SPEED, // Max module speed, in m/s
-                        0.3, // Drive base radius in meters. Distance from robot center to the furthest module.
+                        0.382, // Drive base radius in meters. Distance from robot center to the furthest module.
                         new ReplanningConfig(false, false)
                 ), () -> DriverStation.getAlliance().filter(value -> value == DriverStation.Alliance.Red).isPresent()
                 , this
@@ -128,6 +128,7 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
     public double getSpeakerDistance() {
         return this.getSpeakerVector().getNorm();
     }
+    
 
     private Translation2d getSpeakerVector() {
         boolean isBlue = DriverStation.getAlliance().isPresent() &&

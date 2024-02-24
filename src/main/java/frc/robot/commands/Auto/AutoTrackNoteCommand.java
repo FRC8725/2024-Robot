@@ -25,6 +25,7 @@ public class AutoTrackNoteCommand extends Command {
     
     private final SlewRateLimiter speedLimiter = new SlewRateLimiter(SwerveDriveConstants.AUTO_MAX_ACCELERATION);
     private final SlewRateLimiter rotationLimiter = new SlewRateLimiter(SwerveDriveConstants.AUTO_MAX_ANGULAR_ACCELERATION);
+
     private final PIDController drivePIDController = new PIDController(0.03, 0, 0);
     private final PIDController steerPIDController = new PIDController(0.06, 0, 0);
 

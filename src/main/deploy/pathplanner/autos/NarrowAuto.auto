@@ -2,31 +2,57 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.4,
-      "y": 7.0
+      "x": 0.54,
+      "y": 6.72
     },
-    "rotation": 0
+    "rotation": 62.2
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "npath-1"
-          }
-        },
-        {
           "type": "named",
           "data": {
-            "name": "StopSwerve"
+            "name": "AutoShoot"
           }
         },
         {
-          "type": "wait",
+          "type": "deadline",
           "data": {
-            "waitTime": 0.5
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "npath-1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ToIntakePoint"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "npath-2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StopAndLiftIntake"
+                }
+              }
+            ]
           }
         },
         {
@@ -38,13 +64,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "npath-2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "npath-3"
+            "pathName": "mpath-3"
           }
         }
       ]

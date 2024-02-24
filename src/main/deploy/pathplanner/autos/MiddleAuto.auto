@@ -12,9 +12,47 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "mpath-1"
+            "name": "AutoShoot"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "mpath-1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ToIntakePoint"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "mpath-2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StopAndLiftIntake"
+                }
+              }
+            ]
           }
         },
         {
@@ -24,45 +62,15 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "AutoShoot"
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "ZeroRobotHeading"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "mpath-2"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "mpath-3"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "mpath-4"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "mpath-5"
           }
         },
         {
