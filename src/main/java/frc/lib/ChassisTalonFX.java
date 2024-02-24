@@ -5,12 +5,12 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.util.Units;
 
+// TODO combine this with ModuleTalonFX
 public class ChassisTalonFX extends TalonFX {
     private final double gearRatio;
 
     public ChassisTalonFX(int motorId, double gearRatio) {
         super(motorId);
-        // If the motor is for chassis, we won't set a high current limit.
         this.setCurrentLimit(false);
         this.gearRatio = gearRatio;
     }
@@ -20,7 +20,7 @@ public class ChassisTalonFX extends TalonFX {
         double thresholdCurrent = isLimitHigh ? 40.0 : 30.0;
         double thresholdTime = 0.2;
 
-        var currentConfig = new CurrentLimitsConfigs()
+        CurrentLimitsConfigs currentConfig = new CurrentLimitsConfigs()
                 .withStatorCurrentLimitEnable(true)
                 .withStatorCurrentLimit(currentLimit)
                 .withSupplyCurrentLimitEnable(true)
@@ -28,7 +28,7 @@ public class ChassisTalonFX extends TalonFX {
                 .withSupplyCurrentThreshold(thresholdCurrent)
                 .withSupplyTimeThreshold(thresholdTime);
 
-        var FXConfig = new TalonFXConfiguration().withCurrentLimits(currentConfig);
+        TalonFXConfiguration FXConfig = new TalonFXConfiguration().withCurrentLimits(currentConfig);
         this.getConfigurator().refresh(FXConfig);
     }
 

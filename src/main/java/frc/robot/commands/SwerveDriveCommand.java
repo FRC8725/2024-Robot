@@ -1,9 +1,11 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.lib.helpers.TidiedUp;
 import frc.robot.joysticks.DriverJoystick;
 import frc.robot.subsystems.SwerveSubsystem;
 
+@TidiedUp
 @SuppressWarnings("RedundantMethodOverride")
 public class SwerveDriveCommand extends Command {
     private final SwerveSubsystem swerveSubsystem;

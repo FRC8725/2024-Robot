@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import org.apache.commons.math3.util.FastMath;
-
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
@@ -9,23 +7,38 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.ModuleTalonFX;
+import frc.lib.helpers.IDashboardProvider;
+import frc.lib.helpers.OutputUnit;
+import frc.lib.helpers.TidiedUp;
+import frc.lib.helpers.UnitTypes;
+import frc.lib.math.MathHelper;
 import frc.robot.constants.RobotCANPorts;
+import org.apache.commons.math3.util.FastMath;
 
-public class IntakeSubsystem extends SubsystemBase {
+@TidiedUp
+public class IntakeSubsystem extends SubsystemBase implements IDashboardProvider {
+    @OutputUnit(UnitTypes.DEGREES)
     public static final double LIFTER_MAX_SETPOINT = 170.0;
+    @OutputUnit(UnitTypes.DEGREES)
     public static final double LIFTER_MIN_SETPOINT = 11.0;
-    public static final double LIFTER_AMP_SETPOINT = 103.86;  //5cm to AMP, note to bumper, 
+    @OutputUnit(UnitTypes.DEGREES)
+    public static final double LIFTER_AMP_SETPOINT = 103.86; // Setpoint for scoring AMP
+    @OutputUnit(UnitTypes.DEGREES)
+    private static final double DEFAULT_LIFTER_THRESHOLD = 0.1; // Determine whether the lifter reaches the position
 
+    @OutputUnit(UnitTypes.PERCENTAGES)
     private static final double INTAKE_SPEED = 0.4;
-    private static final double RELEASE_SPEED = -1;
-    private static final double LIFT_COEFFICIENT = 0.1;
+    @OutputUnit(UnitTypes.PERCENTAGES)
+    private static final double RELEASE_SPEED = 1.0;
+    @OutputUnit(UnitTypes.PERCENTAGES)
+    private static final double FINE_TUNE_NOTE_SPEED = 0.03;
+    @OutputUnit(UnitTypes.PERCENTAGES)
+    private static final double LIFT_PID_COEFFICIENT = 0.1;
 
+    @OutputUnit(UnitTypes.DEGREES)
     private static final double LIFTER_ZERO_OFFSET = 172.1;
     private static final boolean LIFTER_REVERSED = false;
-    private static final double LIFTER_GEAR_RATIO = 18.0/22.0;
-
-    private static final double LIFTER_MAX_LIMIT = 166.5;
-    private static final double LIFTER_MIN_LIMIT = 12.0;
+    private static final double LIFTER_GEAR_RATIO = 18.0 / 22.0;
 
     private final ModuleTalonFX rightIntakeMotor = new ModuleTalonFX(RobotCANPorts.RIGHT_INTAKE.get());
     private final ModuleTalonFX leftIntakeMotor = new ModuleTalonFX(RobotCANPorts.LEFT_INTAKE.get());
@@ -34,8 +47,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private final ModuleTalonFX leftLiftMotor = new ModuleTalonFX(RobotCANPorts.LEFT_INTAKE_LIFTER.get());
 
     private final DutyCycleEncoder liftEncoder = new DutyCycleEncoder(1);
-    private final PIDController liftPIDController = new PIDController(0.04, 0, 0);
-
+    private final PIDController liftPIDController = new PIDController(0.04, 0.0, 0.0); // TODO turn this into ProfiledPID
 
     public IntakeSubsystem() {
         this.rightIntakeMotor.setInverted(true);
@@ -46,52 +58,50 @@ public class IntakeSubsystem extends SubsystemBase {
 
         this.rightLiftMotor.setInverted(true);
         this.leftLiftMotor.setInverted(false);
-        
+
         this.rightLiftMotor.setNeutralMode(NeutralModeValue.Brake);
         this.leftLiftMotor.setNeutralMode(NeutralModeValue.Brake);
     }
 
-    private double getLifterDegrees() {
-        return ((Units.rotationsToDegrees(liftEncoder.getAbsolutePosition()) + LIFTER_ZERO_OFFSET) % 360) * (LIFTER_REVERSED ? -1 : 1) * LIFTER_GEAR_RATIO;
+    @OutputUnit(UnitTypes.DEGREES)
+    private double getLifterPosition() {
+        double position = Units.degreesToRadians(this.liftEncoder.getAbsolutePosition());
+        position = (position + LIFTER_ZERO_OFFSET) % 360;
+        return position * LIFTER_GEAR_RATIO * (LIFTER_REVERSED ? 1.0 : -1.0);
     }
 
-    public void intake() {
-        this.rightIntakeMotor.set(INTAKE_SPEED);
-        this.leftIntakeMotor.set(INTAKE_SPEED);
+    private void executeIntake(double percentage) {
+        this.rightIntakeMotor.set(percentage);
+        this.leftIntakeMotor.set(percentage);
     }
 
-    public void adjustNote() {
-        this.rightIntakeMotor.set(0.03);
-        this.leftIntakeMotor.set(0.03);
+    public void executeIntake() {
+        this.executeIntake(INTAKE_SPEED);
     }
 
-    public void release() {
-        this.rightIntakeMotor.set(RELEASE_SPEED);
-        this.leftIntakeMotor.set(RELEASE_SPEED);
+    public void releaseIntake() {
+        this.executeIntake(-RELEASE_SPEED);
     }
 
-    public void stopIntake() {
-        this.rightIntakeMotor.stopMotor();
-        this.leftIntakeMotor.stopMotor();
+    public void fineTuneNote() {
+        this.executeIntake(FINE_TUNE_NOTE_SPEED);
     }
 
-    public void lift(double activeDirection) {
-        activeDirection /= Math.abs(activeDirection);
-        final boolean atMaxLimit = this.getLifterDegrees() >= LIFTER_MAX_LIMIT;
-        final boolean atMinLimit = this.getLifterDegrees() <= LIFTER_MIN_LIMIT;
-        
-        if (!((atMaxLimit && activeDirection > 0) || (atMinLimit && activeDirection < 0))) {
-            this.rightLiftMotor.set(activeDirection * LIFT_COEFFICIENT);
-            this.leftLiftMotor.set(activeDirection * LIFT_COEFFICIENT); 
+    private void liftIntakePID(double controllerOutput) {
+        this.rightLiftMotor.setVoltage(controllerOutput);
+        this.leftLiftMotor.setVoltage(controllerOutput);
+    }
 
-        } else this.stopLift();
+    private void liftIntake(double percentage) {
+        this.rightLiftMotor.set(percentage);
+        this.leftLiftMotor.set(percentage);
     }
 
     public void liftTo(double setpoint) {
-        final double output = this.liftPIDController.calculate(this.getLifterDegrees(), setpoint) * LIFT_COEFFICIENT;
+        // TODO remove the coefficient
+        final double output = this.liftPIDController.calculate(this.getLifterPosition(), setpoint) * LIFT_PID_COEFFICIENT;
         // SmartDashboard.putNumber("output", output);
-        this.rightLiftMotor.set(output);
-        this.leftLiftMotor.set(output);
+        this.liftIntake(output); // TODO re-tune the PID controller, use liftIntakePID instead
     }
 
     public void liftToMin() {
@@ -103,29 +113,38 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public boolean isLifterAt(double setpoint, double threshold) {
-        return FastMath.abs(this.getLifterDegrees() - setpoint) < threshold;
+        return MathHelper.isWithinRange(setpoint, this.getLifterPosition(), threshold);
     }
 
     public boolean isLifterAtMin() {
-        return this.isLifterAt(LIFTER_MIN_SETPOINT, 1.0);
+        return this.isLifterAt(LIFTER_MIN_SETPOINT, DEFAULT_LIFTER_THRESHOLD);
     }
 
     public boolean isLifterAtMax() {
-        return this.isLifterAt(LIFTER_MAX_SETPOINT, 1.0);
+        return this.isLifterAt(LIFTER_MAX_SETPOINT, DEFAULT_LIFTER_THRESHOLD);
     }
 
-    public void stopLift() {
+    public void stopIntake() {
+        this.rightIntakeMotor.stopMotor();
+        this.leftIntakeMotor.stopMotor();
+    }
+
+    public void stopLifters() {
         this.rightLiftMotor.stopMotor();
         this.leftLiftMotor.stopMotor();
     }
 
     public void stopAll() {
         this.stopIntake();
-        this.stopLift();
+        this.stopLifters();
     }
 
     @Override
-    public void periodic() {
-         SmartDashboard.putNumber("IntakePos", this.getLifterDegrees());
+    public void putDashboard() {
+        SmartDashboard.putNumber("IntakePos", this.getLifterPosition());
+    }
+
+    @Override
+    public void putDashboardOnce() {
     }
 }

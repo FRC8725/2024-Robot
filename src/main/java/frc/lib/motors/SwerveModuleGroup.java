@@ -26,7 +26,7 @@ public class SwerveModuleGroup {
     }
 
     public SwerveDriveKinematics constructKinematics() {
-        return new SwerveDriveKinematics(this.modules.stream().map(SwerveModule::getModulePosition).toArray(Translation2d[]::new));
+        return new SwerveDriveKinematics(this.modules.stream().map(SwerveModule::getTranslation).toArray(Translation2d[]::new));
     }
 
     public void setDesiredStates(SwerveModuleState[] desiredStates) {

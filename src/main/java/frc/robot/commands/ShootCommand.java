@@ -1,10 +1,11 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.lib.helpers.TidiedUp;
 import frc.robot.joysticks.ControllerJoystick;
-import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
+@TidiedUp
 @SuppressWarnings("RedundantMethodOverride")
 public class ShootCommand extends Command {
     private final ShooterSubsystem shooterSubsystem;
@@ -22,12 +23,11 @@ public class ShootCommand extends Command {
 
     @Override
     public void execute() {
-        if (this.joystick.isShootButtonDown()) this.shooterSubsystem.shoot();
-        else this.shooterSubsystem.stopShooters();
-
-        final double slopeTogglerDirection = this.joystick.getSlopeTogglerDirection();
-        if (slopeTogglerDirection != 0) this.shooterSubsystem.toggleSlope(slopeTogglerDirection);
-        else this.shooterSubsystem.stopSlopeToggler();
+        if (this.joystick.isShootButtonDown()) {
+            this.shooterSubsystem.executeShooter();
+        } else {
+            this.shooterSubsystem.stopAll();
+        }
     }
 
     @Override

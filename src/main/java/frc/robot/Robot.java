@@ -4,14 +4,17 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.helpers.DashboardHelper;
+import frc.lib.helpers.TidiedUp;
 
+@TidiedUp
 @SuppressWarnings("RedundantMethodOverride")
 public class Robot extends TimedRobot {
+    private static final double LOOP_PERIOD = 0.01;
     private Command autonomousCommand;
     private RobotContainer robotContainer;
 
     public Robot() {
-        super(0.01);
+        super(LOOP_PERIOD);
     }
 
     @Override
@@ -19,12 +22,14 @@ public class Robot extends TimedRobot {
         DashboardHelper.enableRegistration();
         this.robotContainer = new RobotContainer();
         DashboardHelper.disableRegistration();
+
         DashboardHelper.putAllRegistriesOnce();
     }
 
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
+
         DashboardHelper.putAllRegistriesPeriodic();
     }
 

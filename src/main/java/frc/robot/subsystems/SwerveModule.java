@@ -13,9 +13,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.ChassisTalonFX;
 import frc.lib.helpers.IDashboardProvider;
 import frc.lib.helpers.OutputUnit;
+import frc.lib.helpers.TidiedUp;
 import frc.lib.helpers.UnitTypes;
-import frc.robot.constants.RobotCANPorts;
 
+@TidiedUp
 public class SwerveModule implements IDashboardProvider {
     @OutputUnit(UnitTypes.METERS)
     public static final double WHEEL_RADIUS = Units.inchesToMeters(2.0);
@@ -75,7 +76,7 @@ public class SwerveModule implements IDashboardProvider {
         return new SwerveModuleState(this.getDriveVelocity(), new Rotation2d(this.getAbsTurningPosition()));
     }
 
-    public Translation2d getModulePosition() {
+    public Translation2d getTranslation() {
         return this.modulePosition;
     }
 
@@ -105,7 +106,7 @@ public class SwerveModule implements IDashboardProvider {
     }
 
     public void resetRelativeEncoders() {
-        this.driveMotor.setRadPosition(0);
+        this.driveMotor.setRadPosition(0.0);
         this.turningMotor.setRadPosition(this.getAbsTurningPosition());
     }
 
@@ -121,28 +122,9 @@ public class SwerveModule implements IDashboardProvider {
         this.turningMotor.setVoltage(this.turningPIDController.calculate(currentAngle, desiredAngle));
     }
 
-    public void stop() {
+    public void stopAll() {
         this.driveMotor.stopMotor();
         this.turningMotor.stopMotor();
-    }
-
-    public void lockModule() {
-        double setpoint = Math.PI / 4.0 *
-                (RobotCANPorts.anyMatch(this.turningMotor.getDeviceID(), RobotCANPorts.FL_STEER, RobotCANPorts.BR_STEER)
-                ? 1 : -1);
-
-        this.turningMotor.set(this.turningPIDController.calculate(this.getAbsTurningPosition(), setpoint));
-
-//        switch (this.turningMotor.getDeviceID()) {
-//            case (SwervePort.kFrontLeftTurningMotor):
-//            case (SwervePort.kBackRightTurningMotor):
-//                this.turningMotor.set(this.turningPIDController.calculate(this.getAbsTurningPosition(), Math.PI / 4));
-//                break;
-//            case (SwervePort.kFrontRightTurningMotor):
-//            case (SwervePort.kBackLeftTurningMotor):
-//                this.turningMotor.set(this.turningPIDController.calculate(this.getAbsTurningPosition(), -Math.PI / 4));
-//                break;
-//        }
     }
 
     public void putDashboard() {

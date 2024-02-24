@@ -7,11 +7,12 @@ import edu.wpi.first.math.util.Units;
 import frc.lib.helpers.OutputUnit;
 import frc.lib.helpers.UnitTypes;
 
+// TODO combine this with ChassisTalonFX
 public class ModuleTalonFX extends TalonFX {
     public ModuleTalonFX(int motorId) {
         super(motorId);
 
-        var currentConfig = new CurrentLimitsConfigs()
+        CurrentLimitsConfigs currentConfig = new CurrentLimitsConfigs()
                 .withStatorCurrentLimitEnable(true)
                 .withStatorCurrentLimit(40)
                 .withSupplyCurrentLimitEnable(true)
@@ -19,7 +20,7 @@ public class ModuleTalonFX extends TalonFX {
                 .withSupplyCurrentThreshold(10)
                 .withSupplyTimeThreshold(0.5);
 
-        var talonConfig = new TalonFXConfiguration().withCurrentLimits(currentConfig);
+        TalonFXConfiguration talonConfig = new TalonFXConfiguration().withCurrentLimits(currentConfig);
 
         this.getConfigurator().apply(talonConfig);
     }

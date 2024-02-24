@@ -5,27 +5,29 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
-
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.*;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.helpers.*;
-import frc.lib.math.FieldPositions;
 import frc.lib.motors.SwerveModuleGroup;
 import frc.robot.constants.RobotCANPorts;
+import frc.robot.constants.SwerveDriveConstants;
 
+@TidiedUp
 public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider {
     @OutputUnit(UnitTypes.METERS)
     private static final double TRACK_WIDTH = Units.inchesToMeters(24.0);
@@ -39,7 +41,7 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
             true,
             RobotCANPorts.FL_ABS_ENCODER.get(),
             0.0, new Translation2d(WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0));
-            
+
     private final SwerveModule frontRight = new SwerveModule("FR Module",
             RobotCANPorts.FR_DRIVE.get(),
             RobotCANPorts.FR_STEER.get(),
@@ -55,7 +57,7 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
             true,
             RobotCANPorts.BL_ABS_ENCODER.get(),
             0.0, new Translation2d(-WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0));
-            
+
     private final SwerveModule backRight = new SwerveModule("BR Module",
             RobotCANPorts.BR_DRIVE.get(),
             RobotCANPorts.BR_STEER.get(),
@@ -64,14 +66,29 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
             RobotCANPorts.BR_ABS_ENCODER.get(),
             0.0, new Translation2d(-WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0));
 
-    private final SwerveModuleGroup modules = new SwerveModuleGroup(this.frontLeft, this.frontRight, this.backLeft, this.backRight);
-    private final AHRS gyro = new AHRS(SPI.Port.kMXP);
-//    private final AHRS gyro = new AHRS(SerialPort.Port.kUSB);
-    private final Field2d gameFieldSim = new Field2d();
+    private final SwerveModuleGroup modules = new SwerveModuleGroup(
+            this.frontLeft, this.frontRight, this.backLeft, this.backRight);
     private final SwerveDriveKinematics kinematics = this.modules.constructKinematics();
-    private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(this.kinematics, this.getHeading(), this.getModulePositions(), new Pose2d());
+    private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(
+            this.kinematics, this.getHeading(), this.getModulePositions(), new Pose2d());
+    private final AHRS gyro = new AHRS(SPI.Port.kMXP);
+    // private final AHRS gyro = new AHRS(SerialPort.Port.kUSB);
+    private final Field2d gameFieldSim = new Field2d();
 
-    private final PIDController steerPIDController = new PIDController(0.02, 0, 0);
+    private final ProfiledPIDController drivePIDController =
+            new ProfiledPIDController(0.03, 0.0, 0.0,
+                    new TrapezoidProfile.Constraints(
+                            SwerveDriveConstants.AUTO_MAX_ROBOT_SPEED,
+                            SwerveDriveConstants.AUTO_MAX_ACCELERATION
+                    )
+            ); // TODO re-tune PID
+    private final ProfiledPIDController steerPIDController =
+            new ProfiledPIDController(0.02, 0, 0,
+                    new TrapezoidProfile.Constraints(
+                            SwerveDriveConstants.AUTO_MAX_ROBOT_ANGULAR_SPEED,
+                            SwerveDriveConstants.AUTO_MAX_ANGULAR_ACCELERATION
+                    )
+            ); // TODO re-tune PID
 
     public SwerveSubsystem() {
         this.registerDashboard();
@@ -96,15 +113,20 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
                 this::resetOdometry,
                 this::getChassisSpeeds,
                 this::drive,
-                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                        new PIDConstants(5.0, 0.05, 0.),
-                        new PIDConstants(5.0, 0., 0.),
-                        SwerveModule.MODULE_MAX_DRIVING_SPEED, // Max module speed, in m/s
-                        0.382, // Drive base radius in meters. Distance from robot center to the furthest module.
+                new HolonomicPathFollowerConfig(
+                        new PIDConstants(5.0, 0.05, 0.0),
+                        new PIDConstants(5.0, 0.0, 0.0),
+                        SwerveModule.MODULE_MAX_DRIVING_SPEED,
+                        0.382, // TODO this conflicts with the wheel base & track width, need check
                         new ReplanningConfig(false, false)
                 ), () -> DriverStation.getAlliance().filter(value -> value == DriverStation.Alliance.Red).isPresent()
                 , this
         );
+    }
+
+    @CoordinateSystem(CoordinationPolicy.ROBOT_COORDINATION)
+    private ChassisSpeeds getChassisSpeeds() {
+        return this.kinematics.toChassisSpeeds(this.getModuleStates());
     }
 
     public void drive(double xSpeed, double ySpeed, double rotation, boolean fieldOriented) {
@@ -125,30 +147,6 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
         this.drive(desiredStates);
     }
 
-    public double getSpeakerDistance() {
-        return this.getSpeakerVector().getNorm();
-    }
-    
-
-    private Translation2d getSpeakerVector() {
-        boolean isBlue = DriverStation.getAlliance().isPresent() &&
-                DriverStation.getAlliance().get() == DriverStation.Alliance.Blue;
-
-        Translation2d robotPos = this.getRobotPosition().getTranslation();
-        Translation2d edgePos = robotPos.plus(new Translation2d(isBlue ? -0.33 : 0.33, 0.0));
-        return (isBlue ? FieldPositions.BLUE_SHOOTER : FieldPositions.RED_SHOOTER).minus(edgePos);
-    }
-
-    public double getSpeakerAngle() {
-        double value = this.getSpeakerVector().getAngle().getDegrees();
-        return value > 90.0 ? value - 180.0 : (value < -90.0 ? value + 180.0 : value);
-    }
-
-    @CoordinateSystem(CoordinationPolicy.ROBOT_COORDINATION)
-    private ChassisSpeeds getChassisSpeeds() {
-        return this.kinematics.toChassisSpeeds(this.getModuleStates());
-    }
-
     @OutputUnit(UnitTypes.DEGREES)
     public double getGyroAngle() {
         return Math.IEEEremainder(-this.gyro.getAngle(), 360);
@@ -158,21 +156,27 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
         this.gyro.reset();
     }
 
-
     public void zeroRobotHeading() {
         this.situateRobot(0.0);
     }
 
-    public void situateTowardSpeaker(double xSpeed, double ySpeed) {
-        this.situateRobot(xSpeed, ySpeed, this.getSpeakerAngle());
-    }
-
     public void situateRobot(double angleSetpoint) {
-        this.situateRobot(0.0, 0.0, angleSetpoint);
+        Pose2d dummyInitialPose = new Pose2d(0.0, 0.0, this.getHeading());
+        Pose2d dummyTargetPose = new Pose2d(0.0, 0.0, Rotation2d.fromRadians(angleSetpoint));
+        this.situateRobot(dummyInitialPose, dummyTargetPose);
     }
 
-    public void situateRobot(double xSpeed, double ySpeed, double angleSetpoint) {
-        this.drive(xSpeed, ySpeed, this.steerPIDController.calculate(this.getGyroAngle(), angleSetpoint), true);
+    public void situateRobot(Pose2d initialPose, Pose2d targetPose) {
+        double initialRotation = initialPose.getRotation().getRadians();
+        double targetRotation = targetPose.getRotation().getRadians();
+
+        Translation2d vector = targetPose.getTranslation().minus(initialPose.getTranslation());
+        double speed = this.drivePIDController.calculate(vector.getNorm(), 0.0);
+        double rotation = this.steerPIDController.calculate(initialRotation, targetRotation);
+
+        double xSpeed = speed * vector.getX() / vector.getNorm();
+        double ySpeed = speed * vector.getY() / vector.getNorm();
+        this.drive(xSpeed, ySpeed, rotation, true);
     }
 
     public Rotation2d getHeading() {
@@ -196,7 +200,7 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
         this.poseEstimator.resetPosition(this.getHeading(), this.getModulePositions(), pose);
     }
 
-    public void adjustPoseEstimator(Pose2d pose2d) {
+    public void calibratePose(Pose2d pose2d) {
         this.poseEstimator.addVisionMeasurement(pose2d, Timer.getFPGATimestamp());
     }
 
@@ -205,11 +209,7 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
     }
 
     public void stopModules() {
-        this.modules.forEach(SwerveModule::stop);
-    }
-
-    public void lockModules() {
-        this.modules.forEach(SwerveModule::lockModule);
+        this.modules.forEach(SwerveModule::stopAll);
     }
 
     @Override
@@ -221,8 +221,6 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
     @Override
     public void putDashboard() {
         SmartDashboard.putNumber("RobotHeading", this.getGyroAngle());
-        SmartDashboard.putNumber("DistanceToSpeaker", this.getSpeakerDistance());
-        SmartDashboard.putNumber("AngleToSpeaker", this.getSpeakerAngle());
         SmartDashboard.putData(this.gameFieldSim);
     }
 

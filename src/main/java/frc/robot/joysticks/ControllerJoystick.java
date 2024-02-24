@@ -2,8 +2,9 @@ package frc.robot.joysticks;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.lib.helpers.TidiedUp;
 
-// TODO complete this Class
+@TidiedUp
 public class ControllerJoystick extends XboxController {
     private static final int PORT = 0;
     private static final double MUSHROOM_HEAD_DEADBAND = 0.1;
@@ -14,10 +15,6 @@ public class ControllerJoystick extends XboxController {
 
     public boolean isShootButtonDown() {
         return this.getLeftBumper();
-    }
-
-    public double getSlopeTogglerDirection() {
-        return MathUtil.applyDeadband(this.getRightY(), MUSHROOM_HEAD_DEADBAND); 
     }
 
     public boolean isIntakeButtonDown() {

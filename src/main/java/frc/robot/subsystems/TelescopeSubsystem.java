@@ -2,57 +2,55 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.ModuleTalonFX;
+import frc.lib.helpers.IDashboardProvider;
+import frc.lib.helpers.OutputUnit;
+import frc.lib.helpers.TidiedUp;
+import frc.lib.helpers.UnitTypes;
 import frc.robot.constants.RobotCANPorts;
-public class TelescopeSubsystem extends SubsystemBase {
-    private static final double LIMIT = 2598.91;
+
+@TidiedUp
+public class TelescopeSubsystem extends SubsystemBase implements IDashboardProvider {
+    @OutputUnit(UnitTypes.PERCENTAGES)
     private static final double SPEED = 0.8;
+
     private final ModuleTalonFX rightMotor = new ModuleTalonFX(RobotCANPorts.RIGHT_TELESCOPE.get());
     private final ModuleTalonFX leftMotor = new ModuleTalonFX(RobotCANPorts.LEFT_TELESCOPE.get());
-    private final Follower follower = new Follower(RobotCANPorts.RIGHT_TELESCOPE.get(), true); // Make left motor follow right motor
-
-    private final PIDController telescopePidController = new PIDController(0.2, 0., 0.); // TODO fill in values
+    private final Follower follower = new Follower(RobotCANPorts.RIGHT_TELESCOPE.get(), true);
 
     public TelescopeSubsystem() {
         this.rightMotor.setInverted(true);
         this.leftMotor.setInverted(false);
         this.rightMotor.setNeutralMode(NeutralModeValue.Brake);
         this.leftMotor.setNeutralMode(NeutralModeValue.Brake);
+
         this.resetPosition();
     }
 
     public void move(boolean direction) {
-        // if (direction && rightMotor.getRadPosition() < LIMIT && leftMotor.getRadPosition() < LIMIT) rightMotor.set(SPEED);        
-        // else if (!direction && rightMotor.getRadPosition() > 0 && leftMotor.getRadPosition() > 0) rightMotor.set(-SPEED);
-        // else this.stop();
-
-
-        rightMotor.set(SPEED * (direction ? 1 : -1));
-        leftMotor.setControl(this.follower);
-    }
-
-    public void move(double setpoint) {
-        rightMotor.set(telescopePidController.calculate(rightMotor.getRadPosition(), setpoint));
-        leftMotor.setControl(this.follower);
+        this.rightMotor.set(SPEED * (direction ? 1 : -1));
+        this.leftMotor.setControl(this.follower);
     }
 
     public void resetPosition() {
-        rightMotor.setRadPosition(0);
-        leftMotor.setRadPosition(0);
+        this.rightMotor.setRadPosition(0.0);
+        this.leftMotor.setRadPosition(0.0);
     }
 
-    public void stop() {
-        rightMotor.set(0);
-        leftMotor.set(0);
+    public void stopAll() {
+        this.rightMotor.stopMotor();
+        this.leftMotor.stopMotor();
     }
 
     @Override
-    public void periodic() {
-        SmartDashboard.putNumber("Telescope Position right", rightMotor.getRadPosition());
-        SmartDashboard.putNumber("Telescope Position left", leftMotor.getRadPosition());
-        // This method will be called once per scheduler run
+    public void putDashboard() {
+        SmartDashboard.putNumber("Telescope Position right", this.rightMotor.getRadPosition());
+        SmartDashboard.putNumber("Telescope Position left", this.leftMotor.getRadPosition());
+    }
+
+    @Override
+    public void putDashboardOnce() {
     }
 }
