@@ -112,6 +112,7 @@ public class IntakeSubsystem extends SubsystemBase implements IDashboardProvider
 
     public void liftToMax() {
         this.liftTo(LIFTER_MAX_SETPOINT);
+        this.fineTuneNote();
     }
 
     public boolean isLifterAt(double setpoint, double threshold) {

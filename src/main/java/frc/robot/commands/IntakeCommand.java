@@ -44,9 +44,7 @@ public class IntakeCommand extends Command {
             this.intakeSubsystem.executeIntake();
         } else if (this.joystick.isReleaseButtonDown() || this.canShootSupplier.get()){
             this.intakeSubsystem.releaseIntake();
-        } else if (lifterDirection < 0 && !this.intakeSubsystem.isLifterAtMax()) {
-            this.intakeSubsystem.fineTuneNote();
-        } else {
+        } else if (!(lifterDirection < 0 && !this.intakeSubsystem.isLifterAtMax())) {
             this.intakeSubsystem.stopIntake();
         }
     }

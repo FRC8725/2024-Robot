@@ -85,8 +85,7 @@ public class RobotContainer implements IDashboardProvider {
                 new SequentialCommandGroup(
                         Commands.runOnce(this.intakeSubsystem::stopAll, this.intakeSubsystem),
                         new ParallelDeadlineGroup(Commands.waitUntil(this.intakeSubsystem::isLifterAtMax),
-                                Commands.run(this.intakeSubsystem::liftToMax, this.intakeSubsystem),
-                                Commands.run(this.intakeSubsystem::fineTuneNote, this.intakeSubsystem)
+                                Commands.run(this.intakeSubsystem::liftToMax, this.intakeSubsystem)
                         ),
                         Commands.runOnce(this.intakeSubsystem::stopAll, this.intakeSubsystem)
                 )

@@ -72,9 +72,10 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
     private final SwerveModuleGroup modules = new SwerveModuleGroup(
             this.frontLeft, this.frontRight, this.backLeft, this.backRight);
     private final SwerveDriveKinematics kinematics = this.modules.constructKinematics();
+
+    private final AHRS gyro = new AHRS(SPI.Port.kMXP);
     private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(
             this.kinematics, this.getHeading(), this.getModulePositions(), new Pose2d());
-    private final AHRS gyro = new AHRS(SPI.Port.kMXP);
     // private final AHRS gyro = new AHRS(SerialPort.Port.kUSB);
     private final Field2d gameFieldSim = new Field2d();
 
@@ -231,9 +232,9 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
 
     @Override
     public void putDashboard() {
-        SmartDashboard.putNumber("RobotHeading", this.getGyroAngle());
-        SmartDashboard.putData(this.gameFieldSim);
-        SmartDashboard.putString("RobotPose", this.getRobotPosition().toString());
+        // SmartDashboard.putNumber("RobotHeading", this.getGyroAngle());
+        // SmartDashboard.putData(this.gameFieldSim);
+        // SmartDashboard.putString("RobotPose", this.getRobotPosition().toString());
     }
 
     @Override
