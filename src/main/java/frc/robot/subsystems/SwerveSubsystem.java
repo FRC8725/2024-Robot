@@ -80,14 +80,14 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
     private final Field2d gameFieldSim = new Field2d();
 
     private final ProfiledPIDController drivePIDController =
-            new ProfiledPIDController(0.03, 0.0, 0.0,
+            new ProfiledPIDController(0.15, 0.0, 0.0,
                     new TrapezoidProfile.Constraints(
                             SwerveDriveConstants.AUTO_MAX_ROBOT_SPEED,
                             SwerveDriveConstants.AUTO_MAX_ACCELERATION
                     ), 0.01
             ); // TODO re-tune PID
     private final ProfiledPIDController steerPIDController =
-            new ProfiledPIDController(0.02, 0, 0,
+            new ProfiledPIDController(0.1, 0, 0,
                     new TrapezoidProfile.Constraints(
                             SwerveDriveConstants.AUTO_MAX_ROBOT_ANGULAR_SPEED,
                             SwerveDriveConstants.AUTO_MAX_ANGULAR_ACCELERATION
@@ -209,11 +209,13 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
     }
 
     public void resetOdometry(Pose2d pose) {
+        this.gyro.setAngleAdjustment(pose.getRotation().getDegrees());
         this.poseEstimator.resetPosition(this.getHeading(), this.getModulePositions(), pose);
+
     }
 
     public void calibratePose(Pose2d pose2d) {
-        this.poseEstimator.addVisionMeasurement(pose2d, Timer.getFPGATimestamp());
+        // this.poseEstimator.addVisionMeasurement(pose2d, Timer.getFPGATimestamp());
     }
 
     public void resetRelativeEncoders() {
@@ -232,9 +234,9 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
 
     @Override
     public void putDashboard() {
-        // SmartDashboard.putNumber("RobotHeading", this.getGyroAngle());
-        // SmartDashboard.putData(this.gameFieldSim);
-        // SmartDashboard.putString("RobotPose", this.getRobotPosition().toString());
+         SmartDashboard.putNumber("RobotHeading", this.getGyroAngle());
+         SmartDashboard.putData(this.gameFieldSim);
+         SmartDashboard.putString("RobotPose", this.getRobotPosition().toString());
     }
 
     @Override

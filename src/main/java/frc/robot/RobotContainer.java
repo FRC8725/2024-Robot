@@ -108,7 +108,7 @@ public class RobotContainer implements IDashboardProvider {
         this.driverJoystick.getAMPTrigger()
                 .whileTrue(new AutoAMPCommand(this.swerveSubsystem, this.intakeSubsystem));
         this.driverJoystick.getTestTrigger()
-                .whileTrue(Commands.run(() -> this.swerveSubsystem.situateRobot(new Pose2d(14.17, 1.79, new Rotation2d(0.69))), this.swerveSubsystem));
+                .whileTrue(Commands.runEnd(() -> this.swerveSubsystem.situateRobot(new Pose2d(14.17, 1.79, new Rotation2d(0.69))), this.swerveSubsystem::stopModules, this.swerveSubsystem));
     }
 
     public void teleopPeriodic() {
