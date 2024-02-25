@@ -61,6 +61,8 @@ public class IntakeSubsystem extends SubsystemBase implements IDashboardProvider
 
         this.rightLiftMotor.setNeutralMode(NeutralModeValue.Brake);
         this.leftLiftMotor.setNeutralMode(NeutralModeValue.Brake);
+
+        this.registerDashboard();
     }
 
     @OutputUnit(UnitTypes.DEGREES)

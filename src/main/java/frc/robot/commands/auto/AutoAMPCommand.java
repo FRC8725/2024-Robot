@@ -39,7 +39,7 @@ public class AutoAMPCommand extends Command {
         Pose2d ampPosition = isBlue ? FieldPositions.BLUE_AMP_POSITION : FieldPositions.RED_AMP_POSITION;
 
         // TODO test test test test ~~~~~!!!!!!
-        this.swerveSubsystem.situateRobot(this.swerveSubsystem.getRobotPosition(), ampPosition);
+        this.swerveSubsystem.situateRobot(ampPosition);
     }
 
     @Override

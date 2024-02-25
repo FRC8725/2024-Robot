@@ -34,6 +34,10 @@ public class VisionManager extends SubsystemBase implements IDashboardProvider {
     DoubleArraySubscriber redBotPose = NetworkTableInstance.getDefault().getTable("limelight")
             .getDoubleArrayTopic("botpose_wpired").subscribe(new double[7]);
 
+    public VisionManager() {
+        this.registerDashboard();
+    }
+
     public Pose2d getVisionRobotPose() {
         final boolean isBlue = DriverStation.getAlliance().isPresent() &&
                 DriverStation.getAlliance().get() == DriverStation.Alliance.Blue;

@@ -27,6 +27,8 @@ public class TelescopeSubsystem extends SubsystemBase implements IDashboardProvi
         this.leftMotor.setNeutralMode(NeutralModeValue.Brake);
 
         this.resetPosition();
+
+        this.registerDashboard();
     }
 
     public void move(boolean direction) {

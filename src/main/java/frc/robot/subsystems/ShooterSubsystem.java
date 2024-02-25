@@ -26,6 +26,8 @@ public class ShooterSubsystem extends SubsystemBase implements IDashboardProvide
     public ShooterSubsystem() {
         this.rightShootMotor.setInverted(false);
         this.leftShootMotor.setInverted(false);
+
+        this.registerDashboard();
     }
 
     private double getAverageShooterSpeed() {

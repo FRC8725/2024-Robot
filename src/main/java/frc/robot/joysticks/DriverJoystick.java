@@ -40,6 +40,10 @@ public class DriverJoystick extends XboxController implements IDashboardProvider
         return new Trigger(this::getAButton);
     }
 
+    public Trigger getTestTrigger() {
+        return new Trigger(this::getYButton);
+    }
+
     @CoordinateSystem(CoordinationPolicy.ROBOT_COORDINATION)
     @OutputUnit(UnitTypes.METERS_PER_SECOND)
     public double getDesiredRobotXSpeed() {

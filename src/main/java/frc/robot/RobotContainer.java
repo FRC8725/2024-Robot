@@ -2,6 +2,9 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
@@ -82,7 +85,8 @@ public class RobotContainer implements IDashboardProvider {
                 new SequentialCommandGroup(
                         Commands.runOnce(this.intakeSubsystem::stopAll, this.intakeSubsystem),
                         new ParallelDeadlineGroup(Commands.waitUntil(this.intakeSubsystem::isLifterAtMax),
-                                Commands.run(this.intakeSubsystem::liftToMax, this.intakeSubsystem)
+                                Commands.run(this.intakeSubsystem::liftToMax, this.intakeSubsystem),
+                                Commands.run(this.intakeSubsystem::fineTuneNote, this.intakeSubsystem)
                         ),
                         Commands.runOnce(this.intakeSubsystem::stopAll, this.intakeSubsystem)
                 )
@@ -99,11 +103,13 @@ public class RobotContainer implements IDashboardProvider {
 
     private void configureBindings() {
         this.driverJoystick.getZeroHeadingTrigger()
-                .onTrue(new InstantCommand(this.swerveSubsystem::resetGyro, this.swerveSubsystem));
-        this.driverJoystick.getNoteTrackingTrigger()
-                .whileTrue(new AutoTrackNoteCommand(this.swerveSubsystem, this.visionManager));
+                .onTrue(new InstantCommand(this.swerveSubsystem::resetToMiddlePose, this.swerveSubsystem));
+        // this.driverJoystick.getNoteTrackingTrigger()
+        //         .whileTrue(new AutoTrackNoteCommand(this.swerveSubsystem, this.visionManager));
         this.driverJoystick.getAMPTrigger()
                 .whileTrue(new AutoAMPCommand(this.swerveSubsystem, this.intakeSubsystem));
+        this.driverJoystick.getTestTrigger()
+                .whileTrue(Commands.run(() -> this.swerveSubsystem.situateRobot(new Pose2d(14.17, 1.79, new Rotation2d(0.69))), this.swerveSubsystem));
     }
 
     public void teleopPeriodic() {
