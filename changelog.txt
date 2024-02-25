@@ -121,7 +121,7 @@
 2024/02/23 v1.1.24
 - Added AutoAMPCommand
 - Added AutoIntakeCommand 
-- Added Breaker to dirver controller for safty drive
+- Added Brake to driver controller for safety drive
 
 2024/02/24 v1.2.0
 - Lock SlopeToggler
@@ -131,3 +131,6 @@
 - Updated the wpilib library to the latest version
 - Added TidiedUp Annotation to specify the tidied-up classes
 - Tidied up a bunch of stuff.
+
+2024/02/25 v1.2.2
+- 12345

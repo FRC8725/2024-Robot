@@ -2,7 +2,6 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -15,7 +14,6 @@ import frc.robot.commands.ShootCommand;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.commands.TelescopeCommand;
 import frc.robot.commands.auto.AutoAMPCommand;
-import frc.robot.commands.auto.AutoTrackNoteCommand;
 import frc.robot.joysticks.ControllerJoystick;
 import frc.robot.joysticks.DriverJoystick;
 import frc.robot.subsystems.*;
@@ -101,14 +99,18 @@ public class RobotContainer implements IDashboardProvider {
     }
 
     private void configureBindings() {
-        this.driverJoystick.getZeroHeadingTrigger()
-                .onTrue(new InstantCommand(this.swerveSubsystem::resetToMiddlePose, this.swerveSubsystem));
+//        this.driverJoystick.getZeroHeadingTrigger()
+//                .onTrue(new InstantCommand(this.swerveSubsystem::resetToMiddlePose, this.swerveSubsystem));
+//        this.driverJoystick.getZeroHeadingTrigger()
+//                .whileTrue(Commands.runEnd(this.swerveSubsystem::zeroRobotHeading, this.swerveSubsystem::stopModules, this.swerveSubsystem));
         // this.driverJoystick.getNoteTrackingTrigger()
         //         .whileTrue(new AutoTrackNoteCommand(this.swerveSubsystem, this.visionManager));
         this.driverJoystick.getAMPTrigger()
                 .whileTrue(new AutoAMPCommand(this.swerveSubsystem, this.intakeSubsystem));
         this.driverJoystick.getTestTrigger()
                 .whileTrue(Commands.runEnd(() -> this.swerveSubsystem.situateRobot(new Pose2d(14.17, 1.79, new Rotation2d(0.69))), this.swerveSubsystem::stopModules, this.swerveSubsystem));
+        this.driverJoystick.getStopTrigger()
+                .onTrue(Commands.runOnce(this.swerveSubsystem::stopModules, this.swerveSubsystem));
     }
 
     public void teleopPeriodic() {

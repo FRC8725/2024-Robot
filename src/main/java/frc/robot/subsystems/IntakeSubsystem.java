@@ -18,13 +18,13 @@ import org.apache.commons.math3.util.FastMath;
 @TidiedUp
 public class IntakeSubsystem extends SubsystemBase implements IDashboardProvider {
     @OutputUnit(UnitTypes.DEGREES)
-    public static final double LIFTER_MAX_SETPOINT = 170.0;
+    public static final double LIFTER_MAX_SETPOINT = 224.5;
     @OutputUnit(UnitTypes.DEGREES)
-    public static final double LIFTER_MIN_SETPOINT = 11.0;
+    public static final double LIFTER_MIN_SETPOINT = 54.8;
     @OutputUnit(UnitTypes.DEGREES)
-    public static final double LIFTER_AMP_SETPOINT = 103.86; // Setpoint for scoring AMP
+    public static final double LIFTER_AMP_SETPOINT = 157.0; // Setpoint for scoring AMP
     @OutputUnit(UnitTypes.DEGREES)
-    private static final double DEFAULT_LIFTER_THRESHOLD = 0.1; // Determine whether the lifter reaches the position
+    private static final double DEFAULT_LIFTER_THRESHOLD = 3.0; // Determine whether the lifter reaches the position
 
     @OutputUnit(UnitTypes.PERCENTAGES)
     private static final double INTAKE_SPEED = 0.4;
@@ -36,8 +36,8 @@ public class IntakeSubsystem extends SubsystemBase implements IDashboardProvider
     private static final double LIFT_PID_COEFFICIENT = 0.1;
 
     @OutputUnit(UnitTypes.DEGREES)
-    private static final double LIFTER_ZERO_OFFSET = 172.1;
-    private static final boolean LIFTER_REVERSED = false;
+    private static final double LIFTER_ZERO_OFFSET = 172.0;
+    private static final boolean LIFTER_REVERSED = true;
     private static final double LIFTER_GEAR_RATIO = 18.0 / 22.0;
 
     private final ModuleTalonFX rightIntakeMotor = new ModuleTalonFX(RobotCANPorts.RIGHT_INTAKE.get());
@@ -67,7 +67,7 @@ public class IntakeSubsystem extends SubsystemBase implements IDashboardProvider
 
     @OutputUnit(UnitTypes.DEGREES)
     private double getLifterPosition() {
-        double position = Units.degreesToRadians(this.liftEncoder.getAbsolutePosition());
+        double position = Units.rotationsToDegrees(this.liftEncoder.getAbsolutePosition());
         position = (position + LIFTER_ZERO_OFFSET) % 360;
         return position * LIFTER_GEAR_RATIO * (LIFTER_REVERSED ? 1.0 : -1.0);
     }
@@ -112,7 +112,10 @@ public class IntakeSubsystem extends SubsystemBase implements IDashboardProvider
 
     public void liftToMax() {
         this.liftTo(LIFTER_MAX_SETPOINT);
-        this.fineTuneNote();
+
+        if (!this.isLifterAtMax()) {
+            this.fineTuneNote();
+        }
     }
 
     public boolean isLifterAt(double setpoint, double threshold) {

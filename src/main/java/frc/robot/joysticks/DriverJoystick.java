@@ -32,6 +32,10 @@ public class DriverJoystick extends XboxController implements IDashboardProvider
         return new Trigger(this::getBButton);
     }
 
+    public Trigger getStopTrigger() {
+        return new Trigger(this::getLeftBumper);
+    }
+
     public Trigger getAMPTrigger() {
         return new Trigger(this::getXButton);
     }

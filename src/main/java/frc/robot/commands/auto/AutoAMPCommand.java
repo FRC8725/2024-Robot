@@ -27,7 +27,7 @@ public class AutoAMPCommand extends Command {
     @Override
     public void execute() {
         //.this.swerveSubsystem.situateRobot(0.0, 0.0, AMP_POSITION.getRotation().getDegrees());
-        this.intakeSubsystem.liftTo(IntakeSubsystem.LIFTER_AMP_SETPOINT);
+        // this.intakeSubsystem.liftTo(IntakeSubsystem.LIFTER_AMP_SETPOINT);
 
         if (this.intakeSubsystem.isLifterAt(IntakeSubsystem.LIFTER_AMP_SETPOINT, 5.0)) {
             return;
