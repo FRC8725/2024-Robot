@@ -1,4 +1,4 @@
-package frc.robot.commands.auto;
+package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -27,11 +27,11 @@ public class AutoAMPCommand extends Command {
     @Override
     public void execute() {
         //.this.swerveSubsystem.situateRobot(0.0, 0.0, AMP_POSITION.getRotation().getDegrees());
-        // this.intakeSubsystem.liftTo(IntakeSubsystem.LIFTER_AMP_SETPOINT);
+        this.intakeSubsystem.liftTo(IntakeSubsystem.LIFTER_AMP_SETPOINT);
 
-        if (this.intakeSubsystem.isLifterAt(IntakeSubsystem.LIFTER_AMP_SETPOINT, 5.0)) {
-            return;
-        }
+        // if (this.intakeSubsystem.isLifterAt(IntakeSubsystem.LIFTER_AMP_SETPOINT, 5.0)) {
+        //     return;
+        // }
 
         boolean isBlue = DriverStation.getAlliance().isPresent() &&
                 DriverStation.getAlliance().get() == DriverStation.Alliance.Blue;

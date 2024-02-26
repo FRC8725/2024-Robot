@@ -9,11 +9,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.lib.helpers.IDashboardProvider;
 import frc.lib.helpers.TidiedUp;
+import frc.robot.commands.AutoAMPCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.commands.TelescopeCommand;
-import frc.robot.commands.auto.AutoAMPCommand;
+// import frc.robot.commands.auto.AutoAMPCommand;
 import frc.robot.joysticks.ControllerJoystick;
 import frc.robot.joysticks.DriverJoystick;
 import frc.robot.subsystems.*;
@@ -27,19 +28,22 @@ public class RobotContainer implements IDashboardProvider {
     private final VisionManager visionManager = new VisionManager();
     private final DriverJoystick driverJoystick = new DriverJoystick();
     private final ControllerJoystick controllerJoystick = new ControllerJoystick();
-    private final SendableChooser<Command> autoCommandChooser = AutoBuilder.buildAutoChooser();
+    private final SendableChooser<Command> autoCommandChooser;
 
     public RobotContainer() {
         this.registerNamedCommands();
         this.setDefaultCommands();
         this.configureBindings();
         this.registerDashboard();
+
+        this.autoCommandChooser = AutoBuilder.buildAutoChooser();
     }
 
     private void registerNamedCommands() {
         NamedCommands.registerCommand(
                 "AutoShoot",
-                new ParallelDeadlineGroup(new WaitCommand(5.5),
+                new ParallelRaceGroup(
+                        new WaitCommand(5.5),
                         new SequentialCommandGroup(
                                 new ParallelDeadlineGroup(new WaitCommand(1.5),
                                         Commands.run(this.shooterSubsystem::executeShooter, this.shooterSubsystem),
@@ -101,16 +105,20 @@ public class RobotContainer implements IDashboardProvider {
     private void configureBindings() {
 //        this.driverJoystick.getZeroHeadingTrigger()
 //                .onTrue(new InstantCommand(this.swerveSubsystem::resetToMiddlePose, this.swerveSubsystem));
-//        this.driverJoystick.getZeroHeadingTrigger()
-//                .whileTrue(Commands.runEnd(this.swerveSubsystem::zeroRobotHeading, this.swerveSubsystem::stopModules, this.swerveSubsystem));
-        // this.driverJoystick.getNoteTrackingTrigger()
+        this.driverJoystick.getZeroHeadingTrigger()
+               .whileTrue(Commands.runEnd(this.swerveSubsystem::zeroRobotHeading, this.swerveSubsystem::stopModules, this.swerveSubsystem));
+        
+               // this.driverJoystick.getNoteTrackingTrigger()
         //         .whileTrue(new AutoTrackNoteCommand(this.swerveSubsystem, this.visionManager));
         this.driverJoystick.getAMPTrigger()
                 .whileTrue(new AutoAMPCommand(this.swerveSubsystem, this.intakeSubsystem));
         this.driverJoystick.getTestTrigger()
-                .whileTrue(Commands.runEnd(() -> this.swerveSubsystem.situateRobot(new Pose2d(14.17, 1.79, new Rotation2d(0.69))), this.swerveSubsystem::stopModules, this.swerveSubsystem));
+                .whileTrue(Commands.runEnd(() -> this.swerveSubsystem.situateRobot(new Pose2d(14.0, 7.0, Rotation2d.fromDegrees(50.0))), this.swerveSubsystem::stopModules, this.swerveSubsystem));
         this.driverJoystick.getStopTrigger()
                 .onTrue(Commands.runOnce(this.swerveSubsystem::stopModules, this.swerveSubsystem));
+
+        this.controllerJoystick.getIntakeAMPTrigger()
+                .whileTrue(Commands.run(this.intakeSubsystem::releaseAMP, this.intakeSubsystem));
     }
 
     public void teleopPeriodic() {
@@ -123,7 +131,6 @@ public class RobotContainer implements IDashboardProvider {
         return this.autoCommandChooser.getSelected();
     }
 
-    @Override
     public void putDashboard() {
     }
 

@@ -2,6 +2,7 @@ package frc.robot.joysticks;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.helpers.TidiedUp;
 
 @TidiedUp
@@ -23,6 +24,10 @@ public class ControllerJoystick extends XboxController {
 
     public boolean isReleaseButtonDown() {
         return this.getXButton();
+    }
+
+    public Trigger getIntakeAMPTrigger() {
+        return new Trigger(this::getStartButton);
     }
 
     public double getIntakeLiftDirection() {

@@ -20,18 +20,20 @@ public class IntakeSubsystem extends SubsystemBase implements IDashboardProvider
     @OutputUnit(UnitTypes.DEGREES)
     public static final double LIFTER_MAX_SETPOINT = 224.5;
     @OutputUnit(UnitTypes.DEGREES)
-    public static final double LIFTER_MIN_SETPOINT = 54.8;
+    public static final double LIFTER_MIN_SETPOINT = 58.0;
     @OutputUnit(UnitTypes.DEGREES)
     public static final double LIFTER_AMP_SETPOINT = 157.0; // Setpoint for scoring AMP
     @OutputUnit(UnitTypes.DEGREES)
-    private static final double DEFAULT_LIFTER_THRESHOLD = 3.0; // Determine whether the lifter reaches the position
+    private static final double DEFAULT_LIFTER_THRESHOLD = 5.0; // Determine whether the lifter reaches the position
 
     @OutputUnit(UnitTypes.PERCENTAGES)
     private static final double INTAKE_SPEED = 0.4;
     @OutputUnit(UnitTypes.PERCENTAGES)
     private static final double RELEASE_SPEED = 1.0;
     @OutputUnit(UnitTypes.PERCENTAGES)
-    private static final double FINE_TUNE_NOTE_SPEED = 0.03;
+    private static final double AMP_SPEED = 0.75;
+    @OutputUnit(UnitTypes.PERCENTAGES)
+    private static final double FINE_TUNE_NOTE_SPEED = 0.04;
     @OutputUnit(UnitTypes.PERCENTAGES)
     private static final double LIFT_PID_COEFFICIENT = 0.1;
 
@@ -83,6 +85,10 @@ public class IntakeSubsystem extends SubsystemBase implements IDashboardProvider
 
     public void releaseIntake() {
         this.executeIntake(-RELEASE_SPEED);
+    }
+
+    public void releaseAMP() {
+        this.executeIntake(-AMP_SPEED);
     }
 
     public void fineTuneNote() {

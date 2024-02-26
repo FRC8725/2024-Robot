@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.76,
-      "y": 6.59
+      "x": 1.32,
+      "y": 5.55
     },
-    "rotation": 62.2
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -28,13 +28,13 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.2
+                        "waitTime": 0.5
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "npath-1"
+                        "pathName": "mpath-1"
                       }
                     }
                   ]
@@ -47,12 +47,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "StopSwerve"
           }
         },
         {
@@ -72,7 +66,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "npath-2"
+                        "pathName": "mpath-2"
                       }
                     }
                   ]
@@ -98,22 +92,10 @@
           "data": {
             "name": "AutoShoot"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "npath-3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "StopSwerve"
-          }
         }
       ]
     }
   },
-  "folder": "Narrow",
+  "folder": null,
   "choreoAuto": false
 }

@@ -80,8 +80,8 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
     // private final AHRS gyro = new AHRS(SerialPort.Port.kUSB);
     private final Field2d gameFieldSim = new Field2d();
 
-    private final PIDController drivePIDController = new PIDController(1.0, 0.0, 0.0, 0.01); // TODO re-tune PID
-    private final PIDController steerPIDController = new PIDController(0.9, 0.0, 0.0, 0.01); // TODO re-tune PID
+    private final PIDController drivePIDController = new PIDController(3.0, 0.0, 0.0, 0.01); // TODO re-tune PID
+    private final PIDController steerPIDController = new PIDController(2.5, 0.3, 0.0, 0.01); // TODO re-tune PID
 
     public SwerveSubsystem() {
         this.registerDashboard();
@@ -179,18 +179,12 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
         boolean isBlue = DriverStation.getAlliance().get() == Alliance.Blue;
         // targetRotation = isBlue ? -targetRotation : Math.PI - targetRotation;
 
-        SmartDashboard.putNumber("init", Units.radiansToDegrees(initialRotation));
-        SmartDashboard.putNumber("target", Units.radiansToDegrees(targetRotation));
-
         Translation2d vector = targetPose.getTranslation().minus(this.getRobotPosition().getTranslation());
         double speed = FastMath.abs(this.drivePIDController.calculate(vector.getNorm(), 0.0));
         double rotation = this.steerPIDController.calculate(initialRotation, targetRotation);
 
-        SmartDashboard.putNumber("situateSpeed", speed);
-        SmartDashboard.putNumber("situateRot", rotation);
-
         speed = FastMath.min(SwerveDriveConstants.AUTO_MAX_ROBOT_SPEED, speed);
-        rotation = FastMath.min(SwerveDriveConstants.AUTO_MAX_ANGULAR_ACCELERATION, rotation);
+        rotation = FastMath.min(SwerveDriveConstants.AUTO_MAX_ROBOT_ANGULAR_SPEED, rotation);
 
         double xSpeed = speed * vector.getX() / vector.getNorm() * (isBlue ? 1.0 : -1.0);
         double ySpeed = speed * vector.getY() / vector.getNorm() * (isBlue ? 1.0 : -1.0);
@@ -242,6 +236,10 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
 
     @Override
     public void putDashboard() {
+        Pose2d pose = new Pose2d(14.0, 7.0, Rotation2d.fromDegrees(50.0));
+        SmartDashboard.putNumber("DistanceErr", pose.getTranslation().getDistance(this.getRobotPosition().getTranslation()));
+        SmartDashboard.putNumber("AngleErr", FastMath.abs(pose.getRotation().getRadians() - this.getRobotPosition().getRotation().getRadians()));
+
         SmartDashboard.putNumber("RobotHeading", this.getGyroAngle());
         SmartDashboard.putData(this.gameFieldSim);
         SmartDashboard.putNumber("RobotPoseX", this.getRobotPosition().getX());

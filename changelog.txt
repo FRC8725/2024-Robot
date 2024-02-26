@@ -134,3 +134,8 @@
 
 2024/02/25 v1.2.2
 - 12345
+
+2024/02/25 v1.2.3
+- Finished Auto pathplanner adjustment
+- Finished AutoSituateRobot PID adjustment
+- Added releaseAMP

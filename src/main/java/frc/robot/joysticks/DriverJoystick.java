@@ -12,7 +12,7 @@ import frc.robot.constants.SwerveDriveConstants;
 public class DriverJoystick extends XboxController implements IDashboardProvider {
     private static final int PORT = 1;
     private static final double MUSHROOM_HEAD_DEADBAND = 0.05;
-    private static final double MAX_BRAKE_VALUE = 0.5;
+    private static final double MAX_BRAKE_VALUE = 0.8;
 
     private final SlewRateLimiter xSpeedLimiter = new SlewRateLimiter(SwerveDriveConstants.TELEOP_MAX_ACCELERATION);
     private final SlewRateLimiter ySpeedLimiter = new SlewRateLimiter(SwerveDriveConstants.TELEOP_MAX_ACCELERATION);
