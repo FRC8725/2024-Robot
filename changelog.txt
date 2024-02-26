@@ -139,3 +139,6 @@
 - Finished Auto pathplanner adjustment
 - Finished AutoSituateRobot PID adjustment
 - Added releaseAMP
+
+2024/02/26 v1.2.4
+- Tidied up some code

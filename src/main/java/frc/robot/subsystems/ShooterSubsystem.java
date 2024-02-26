@@ -11,10 +11,9 @@ import frc.lib.helpers.UnitTypes;
 import frc.lib.math.MathHelper;
 import frc.robot.constants.RobotCANPorts;
 
-@TidiedUp
 public class ShooterSubsystem extends SubsystemBase implements IDashboardProvider {
     @OutputUnit(UnitTypes.PERCENTAGES)
-    private static final double SHOOT_SPEED = 1.0;//0.9;
+    private static final double SHOOT_SPEED = 1.0; //0.9
     @OutputUnit(UnitTypes.PERCENTAGES)
     private static final double SHOOT_THRESHOLD = 0.13;
 

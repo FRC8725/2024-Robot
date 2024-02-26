@@ -8,7 +8,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -17,13 +16,10 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.helpers.*;
@@ -31,7 +27,6 @@ import frc.lib.motors.SwerveModuleGroup;
 import frc.robot.constants.RobotCANPorts;
 import frc.robot.constants.SwerveDriveConstants;
 
-@TidiedUp
 public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider {
     @OutputUnit(UnitTypes.METERS)
     private static final double TRACK_WIDTH = Units.inchesToMeters(24.0);
@@ -78,7 +73,6 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
     private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(
             this.kinematics, this.getHeading(), this.getModulePositions(), new Pose2d());
     // private final AHRS gyro = new AHRS(SerialPort.Port.kUSB);
-    private final Field2d gameFieldSim = new Field2d();
 
     private final PIDController drivePIDController = new PIDController(3.0, 0.0, 0.0, 0.01); // TODO re-tune PID
     private final PIDController steerPIDController = new PIDController(2.5, 0.3, 0.0, 0.01); // TODO re-tune PID
@@ -105,7 +99,7 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
     private void configureAutoBuilder() {
         AutoBuilder.configureHolonomic(
                 this::getRobotPosition,
-                this::resetOdometry,
+                this::resetPose,
                 this::getChassisSpeeds,
                 this::drive,
                 new HolonomicPathFollowerConfig(
@@ -154,7 +148,7 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
             ? new Pose2d(1.32, 5.55, new Rotation2d())
             : new Pose2d(15.24, 5.55, new Rotation2d(Math.PI));
 
-        this.resetOdometry(pose2d);
+        this.resetPose(pose2d);
     }
 
     public void resetGyro() {
@@ -168,7 +162,8 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
 
     public void situateRobot(double angleSetpoint) {
         Translation2d position = this.getRobotPosition().getTranslation();
-        Pose2d desiredPose = new Pose2d(position, Rotation2d.fromDegrees(angleSetpoint));
+        Translation2d copy = new Translation2d(position.getX(), position.getY());
+        Pose2d desiredPose = new Pose2d(copy, Rotation2d.fromDegrees(angleSetpoint));
         this.situateRobot(desiredPose);
     }
 
@@ -176,8 +171,8 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
         double initialRotation = this.getRobotPosition().getRotation().getRadians();
         double targetRotation = targetPose.getRotation().getRadians();
 
-        boolean isBlue = DriverStation.getAlliance().get() == Alliance.Blue;
-        // targetRotation = isBlue ? -targetRotation : Math.PI - targetRotation;
+        boolean isBlue = DriverStation.getAlliance().isPresent()
+                && DriverStation.getAlliance().get() == Alliance.Blue;
 
         Translation2d vector = targetPose.getTranslation().minus(this.getRobotPosition().getTranslation());
         double speed = FastMath.abs(this.drivePIDController.calculate(vector.getNorm(), 0.0));
@@ -185,6 +180,9 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
 
         speed = FastMath.min(SwerveDriveConstants.AUTO_MAX_ROBOT_SPEED, speed);
         rotation = FastMath.min(SwerveDriveConstants.AUTO_MAX_ROBOT_ANGULAR_SPEED, rotation);
+
+        SmartDashboard.putNumber("DistanceErr", vector.getNorm());
+        SmartDashboard.putNumber("AngleErr", targetRotation - initialRotation);
 
         double xSpeed = speed * vector.getX() / vector.getNorm() * (isBlue ? 1.0 : -1.0);
         double ySpeed = speed * vector.getY() / vector.getNorm() * (isBlue ? 1.0 : -1.0);
@@ -208,8 +206,9 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
         return this.modules.getPositions();
     }
 
-    public void resetOdometry(Pose2d pose) {
-        boolean isBlue = DriverStation.getAlliance().get() == Alliance.Blue;
+    public void resetPose(Pose2d pose) {
+        boolean isBlue = DriverStation.getAlliance().isPresent()
+                && DriverStation.getAlliance().get() == Alliance.Blue;
         double angleAdj = isBlue ? -pose.getRotation().getDegrees() : 180.0 - pose.getRotation().getDegrees();
         this.gyro.setAngleAdjustment(Math.IEEEremainder(angleAdj, 360.0));
         this.gyro.reset();
@@ -231,17 +230,11 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
     @Override
     public void periodic() {
         this.poseEstimator.update(this.getHeading(), this.getModulePositions());
-        this.gameFieldSim.setRobotPose(this.getRobotPosition());
     }
 
     @Override
     public void putDashboard() {
-        Pose2d pose = new Pose2d(14.0, 7.0, Rotation2d.fromDegrees(50.0));
-        SmartDashboard.putNumber("DistanceErr", pose.getTranslation().getDistance(this.getRobotPosition().getTranslation()));
-        SmartDashboard.putNumber("AngleErr", FastMath.abs(pose.getRotation().getRadians() - this.getRobotPosition().getRotation().getRadians()));
-
         SmartDashboard.putNumber("RobotHeading", this.getGyroAngle());
-        SmartDashboard.putData(this.gameFieldSim);
         SmartDashboard.putNumber("RobotPoseX", this.getRobotPosition().getX());
         SmartDashboard.putNumber("RobotPoseY", this.getRobotPosition().getY());
         SmartDashboard.putNumber("RobotPoseDegree", this.getRobotPosition().getRotation().getDegrees());

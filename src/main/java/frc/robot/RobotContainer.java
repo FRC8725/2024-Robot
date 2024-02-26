@@ -9,12 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.lib.helpers.IDashboardProvider;
 import frc.lib.helpers.TidiedUp;
-import frc.robot.commands.AutoAMPCommand;
-import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.ShootCommand;
-import frc.robot.commands.SwerveDriveCommand;
-import frc.robot.commands.TelescopeCommand;
-// import frc.robot.commands.auto.AutoAMPCommand;
+import frc.robot.commands.*;
 import frc.robot.joysticks.ControllerJoystick;
 import frc.robot.joysticks.DriverJoystick;
 import frc.robot.subsystems.*;
@@ -28,7 +23,7 @@ public class RobotContainer implements IDashboardProvider {
     private final VisionManager visionManager = new VisionManager();
     private final DriverJoystick driverJoystick = new DriverJoystick();
     private final ControllerJoystick controllerJoystick = new ControllerJoystick();
-    private final SendableChooser<Command> autoCommandChooser;
+    private final SendableChooser<Command> autoCommandChooser; // Must NOT be initialized here
 
     public RobotContainer() {
         this.registerNamedCommands();
@@ -69,7 +64,7 @@ public class RobotContainer implements IDashboardProvider {
                 new ParallelDeadlineGroup(new WaitCommand(2.0),
                         Commands.run(this.swerveSubsystem::zeroRobotHeading, this.swerveSubsystem)
                 )
-        );
+        ); // TODO delete this
 
         NamedCommands.registerCommand(
                 "ToIntakePoint",
