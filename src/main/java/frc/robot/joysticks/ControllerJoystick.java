@@ -30,6 +30,10 @@ public class ControllerJoystick extends XboxController {
         return new Trigger(this::getStartButton);
     }
 
+    public Trigger getCollectSourceTrigger() {
+        return new Trigger(this::getBackButton);
+    }
+
     public double getIntakeLiftDirection() {
         return MathUtil.applyDeadband(this.getLeftY(), MUSHROOM_HEAD_DEADBAND);
     }

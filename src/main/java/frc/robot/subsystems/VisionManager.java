@@ -70,7 +70,7 @@ public class VisionManager extends SubsystemBase implements IDashboardProvider {
 
     @Override
     public void putDashboard() {
-        SmartDashboard.putNumber("distance", getNoteHorizontalDistance());
+        SmartDashboard.putNumber("NoteDistance", getNoteHorizontalDistance());
     }
 
     @Override

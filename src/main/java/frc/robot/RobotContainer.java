@@ -21,8 +21,12 @@ public class RobotContainer implements IDashboardProvider {
     private final TelescopeSubsystem telescopeSubsystem = new TelescopeSubsystem();
     private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
     private final VisionManager visionManager = new VisionManager();
+
+    private final LEDSubsystem leDsubsystem = new LEDSubsystem();
+
     private final DriverJoystick driverJoystick = new DriverJoystick();
     private final ControllerJoystick controllerJoystick = new ControllerJoystick();
+
     private final SendableChooser<Command> autoCommandChooser; // Must NOT be initialized here
 
     public RobotContainer() {
@@ -95,6 +99,14 @@ public class RobotContainer implements IDashboardProvider {
         this.telescopeSubsystem.setDefaultCommand(new TelescopeCommand(this.telescopeSubsystem, this.controllerJoystick));
         this.intakeSubsystem.setDefaultCommand(new IntakeCommand(this.intakeSubsystem,
                 this.shooterSubsystem::canShoot, this.controllerJoystick));
+
+        this.leDsubsystem.setDefaultCommand(
+                new LEDCommand(
+                        this.leDsubsystem, 
+                        this.visionManager::noNoteTarget,
+                        this.shooterSubsystem::getAverageShooterSpeed,
+                        this.shooterSubsystem::canShoot
+                ));
     }
 
     private void configureBindings() {
@@ -102,9 +114,8 @@ public class RobotContainer implements IDashboardProvider {
 //                .onTrue(new InstantCommand(this.swerveSubsystem::resetToMiddlePose, this.swerveSubsystem));
         this.driverJoystick.getZeroHeadingTrigger()
                .whileTrue(Commands.runEnd(this.swerveSubsystem::zeroRobotHeading, this.swerveSubsystem::stopModules, this.swerveSubsystem));
-        
-               // this.driverJoystick.getNoteTrackingTrigger()
-        //         .whileTrue(new AutoTrackNoteCommand(this.swerveSubsystem, this.visionManager));
+        this.driverJoystick.getNoteTrackingTrigger()
+                .whileTrue(new AutoTrackNoteCommand(this.swerveSubsystem, this.visionManager));
         this.driverJoystick.getAMPTrigger()
                 .whileTrue(new AutoAMPCommand(this.swerveSubsystem, this.intakeSubsystem));
         this.driverJoystick.getTestTrigger()
@@ -114,6 +125,8 @@ public class RobotContainer implements IDashboardProvider {
 
         this.controllerJoystick.getIntakeAMPTrigger()
                 .whileTrue(Commands.run(this.intakeSubsystem::releaseAMP, this.intakeSubsystem));
+        this.controllerJoystick.getCollectSourceTrigger()
+                .whileTrue(Commands.run(this.shooterSubsystem::collectSource, this.shooterSubsystem));
     }
 
     public void teleopPeriodic() {

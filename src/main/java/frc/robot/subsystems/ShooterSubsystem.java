@@ -9,16 +9,18 @@ import frc.lib.helpers.OutputUnit;
 import frc.lib.helpers.TidiedUp;
 import frc.lib.helpers.UnitTypes;
 import frc.lib.math.MathHelper;
-import frc.robot.constants.RobotCANPorts;
+import frc.robot.constants.RobotPorts;
 
 public class ShooterSubsystem extends SubsystemBase implements IDashboardProvider {
     @OutputUnit(UnitTypes.PERCENTAGES)
     private static final double SHOOT_SPEED = 1.0; //0.9
     @OutputUnit(UnitTypes.PERCENTAGES)
-    private static final double SHOOT_THRESHOLD = 0.13;
+    private static final double SHOOT_THRESHOLD = 0.23;
+    @OutputUnit(UnitTypes.PERCENTAGES)
+    private static final double SOURCE_COLLECT_SPEED = 0.3;
 
-    private final ModuleTalonFX rightShootMotor = new ModuleTalonFX(RobotCANPorts.LEFT_SHOOTER.get());
-    private final ModuleTalonFX leftShootMotor = new ModuleTalonFX(RobotCANPorts.RIGHT_SHOOTER.get());
+    private final ModuleTalonFX rightShootMotor = new ModuleTalonFX(RobotPorts.CAN.LEFT_SHOOTER.get());
+    private final ModuleTalonFX leftShootMotor = new ModuleTalonFX(RobotPorts.CAN.RIGHT_SHOOTER.get());
 
     private final PIDController shooterPIDController = new PIDController(0.1, 3.0, 0.0); // TODO re-tune the PID
 
@@ -29,7 +31,7 @@ public class ShooterSubsystem extends SubsystemBase implements IDashboardProvide
         this.registerDashboard();
     }
 
-    private double getAverageShooterSpeed() {
+    public double getAverageShooterSpeed() {
         double mean = MathHelper.getMean(this.getLeftShooterSpeed(), this.getRightShooterSpeed());
         return mean / 90.0; // TODO I don't understand the division performed here
     }
@@ -58,6 +60,11 @@ public class ShooterSubsystem extends SubsystemBase implements IDashboardProvide
 
         // SmartDashboard.putNumber("Shooter Speed", currentSpeed);
         // SmartDashboard.putNumber("Shooter Output", output);
+    }
+
+    public void collectSource() {
+        this.rightShootMotor.set(-SOURCE_COLLECT_SPEED);
+        this.leftShootMotor.set(-SOURCE_COLLECT_SPEED);
     }
 
     public void stopAll() {

@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.pathplanner.lib.util.PIDConstants;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -12,15 +14,21 @@ import frc.lib.helpers.OutputUnit;
 import frc.lib.helpers.TidiedUp;
 import frc.lib.helpers.UnitTypes;
 import frc.lib.math.MathHelper;
-import frc.robot.constants.RobotCANPorts;
+import frc.robot.constants.RobotPorts;
 import org.apache.commons.math3.util.FastMath;
 
 @TidiedUp
 public class IntakeSubsystem extends SubsystemBase implements IDashboardProvider {
     @OutputUnit(UnitTypes.DEGREES)
-    public static final double LIFTER_MAX_SETPOINT = 224.5;
+    public static final double LIFTER_MAX_SETPOINT = 224.5;//224.5;
     @OutputUnit(UnitTypes.DEGREES)
-    public static final double LIFTER_MIN_SETPOINT = 58.0;
+    public static final double LIFTER_MAX_BRAKE_SETPOINT = 180.0;
+
+    @OutputUnit(UnitTypes.DEGREES)
+    public static final double LIFTER_MIN_SETPOINT = 62.0;
+    @OutputUnit(UnitTypes.DEGREES)
+    public static final double LIFTER_MIN_BRAKE_SETPOINT = 100.0;
+
     @OutputUnit(UnitTypes.DEGREES)
     public static final double LIFTER_AMP_SETPOINT = 157.0; // Setpoint for scoring AMP
     @OutputUnit(UnitTypes.DEGREES)
@@ -34,22 +42,23 @@ public class IntakeSubsystem extends SubsystemBase implements IDashboardProvider
     private static final double AMP_SPEED = 0.75;
     @OutputUnit(UnitTypes.PERCENTAGES)
     private static final double FINE_TUNE_NOTE_SPEED = 0.04;
-    @OutputUnit(UnitTypes.PERCENTAGES)
-    private static final double LIFT_PID_COEFFICIENT = 0.1;
 
     @OutputUnit(UnitTypes.DEGREES)
     private static final double LIFTER_ZERO_OFFSET = 172.0;
+    @OutputUnit(UnitTypes.DEGREES)
+    private static final double LIFTER_FORCE_OFFSET = 0.0;
     private static final boolean LIFTER_REVERSED = true;
     private static final double LIFTER_GEAR_RATIO = 18.0 / 22.0;
 
-    private final ModuleTalonFX rightIntakeMotor = new ModuleTalonFX(RobotCANPorts.RIGHT_INTAKE.get());
-    private final ModuleTalonFX leftIntakeMotor = new ModuleTalonFX(RobotCANPorts.LEFT_INTAKE.get());
+    private final ModuleTalonFX rightIntakeMotor = new ModuleTalonFX(RobotPorts.CAN.RIGHT_INTAKE.get());
+    private final ModuleTalonFX leftIntakeMotor = new ModuleTalonFX(RobotPorts.CAN.LEFT_INTAKE.get());
 
-    private final ModuleTalonFX rightLiftMotor = new ModuleTalonFX(RobotCANPorts.RIGHT_INTAKE_LIFTER.get());
-    private final ModuleTalonFX leftLiftMotor = new ModuleTalonFX(RobotCANPorts.LEFT_INTAKE_LIFTER.get());
+    private final ModuleTalonFX rightLiftMotor = new ModuleTalonFX(RobotPorts.CAN.RIGHT_INTAKE_LIFTER.get());
+    private final ModuleTalonFX leftLiftMotor = new ModuleTalonFX(RobotPorts.CAN.LEFT_INTAKE_LIFTER.get());
 
-    private final DutyCycleEncoder liftEncoder = new DutyCycleEncoder(1);
-    private final PIDController liftPIDController = new PIDController(0.04, 0.0, 0.0); // TODO turn this into ProfiledPID
+    private final DutyCycleEncoder liftEncoder = new DutyCycleEncoder(RobotPorts.DIO.LIFTER_ENCODER.get());
+    private final PIDController liftPIDController = new PIDController(0.006, 0.0, 0.0);
+    private final PIDController testPIDController = new PIDController(0.01, 0.0, 0.0);
 
     public IntakeSubsystem() {
         this.rightIntakeMotor.setInverted(true);
@@ -71,7 +80,8 @@ public class IntakeSubsystem extends SubsystemBase implements IDashboardProvider
     private double getLifterPosition() {
         double position = Units.rotationsToDegrees(this.liftEncoder.getAbsolutePosition());
         position = (position + LIFTER_ZERO_OFFSET) % 360;
-        return position * LIFTER_GEAR_RATIO * (LIFTER_REVERSED ? 1.0 : -1.0);
+        position = position * LIFTER_GEAR_RATIO * (LIFTER_REVERSED ? 1.0 : -1.0);
+        return position + LIFTER_FORCE_OFFSET;
     }
 
     private void executeIntake(double percentage) {
@@ -95,33 +105,50 @@ public class IntakeSubsystem extends SubsystemBase implements IDashboardProvider
         this.executeIntake(FINE_TUNE_NOTE_SPEED);
     }
 
-    private void liftIntakePID(double controllerOutput) {
-        this.rightLiftMotor.setVoltage(controllerOutput);
-        this.leftLiftMotor.setVoltage(controllerOutput);
-    }
-
     private void liftIntake(double percentage) {
         this.rightLiftMotor.set(percentage);
         this.leftLiftMotor.set(percentage);
     }
 
     public void liftTo(double setpoint) {
-        // TODO remove the coefficient
-        final double output = this.liftPIDController.calculate(this.getLifterPosition(), setpoint) * LIFT_PID_COEFFICIENT;
-        // SmartDashboard.putNumber("output", output);
-        this.liftIntake(output); // TODO re-tune the PID controller, use liftIntakePID instead
-    }
-
-    public void liftToMin() {
-        this.liftTo(LIFTER_MIN_SETPOINT);
+        double output = this.liftPIDController.calculate(this.getLifterPosition(), setpoint);
+        // output = MathHelper.applyMax(output, 0.1);
+        SmartDashboard.putNumber("output", output);
+        this.liftIntake(output);
     }
 
     public void liftToMax() {
-        this.liftTo(LIFTER_MAX_SETPOINT);
-
-        if (!this.isLifterAtMax()) {
-            this.fineTuneNote();
+        double output = this.testPIDController.calculate(this.getLifterPosition(), 175.0) + 0.2;
+        if (output < 0.2) output = 0.2;
+        if (this.getLifterPosition() > LIFTER_MAX_BRAKE_SETPOINT) {
+            output = this.liftPIDController.calculate(this.getLifterPosition(), LIFTER_MAX_SETPOINT);
+            output = MathHelper.applyMax(output, 0.2);
         }
+            
+        this.liftIntake(output);
+
+        if (!this.isLifterAtMax()) this.fineTuneNote();
+        else this.stopIntake();
+    }
+
+    public void liftToMin() {
+        double output = this.liftPIDController.calculate(this.getLifterPosition(), LIFTER_MIN_SETPOINT);
+
+        // double output = this.testPIDController.calculate(this.getLifterPosition(), 105.0) - 0.2;
+        // if (output > -0.2) output = -0.2;
+        // if (this.getLifterPosition() < LIFTER_MIN_BRAKE_SETPOINT) {
+        //     output = this.liftPIDController.calculate(this.getLifterPosition(), LIFTER_MIN_SETPOINT);
+        //     output = MathHelper.applyMax(output, 0.2);
+        // }
+
+        this.liftIntake(output);
+    }
+
+    public void liftToAMP() {
+        this.liftTo(LIFTER_AMP_SETPOINT);
+
+        if (!this.isLifterAt(LIFTER_AMP_SETPOINT, DEFAULT_LIFTER_THRESHOLD)) this.fineTuneNote();
+        else this.stopIntake();
     }
 
     public boolean isLifterAt(double setpoint, double threshold) {

@@ -9,16 +9,16 @@ import frc.lib.helpers.IDashboardProvider;
 import frc.lib.helpers.OutputUnit;
 import frc.lib.helpers.TidiedUp;
 import frc.lib.helpers.UnitTypes;
-import frc.robot.constants.RobotCANPorts;
+import frc.robot.constants.RobotPorts;
 
 @TidiedUp
 public class TelescopeSubsystem extends SubsystemBase implements IDashboardProvider {
     @OutputUnit(UnitTypes.PERCENTAGES)
     private static final double SPEED = 0.8;
 
-    private final ModuleTalonFX rightMotor = new ModuleTalonFX(RobotCANPorts.RIGHT_TELESCOPE.get());
-    private final ModuleTalonFX leftMotor = new ModuleTalonFX(RobotCANPorts.LEFT_TELESCOPE.get());
-    private final Follower follower = new Follower(RobotCANPorts.RIGHT_TELESCOPE.get(), true);
+    private final ModuleTalonFX rightMotor = new ModuleTalonFX(RobotPorts.CAN.RIGHT_TELESCOPE.get());
+    private final ModuleTalonFX leftMotor = new ModuleTalonFX(RobotPorts.CAN.LEFT_TELESCOPE.get());
+    private final Follower follower = new Follower(RobotPorts.CAN.RIGHT_TELESCOPE.get(), true);
 
     public TelescopeSubsystem() {
         this.rightMotor.setInverted(true);

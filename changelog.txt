@@ -142,3 +142,7 @@
 
 2024/02/26 v1.2.4
 - Tidied up some code
+
+2024/02/27 v1.2.5
+- Added RGB
+- Made Intake Smoother

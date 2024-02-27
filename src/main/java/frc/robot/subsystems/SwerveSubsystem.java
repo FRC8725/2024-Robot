@@ -19,12 +19,14 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.helpers.*;
+import frc.lib.math.MathHelper;
 import frc.lib.motors.SwerveModuleGroup;
-import frc.robot.constants.RobotCANPorts;
+import frc.robot.constants.RobotPorts;
 import frc.robot.constants.SwerveDriveConstants;
 
 public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider {
@@ -34,35 +36,35 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
     private static final double WHEEL_BASE = Units.inchesToMeters(24.0);
 
     private final SwerveModule frontLeft = new SwerveModule("FL Module",
-            RobotCANPorts.FL_DRIVE.get(),
-            RobotCANPorts.FL_STEER.get(),
+            RobotPorts.CAN.FL_DRIVE.get(),
+            RobotPorts.CAN.FL_STEER.get(),
             true,
             true,
-            RobotCANPorts.FL_ABS_ENCODER.get(),
+            RobotPorts.CAN.FL_ABS_ENCODER.get(),
             0.0, new Translation2d(WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0));
 
     private final SwerveModule frontRight = new SwerveModule("FR Module",
-            RobotCANPorts.FR_DRIVE.get(),
-            RobotCANPorts.FR_STEER.get(),
+            RobotPorts.CAN.FR_DRIVE.get(),
+            RobotPorts.CAN.FR_STEER.get(),
             false,
             true,
-            RobotCANPorts.FR_ABS_ENCODER.get(),
+            RobotPorts.CAN.FR_ABS_ENCODER.get(),
             0.0, new Translation2d(WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0));
 
     private final SwerveModule backLeft = new SwerveModule("BL Module",
-            RobotCANPorts.BL_DRIVE.get(),
-            RobotCANPorts.BL_STEER.get(),
+            RobotPorts.CAN.BL_DRIVE.get(),
+            RobotPorts.CAN.BL_STEER.get(),
             true,
             true,
-            RobotCANPorts.BL_ABS_ENCODER.get(),
+            RobotPorts.CAN.BL_ABS_ENCODER.get(),
             0.0, new Translation2d(-WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0));
 
     private final SwerveModule backRight = new SwerveModule("BR Module",
-            RobotCANPorts.BR_DRIVE.get(),
-            RobotCANPorts.BR_STEER.get(),
+            RobotPorts.CAN.BR_DRIVE.get(),
+            RobotPorts.CAN.BR_STEER.get(),
             false,
             true,
-            RobotCANPorts.BR_ABS_ENCODER.get(),
+            RobotPorts.CAN.BR_ABS_ENCODER.get(),
             0.0, new Translation2d(-WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0));
 
     private final SwerveModuleGroup modules = new SwerveModuleGroup(
@@ -157,14 +159,14 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
     }
 
     public void zeroRobotHeading() {
-        this.situateRobot(0.0);
+        this.situateTorward(0.0);
     }
 
-    public void situateRobot(double angleSetpoint) {
-        Translation2d position = this.getRobotPosition().getTranslation();
-        Translation2d copy = new Translation2d(position.getX(), position.getY());
-        Pose2d desiredPose = new Pose2d(copy, Rotation2d.fromDegrees(angleSetpoint));
-        this.situateRobot(desiredPose);
+    public void situateTorward(double angleSetpoint) {
+        double initialRotation = this.getRobotPosition().getRotation().getRadians();
+        double rotation = this.steerPIDController.calculate(initialRotation, angleSetpoint);
+        rotation = MathHelper.applyMax(rotation, SwerveDriveConstants.AUTO_MAX_ROBOT_ANGULAR_SPEED);
+        this.drive(0.0, 0.0, rotation, true);
     }
 
     public void situateRobot(Pose2d targetPose) {
@@ -178,8 +180,8 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
         double speed = FastMath.abs(this.drivePIDController.calculate(vector.getNorm(), 0.0));
         double rotation = this.steerPIDController.calculate(initialRotation, targetRotation);
 
-        speed = FastMath.min(SwerveDriveConstants.AUTO_MAX_ROBOT_SPEED, speed);
-        rotation = FastMath.min(SwerveDriveConstants.AUTO_MAX_ROBOT_ANGULAR_SPEED, rotation);
+        speed = MathHelper.applyMax(speed, SwerveDriveConstants.AUTO_MAX_ROBOT_SPEED);
+        rotation = MathHelper.applyMax(rotation, SwerveDriveConstants.AUTO_MAX_ROBOT_ANGULAR_SPEED);
 
         SmartDashboard.putNumber("DistanceErr", vector.getNorm());
         SmartDashboard.putNumber("AngleErr", targetRotation - initialRotation);

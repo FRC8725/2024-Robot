@@ -115,7 +115,8 @@ public class SwerveModule implements IDashboardProvider {
 
         final double desiredSpeed = desiredState.speedMetersPerSecond;
         final double currentSpeed = this.getState().speedMetersPerSecond;
-        this.driveMotor.setVoltage(this.drivePIDController.calculate(currentSpeed, desiredSpeed));
+        double output = this.drivePIDController.calculate(currentSpeed, desiredSpeed);
+        this.driveMotor.setVoltage(output);
 
         final double desiredAngle = desiredState.angle.getRadians();
         final double currentAngle = this.getState().angle.getRadians();
