@@ -14,7 +14,7 @@ import frc.lib.helpers.TidiedUp;
  */
 @TidiedUp
 public class RobotPorts {
-    public enum CAN{
+    public enum CAN {
         FL_DRIVE(2), FR_DRIVE(4), BL_DRIVE(5), BR_DRIVE(7),
         FL_STEER(1), FR_STEER(3), BL_STEER(6), BR_STEER(8),
         FL_ABS_ENCODER(9), FR_ABS_ENCODER(10), BL_ABS_ENCODER(11), BR_ABS_ENCODER(12),

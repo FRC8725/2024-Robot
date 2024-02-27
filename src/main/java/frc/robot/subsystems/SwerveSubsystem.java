@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import frc.robot.Robot;
 import org.apache.commons.math3.util.FastMath;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -19,12 +21,10 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.helpers.*;
-import frc.lib.math.MathHelper;
 import frc.lib.motors.SwerveModuleGroup;
 import frc.robot.constants.RobotPorts;
 import frc.robot.constants.SwerveDriveConstants;
@@ -76,8 +76,18 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
             this.kinematics, this.getHeading(), this.getModulePositions(), new Pose2d());
     // private final AHRS gyro = new AHRS(SerialPort.Port.kUSB);
 
-    private final PIDController drivePIDController = new PIDController(3.0, 0.0, 0.0, 0.01); // TODO re-tune PID
-    private final PIDController steerPIDController = new PIDController(2.5, 0.3, 0.0, 0.01); // TODO re-tune PID
+    private final ProfiledPIDController drivePIDController = new ProfiledPIDController(
+            3.0, 0.0, 0.0,
+            new TrapezoidProfile.Constraints(
+                    SwerveDriveConstants.AUTO_MAX_ROBOT_SPEED,
+                    SwerveDriveConstants.AUTO_MAX_ACCELERATION
+            ), 0.01); // TODO re-tune PID
+    private final ProfiledPIDController steerPIDController = new ProfiledPIDController(
+            2.5, 0.3, 0.0,
+            new TrapezoidProfile.Constraints(
+                    SwerveDriveConstants.AUTO_MAX_ROBOT_ANGULAR_SPEED,
+                    SwerveDriveConstants.AUTO_MAX_ANGULAR_ACCELERATION
+            ),0.01); // TODO re-tune PID
 
     public SwerveSubsystem() {
         this.registerDashboard();
@@ -159,36 +169,34 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
     }
 
     public void zeroRobotHeading() {
-        this.situateTorward(0.0);
+        this.situateRobot(0.0);
     }
 
-    public void situateTorward(double angleSetpoint) {
-        double initialRotation = this.getRobotPosition().getRotation().getRadians();
-        double rotation = this.steerPIDController.calculate(initialRotation, angleSetpoint);
-        rotation = MathHelper.applyMax(rotation, SwerveDriveConstants.AUTO_MAX_ROBOT_ANGULAR_SPEED);
-        this.drive(0.0, 0.0, rotation, true);
+    public void situateRobot(double angleSetpoint) {
+        this.situateRobot(new Translation2d(), angleSetpoint - this.getHeading().getRadians(), false);
+    }
+
+    public void situateRobot(Translation2d vector, double angle, boolean fieldOriented) {
+        double speed = this.drivePIDController.calculate(0.0, vector.getNorm());
+        double rotation = this.steerPIDController.calculate(0.0, angle);
+
+        final double xSpeed = speed * vector.getX() / vector.getNorm()
+                * ((Robot.isBlueAlliance() || !fieldOriented) ? 1.0 : -1.0);
+        final double ySpeed = speed * vector.getY() / vector.getNorm()
+                * ((Robot.isBlueAlliance() || !fieldOriented) ? 1.0 : -1.0);
+
+        SmartDashboard.putNumber("DistanceErr", vector.getNorm());
+        SmartDashboard.putNumber("AngleErr", angle);
+
+        this.drive(xSpeed, ySpeed, rotation, fieldOriented);
     }
 
     public void situateRobot(Pose2d targetPose) {
         double initialRotation = this.getRobotPosition().getRotation().getRadians();
         double targetRotation = targetPose.getRotation().getRadians();
-
-        boolean isBlue = DriverStation.getAlliance().isPresent()
-                && DriverStation.getAlliance().get() == Alliance.Blue;
-
         Translation2d vector = targetPose.getTranslation().minus(this.getRobotPosition().getTranslation());
-        double speed = FastMath.abs(this.drivePIDController.calculate(vector.getNorm(), 0.0));
-        double rotation = this.steerPIDController.calculate(initialRotation, targetRotation);
 
-        speed = MathHelper.applyMax(speed, SwerveDriveConstants.AUTO_MAX_ROBOT_SPEED);
-        rotation = MathHelper.applyMax(rotation, SwerveDriveConstants.AUTO_MAX_ROBOT_ANGULAR_SPEED);
-
-        SmartDashboard.putNumber("DistanceErr", vector.getNorm());
-        SmartDashboard.putNumber("AngleErr", targetRotation - initialRotation);
-
-        double xSpeed = speed * vector.getX() / vector.getNorm() * (isBlue ? 1.0 : -1.0);
-        double ySpeed = speed * vector.getY() / vector.getNorm() * (isBlue ? 1.0 : -1.0);
-        this.drive(xSpeed, ySpeed, rotation, true);
+        this.situateRobot(vector, targetRotation - initialRotation, true);
     }
 
     public Rotation2d getHeading() {

@@ -8,10 +8,9 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.helpers.IDashboardProvider;
-import frc.lib.helpers.OutputUnit;
-import frc.lib.helpers.TidiedUp;
-import frc.lib.helpers.UnitTypes;
+import frc.lib.helpers.*;
+import frc.lib.helpers.CoordinateSystem;
+import frc.lib.math.NotePositionEstimator;
 import org.apache.commons.math3.util.FastMath;
 
 @TidiedUp
@@ -44,6 +43,14 @@ public class VisionManager extends SubsystemBase implements IDashboardProvider {
 
         double[] dArr = isBlue ? this.blueBotPose.get() : this.redBotPose.get();
         return new Pose2d(dArr[0], dArr[1], new Rotation2d(Units.degreesToRadians(dArr[5])));
+    }
+
+    @CoordinateSystem(CoordinationPolicy.ROBOT_COORDINATION)
+    public Translation2d getNotePositionVector() {
+        if (this.noNoteTarget()) return null;
+        double tx = Units.degreesToRadians(this.noteHorizontalAngle.get());
+        double ty = Units.degreesToRadians(this.noteVerticalAngle.get());
+        return NotePositionEstimator.getPositionVector(tx, ty);
     }
 
     public double getNoteHorizontalDistance() {

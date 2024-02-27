@@ -146,3 +146,7 @@
 2024/02/27 v1.2.5
 - Added RGB
 - Made Intake Smoother
+
+2024/02/27 v1.2.6
+- Added NotePositionEstimator and AutoTrackNoteCommand
+- Updated situateRobot methods in SwerveSubsystem

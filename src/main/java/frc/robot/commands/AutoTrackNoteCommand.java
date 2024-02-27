@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -19,9 +20,7 @@ public class AutoTrackNoteCommand extends Command {
 
     private final SwerveSubsystem swerveSubsystem;
     private final VisionManager visionManager;
-
     private final SlewRateLimiter rotationLimiter = new SlewRateLimiter(SwerveDriveConstants.AUTO_MAX_ANGULAR_ACCELERATION);
-
     private final PIDController steerPIDController = new PIDController(0.044, 0.0052, 0.0, 0.01);
 
     public AutoTrackNoteCommand(SwerveSubsystem swerveSubsystem, VisionManager visionManager) {
@@ -37,18 +36,26 @@ public class AutoTrackNoteCommand extends Command {
 
     @Override
     public void execute() {
-        final double noteHorizontal = this.visionManager.getNoteHorizontalAngle();
-
-        double rotationSpeed = this.steerPIDController.calculate(TARGET_HORIZONTAL, noteHorizontal);
-        rotationSpeed = MathUtil.applyDeadband(rotationSpeed, 0.05);
-
         if (this.visionManager.noNoteTarget()) {
-            rotationSpeed = 0.0;
+            this.swerveSubsystem.situateRobot(new Translation2d(), Math.PI, false);
+            return;
         }
 
-        rotationSpeed = this.rotationLimiter.calculate(rotationSpeed);
-        rotationSpeed = MathHelper.applyMax(rotationSpeed, SwerveDriveConstants.AUTO_MAX_ROBOT_ANGULAR_SPEED);
-        this.swerveSubsystem.drive(0.0, 0.0, -rotationSpeed, false);
+        Translation2d vector = this.visionManager.getNotePositionVector();
+        this.swerveSubsystem.situateRobot(vector, vector.getAngle().getRadians() - Math.PI / 2.0, false);
+
+//        final double noteHorizontal = this.visionManager.getNoteHorizontalAngle();
+//
+//        double rotationSpeed = this.steerPIDController.calculate(TARGET_HORIZONTAL, noteHorizontal);
+//        rotationSpeed = MathUtil.applyDeadband(rotationSpeed, 0.05);
+//
+//        if (this.visionManager.noNoteTarget()) {
+//            rotationSpeed = 0.0;
+//        }
+//
+//        rotationSpeed = this.rotationLimiter.calculate(rotationSpeed);
+//        rotationSpeed = MathHelper.applyMax(rotationSpeed, SwerveDriveConstants.AUTO_MAX_ROBOT_ANGULAR_SPEED);
+//        this.swerveSubsystem.drive(0.0, 0.0, -rotationSpeed, false);
     }
 
     @Override
