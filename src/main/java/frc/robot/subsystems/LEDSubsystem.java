@@ -11,14 +11,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.RobotPorts;
 
 public class LEDSubsystem extends SubsystemBase {
-    public static final int LED_BUFFER_LENGTH = 59;
+    private static final int LED_BUFFER_LENGTH = 59;
 
   	public final AddressableLED led;
   	public final AddressableLEDBuffer ledBuffer;
 
     private boolean isIdle = true;
-    
-  	/** Creates a new LEDsubsystem. */
+
   	public LEDSubsystem() {
         this.led = new AddressableLED(RobotPorts.PWM.LED_PORT.get());
         this.ledBuffer = new AddressableLEDBuffer(LED_BUFFER_LENGTH);
