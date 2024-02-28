@@ -64,7 +64,24 @@ public class LEDSubsystem extends SubsystemBase {
         for (var i = endLED; i < LED_BUFFER_LENGTH; i++) {
             this.ledBuffer.setLED(i, backgroundColor);
         }
+    }
 
+    public void setColorWithPercentageInRange(Color color, Color backgroundColor, double percentage, int start, int end) {
+        if (percentage > 1) percentage = 1;
+        else if (percentage < 0) percentage = 0;
+
+        if (start < 0) start = 0;
+        if (end > LED_BUFFER_LENGTH) end = LED_BUFFER_LENGTH;
+        
+        int endLED = (int)((end - start) * percentage);
+
+        for (var i = start; i < endLED; i++) {
+            this.ledBuffer.setLED(i, color);
+        }
+
+        for (var i = endLED; i < end; i++) {
+            this.ledBuffer.setLED(i, backgroundColor);
+        }
     }
 
     @Override

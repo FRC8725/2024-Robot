@@ -33,6 +33,7 @@ public class VisionManager extends SubsystemBase implements IDashboardProvider {
             .getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[7]);
     DoubleArraySubscriber redBotPose = NetworkTableInstance.getDefault().getTable("limelight")
             .getDoubleArrayTopic("botpose_wpired").subscribe(new double[7]);
+            
 
     public VisionManager() {
         this.registerDashboard();

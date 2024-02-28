@@ -14,16 +14,17 @@ import frc.robot.subsystems.VisionManager;
 
 @SuppressWarnings("RedundantMethodOverride")
 public class LEDCommand extends Command {
+
 	private final Supplier<Boolean> noNoteSupplier;
-	private final Supplier<Double> shooterSpeed;
+	private final Supplier<Double> shooterSpeedSupplier;
 	private final Supplier<Boolean> canShootSupplier;
 	
 	public final LEDSubsystem ledSubsystem;
   	/** Creates a new LEDCommand. */
-  	public LEDCommand(LEDSubsystem ledSubsystem, Supplier<Boolean> hasNoteSupplier, Supplier<Double> shooterSpeed, Supplier<Boolean> canShootSupplier){
+  	public LEDCommand(LEDSubsystem ledSubsystem, Supplier<Boolean> hasNoteSupplier, Supplier<Double> shooterSpeedSupplier, Supplier<Boolean> canShootSupplier){
 		this.ledSubsystem = ledSubsystem;
 		this.noNoteSupplier = hasNoteSupplier;
-		this.shooterSpeed = shooterSpeed;
+		this.shooterSpeedSupplier = shooterSpeedSupplier;
 		this.canShootSupplier = canShootSupplier;
 
 		addRequirements(this.ledSubsystem);
@@ -35,13 +36,17 @@ public class LEDCommand extends Command {
 	@Override
 	public void execute() {
 		if (this.canShootSupplier.get()) {
-			this.ledSubsystem.setColor(Color.kGreen);
-		}else if (this.shooterSpeed.get() != 0) {
 			this.ledSubsystem.setIdleMode(false);
-			this.ledSubsystem.setColorWithPercentage(Color.kOrangeRed, Color.kBlack, this.shooterSpeed.get() / 0.8);
+			this.ledSubsystem.setColor(Color.kGreen);
+
+		}else if (this.shooterSpeedSupplier.get() != 0) {
+			this.ledSubsystem.setIdleMode(false);
+			this.ledSubsystem.setColorWithPercentage(Color.kOrangeRed, Color.kBlack, this.shooterSpeedSupplier.get() / 0.8);
+
 		} else if (!this.noNoteSupplier.get()) {
 			this.ledSubsystem.setIdleMode(false);
 			this.ledSubsystem.setColor(Color.kOrangeRed);
+
 		} else {
 			this.ledSubsystem.setIdleMode(true);
 		}
@@ -49,7 +54,9 @@ public class LEDCommand extends Command {
 
 	// Called once the command ends or is interrupted.
 	@Override
-	public void end(boolean interrupted) {}
+	public void end(boolean interrupted) {
+		this.ledSubsystem.setIdleMode(true);
+	}
 
 	@Override
 	public boolean isFinished() {
