@@ -13,7 +13,6 @@ public class NotePositionEstimator {
     private static final Vector3D CAMERA_Y_AXIS = new Vector3D(-0.007, -0.416, -0.466);
     private static final Plane GROUND = new Plane(new Vector3D(0.0, 0.0, 1.0), TOLERANCE);
 
-    @CoordinateSystem(CoordinationPolicy.ROBOT_COORDINATION)
     public static Translation2d getPositionVector(double tx, double ty) {
         Rotation xRot = new Rotation(CAMERA_Y_AXIS, tx, RotationConvention.VECTOR_OPERATOR);
         Rotation yRot = new Rotation(CAMERA_X_AXIS, ty, RotationConvention.VECTOR_OPERATOR);
@@ -23,6 +22,6 @@ public class NotePositionEstimator {
         Plane yPlane = new Plane(CAMERA_POS, CAMERA_POS.add(yVector), CAMERA_POS.add(CAMERA_X_AXIS), TOLERANCE);
         Vector3D intersection = Plane.intersection(xPlane, yPlane, GROUND);
         Translation2d vector = new Translation2d(intersection.getX(), intersection.getY());
-        return vector.plus(new Translation2d(0.0, 0.41));
+        return vector.plus(new Translation2d(0.0, 0.0));
     }
 }

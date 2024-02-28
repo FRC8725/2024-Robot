@@ -30,7 +30,7 @@ public class IntakeSubsystem extends SubsystemBase implements IDashboardProvider
     public static final double LIFTER_MIN_BRAKE_SETPOINT = 100.0;
 
     @OutputUnit(UnitTypes.DEGREES)
-    public static final double LIFTER_AMP_SETPOINT = 157.0; // Setpoint for scoring AMP
+    public static final double LIFTER_AMP_SETPOINT = 154.0; // Setpoint for scoring AMP
     @OutputUnit(UnitTypes.DEGREES)
     private static final double DEFAULT_LIFTER_THRESHOLD = 5.0; // Determine whether the lifter reaches the position
 

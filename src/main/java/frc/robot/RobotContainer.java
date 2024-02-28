@@ -22,7 +22,7 @@ public class RobotContainer implements IDashboardProvider {
     private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
     private final VisionManager visionManager = new VisionManager();
 
-    private final LEDSubsystem leDsubsystem = new LEDSubsystem();
+    private final LEDSubsystem ledSubsystem = new LEDSubsystem();
 
     private final DriverJoystick driverJoystick = new DriverJoystick();
     private final ControllerJoystick controllerJoystick = new ControllerJoystick();
@@ -100,33 +100,37 @@ public class RobotContainer implements IDashboardProvider {
         this.intakeSubsystem.setDefaultCommand(new IntakeCommand(this.intakeSubsystem,
                 this.shooterSubsystem::canShoot, this.controllerJoystick));
 
-        this.leDsubsystem.setDefaultCommand(
+        this.ledSubsystem.setDefaultCommand(
                 new LEDCommand(
-                        this.leDsubsystem, 
-                        this.visionManager::noNoteTarget,
+                        this.ledSubsystem, 
+                        this.visionManager::getNoteGroundDistance,
                         this.shooterSubsystem::getAverageShooterSpeed,
-                        this.shooterSubsystem::canShoot
+                        this.shooterSubsystem::canShoot,
+                        this.controllerJoystick::isShootButtonDown
                 ));
     }
 
     private void configureBindings() {
 //        this.driverJoystick.getZeroHeadingTrigger()
 //                .onTrue(new InstantCommand(this.swerveSubsystem::resetToMiddlePose, this.swerveSubsystem));
-        this.driverJoystick.getZeroHeadingTrigger()
-               .whileTrue(Commands.runEnd(this.swerveSubsystem::zeroRobotHeading, this.swerveSubsystem::stopModules, this.swerveSubsystem));
+        // this.driverJoystick.getZeroHeadingTrigger()
+        //        .whileTrue(Commands.runEnd(this.swerveSubsystem::zeroRobotHeading, this.swerveSubsystem::stopModules, this.swerveSubsystem));
         this.driverJoystick.getNoteTrackingTrigger()
                 .whileTrue(new AutoTrackNoteCommand(this.swerveSubsystem, this.visionManager));
-        this.driverJoystick.getAMPTrigger()
-                .whileTrue(new AutoAMPCommand(this.swerveSubsystem, this.intakeSubsystem));
-        this.driverJoystick.getTestTrigger()
-                .whileTrue(Commands.runEnd(() -> this.swerveSubsystem.situateRobot(new Pose2d(14.0, 7.0, Rotation2d.fromDegrees(50.0))), this.swerveSubsystem::stopModules, this.swerveSubsystem));
+        // this.driverJoystick.getAMPTrigger()
+        //         .whileTrue(new AutoAMPCommand(this.swerveSubsystem, this.intakeSubsystem));
+        // this.driverJoystick.getTestTrigger()
+        //         .whileTrue(Commands.runEnd(() -> this.swerveSubsystem.situateRobot(new Pose2d(14.0, 7.0, Rotation2d.fromDegrees(50.0))), this.swerveSubsystem::stopModules, this.swerveSubsystem));
         this.driverJoystick.getStopTrigger()
                 .onTrue(Commands.runOnce(this.swerveSubsystem::stopModules, this.swerveSubsystem));
 
         this.controllerJoystick.getIntakeAMPTrigger()
                 .whileTrue(Commands.run(this.intakeSubsystem::releaseAMP, this.intakeSubsystem));
         this.controllerJoystick.getCollectSourceTrigger()
-                .whileTrue(Commands.run(this.shooterSubsystem::collectSource, this.shooterSubsystem));
+                .whileTrue(Commands.run(() -> {
+                        this.shooterSubsystem.collectSource();
+                        this.intakeSubsystem.executeIntake();
+                }, this.shooterSubsystem, this.intakeSubsystem));
     }
 
     public void teleopPeriodic() {

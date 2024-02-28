@@ -17,7 +17,7 @@ public class ShooterSubsystem extends SubsystemBase implements IDashboardProvide
     @OutputUnit(UnitTypes.PERCENTAGES)
     private static final double SHOOT_THRESHOLD = 0.23;
     @OutputUnit(UnitTypes.PERCENTAGES)
-    private static final double SOURCE_COLLECT_SPEED = 0.3;
+    private static final double SOURCE_COLLECT_SPEED = 0.2;
 
     private final ModuleTalonFX rightShootMotor = new ModuleTalonFX(RobotPorts.CAN.LEFT_SHOOTER.get());
     private final ModuleTalonFX leftShootMotor = new ModuleTalonFX(RobotPorts.CAN.RIGHT_SHOOTER.get());

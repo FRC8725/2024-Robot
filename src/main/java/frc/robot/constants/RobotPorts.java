@@ -48,7 +48,7 @@ public class RobotPorts {
     }
 
     public enum PWM {
-        LED_PORT(0);
+        LEFT_TELESCOPE_LED_PORT(0), RIGHT_TELESCOPE_LED_PORT(1);
 
         private final int port;
 

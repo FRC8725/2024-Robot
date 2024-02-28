@@ -19,6 +19,8 @@ public class VisionManager extends SubsystemBase implements IDashboardProvider {
     private static final double LIMELIGHT_HEIGHT = 60.0;
     @OutputUnit(UnitTypes.DEGREES)
     private static final double LIMELIGHT_MOUNT = -25.0;
+    @OutputUnit(UnitTypes.METERS)
+    public static final double MAX_NOTE_DISTANCE = 0.97;
 
     DoubleSubscriber primaryAprilTagId = NetworkTableInstance.getDefault().getTable("limelight")
             .getDoubleTopic("tid").subscribe(-1);
@@ -51,17 +53,12 @@ public class VisionManager extends SubsystemBase implements IDashboardProvider {
         if (this.noNoteTarget()) return null;
         double tx = Units.degreesToRadians(this.noteHorizontalAngle.get());
         double ty = Units.degreesToRadians(this.noteVerticalAngle.get());
-        return NotePositionEstimator.getPositionVector(tx, ty);
+        Translation2d vector = NotePositionEstimator.getPositionVector(tx, ty);
+        return new Translation2d(vector.getY(), -vector.getX());
     }
 
-    public double getNoteHorizontalDistance() {
-        if (this.noNoteTarget()) {
-            return 0.0;
-        }
-
-        double noteOffsetAngle = this.noteVerticalAngle.get();
-        double angleToGoal = Units.degreesToRadians(LIMELIGHT_MOUNT + noteOffsetAngle);
-        return FastMath.abs(LIMELIGHT_HEIGHT / FastMath.tan(angleToGoal));
+    public double getNoteGroundDistance() {
+        return this.noNoteTarget() ? -1.0 : this.getNotePositionVector().getNorm();
     }
 
     public double getNoteHorizontalAngle() {
@@ -78,7 +75,8 @@ public class VisionManager extends SubsystemBase implements IDashboardProvider {
 
     @Override
     public void putDashboard() {
-        SmartDashboard.putNumber("NoteDistance", getNoteHorizontalDistance());
+
+        SmartDashboard.putNumber("NoteDistance", getNoteGroundDistance());
     }
 
     @Override

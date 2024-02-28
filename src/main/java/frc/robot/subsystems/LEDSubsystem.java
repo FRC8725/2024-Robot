@@ -11,20 +11,21 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.RobotPorts;
 
 public class LEDSubsystem extends SubsystemBase {
-    private static final int LED_BUFFER_LENGTH = 59;
+    public static final int TELESCOPE_LED_BUFFER_LENGTH = 32;
+    public static final int TELESCOPE_LED_BUFFER_EACH_LENGTH = 16;
 
-  	public final AddressableLED led;
-  	public final AddressableLEDBuffer ledBuffer;
+  	public final AddressableLED telescopeLED;
+  	public final AddressableLEDBuffer telescopeLEDBuffer;
 
     private boolean isIdle = true;
 
   	public LEDSubsystem() {
-        this.led = new AddressableLED(RobotPorts.PWM.LED_PORT.get());
-        this.ledBuffer = new AddressableLEDBuffer(LED_BUFFER_LENGTH);
+        this.telescopeLED = new AddressableLED(RobotPorts.PWM.LEFT_TELESCOPE_LED_PORT.get());
+        this.telescopeLEDBuffer = new AddressableLEDBuffer(TELESCOPE_LED_BUFFER_LENGTH);
 
-        this.led.setLength(LED_BUFFER_LENGTH);
-        this.led.setData(this.ledBuffer);
-        this.led.start();
+        this.telescopeLED.setLength(TELESCOPE_LED_BUFFER_LENGTH);
+        this.telescopeLED.setData(this.telescopeLEDBuffer);
+        this.telescopeLED.start();
   	}
 
 
@@ -35,57 +36,81 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
 	public void rainbow() {
-		for (var i = 0; i < LED_BUFFER_LENGTH; i++) {
-			final var hue = (rainbowFirstPixelHue + (i * 180 / this.ledBuffer.getLength())) % 180;
-			this.ledBuffer.setHSV(i, hue, 255, 128);
-		}
-
-		rainbowFirstPixelHue += 3;
+		for (var i = 0; i < TELESCOPE_LED_BUFFER_EACH_LENGTH; i++) {
+			final var hue = (rainbowFirstPixelHue + (i * 180 / this.telescopeLEDBuffer.getLength())) % 180;
+			this.telescopeLEDBuffer.setHSV(i, hue, 255, 128);
+            this.telescopeLEDBuffer.setHSV(TELESCOPE_LED_BUFFER_LENGTH - (i + 1), hue, 255, 128);
+        }
+		rainbowFirstPixelHue += 1;
 		rainbowFirstPixelHue %= 180;
 	}
 
-    public void setColor(Color color) {
-        for (var i = 0; i < LED_BUFFER_LENGTH; i++) {
-            this.ledBuffer.setLED(i, color);
+    public void setAllColor(Color color) {
+        for (var i = 0; i < TELESCOPE_LED_BUFFER_LENGTH; i++) {
+            this.telescopeLEDBuffer.setLED(i, color);
         }
     }
 
-    public void setColorWithPercentage(Color color, Color backgroundColor, double percentage) {
+    public void setColorInRange(Color backgroundColor, Color color, int start, int end) {
+        if (start < 0) start = 0;
+        if (end > TELESCOPE_LED_BUFFER_EACH_LENGTH) end = TELESCOPE_LED_BUFFER_EACH_LENGTH;
+
+        for (var i = 0; i < start; i++) {
+            this.telescopeLEDBuffer.setLED(i, backgroundColor);
+            this.telescopeLEDBuffer.setLED(TELESCOPE_LED_BUFFER_LENGTH - (i + 1), backgroundColor);
+        }
+
+        for (var i = start; i < end; i++) {
+            this.telescopeLEDBuffer.setLED(i, color);
+            this.telescopeLEDBuffer.setLED(TELESCOPE_LED_BUFFER_LENGTH - (i + 1), color);
+        }
+
+        for (var i = end; i < TELESCOPE_LED_BUFFER_EACH_LENGTH; i++) {
+            this.telescopeLEDBuffer.setLED(i, backgroundColor);
+            this.telescopeLEDBuffer.setLED(TELESCOPE_LED_BUFFER_LENGTH - (i + 1), backgroundColor);
+        }
+    }
+
+    public void setColorWithPercentage(Color backgroundColor, Color color, double percentage) {
         if (percentage > 1) percentage = 1;
         else if (percentage < 0) percentage = 0;
         
-        int endLED = (int)(LED_BUFFER_LENGTH * percentage);
+        int endLED = (int)(TELESCOPE_LED_BUFFER_EACH_LENGTH * percentage);
 
         for (var i = 0; i < endLED; i++) {
-            this.ledBuffer.setLED(i, color);
+            this.telescopeLEDBuffer.setLED(i, color);
+            this.telescopeLEDBuffer.setLED(TELESCOPE_LED_BUFFER_LENGTH - (i + 1), color);
         }
 
-        for (var i = endLED; i < LED_BUFFER_LENGTH; i++) {
-            this.ledBuffer.setLED(i, backgroundColor);
+        for (var i = endLED; i < TELESCOPE_LED_BUFFER_EACH_LENGTH; i++) {
+            this.telescopeLEDBuffer.setLED(i, backgroundColor);
+            this.telescopeLEDBuffer.setLED(TELESCOPE_LED_BUFFER_LENGTH - (i + 1), backgroundColor);
         }
     }
 
-    public void setColorWithPercentageInRange(Color color, Color backgroundColor, double percentage, int start, int end) {
+    public void setColorWithPercentageInRange(Color backgroundColor, Color color, double percentage, int start, int end) {
         if (percentage > 1) percentage = 1;
         else if (percentage < 0) percentage = 0;
 
         if (start < 0) start = 0;
-        if (end > LED_BUFFER_LENGTH) end = LED_BUFFER_LENGTH;
+        if (end > TELESCOPE_LED_BUFFER_EACH_LENGTH) end = TELESCOPE_LED_BUFFER_EACH_LENGTH;
         
         int endLED = (int)((end - start) * percentage);
 
         for (var i = start; i < endLED; i++) {
-            this.ledBuffer.setLED(i, color);
+            this.telescopeLEDBuffer.setLED(i, color);
+            this.telescopeLEDBuffer.setLED(TELESCOPE_LED_BUFFER_LENGTH - (i + 1), color);
         }
 
         for (var i = endLED; i < end; i++) {
-            this.ledBuffer.setLED(i, backgroundColor);
+            this.telescopeLEDBuffer.setLED(i, backgroundColor);
+            this.telescopeLEDBuffer.setLED(TELESCOPE_LED_BUFFER_LENGTH - (i + 1), backgroundColor);
         }
     }
 
     @Override
     public void periodic() {
         if (isIdle) rainbow();
-        this.led.setData(this.ledBuffer);
+        this.telescopeLED.setData(this.telescopeLEDBuffer);
     }
 }

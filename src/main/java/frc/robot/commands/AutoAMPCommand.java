@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.math.FieldPositions;
+import frc.robot.Robot;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -33,13 +34,10 @@ public class AutoAMPCommand extends Command {
         //     return;
         // }
 
-        boolean isBlue = DriverStation.getAlliance().isPresent() &&
-                DriverStation.getAlliance().get() == DriverStation.Alliance.Blue;
-
-        Pose2d ampPosition = isBlue ? FieldPositions.BLUE_AMP_POSITION : FieldPositions.RED_AMP_POSITION;
+        Pose2d ampPosition = Robot.isBlueAlliance() ? FieldPositions.BLUE_AMP_POSITION : FieldPositions.RED_AMP_POSITION;
 
         // TODO test test test test ~~~~~!!!!!!
-        this.swerveSubsystem.situateRobot(ampPosition);
+        this.swerveSubsystem.situateRobot(ampPosition.getRotation().getRadians());
     }
 
     @Override

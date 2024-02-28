@@ -150,3 +150,7 @@
 2024/02/27 v1.2.6
 - Added NotePositionEstimator and AutoTrackNoteCommand
 - Updated situateRobot methods in SwerveSubsystem
+
+2024/02/28 v1.2.7 
+- Updated LED
+- Adjusted PID

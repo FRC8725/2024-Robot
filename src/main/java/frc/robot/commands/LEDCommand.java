@@ -11,16 +11,23 @@ import frc.robot.subsystems.VisionManager;
 @SuppressWarnings("RedundantMethodOverride")
 public class LEDCommand extends Command {
 
-	private final Supplier<Boolean> noNoteSupplier;
+	private final Supplier<Double> noteDistanceSupplier;
 	private final Supplier<Double> shooterSpeedSupplier;
 	private final Supplier<Boolean> canShootSupplier;
+	private final Supplier<Boolean> isShootButtonDown;
+
+	private boolean shootFlag = false;
+	private int lastLEDButterIndex = 0;
+	private int count = 0;
+
 	public final LEDSubsystem ledSubsystem;
   	/** Creates a new LEDCommand. */
-  	public LEDCommand(LEDSubsystem ledSubsystem, Supplier<Boolean> hasNoteSupplier, Supplier<Double> shooterSpeedSupplier, Supplier<Boolean> canShootSupplier){
+  	public LEDCommand(LEDSubsystem ledSubsystem, Supplier<Double> noteDistanceSupplier, Supplier<Double> shooterSpeedSupplier, Supplier<Boolean> canShootSupplier, Supplier<Boolean> isShootButtonDown){
 		this.ledSubsystem = ledSubsystem;
-		this.noNoteSupplier = hasNoteSupplier;
+		this.noteDistanceSupplier = noteDistanceSupplier;
 		this.shooterSpeedSupplier = shooterSpeedSupplier;
 		this.canShootSupplier = canShootSupplier;
+		this.isShootButtonDown = isShootButtonDown;
 
 		addRequirements(this.ledSubsystem);
   	}
@@ -30,17 +37,28 @@ public class LEDCommand extends Command {
 
 	@Override
 	public void execute() {
-		if (this.canShootSupplier.get()) {
-			this.ledSubsystem.setIdleMode(false);
-			this.ledSubsystem.setColor(Color.kGreen);
+		if (!this.isShootButtonDown.get()) this.shootFlag = false;
 
-		}else if (this.shooterSpeedSupplier.get() != 0) {
+		if (this.canShootSupplier.get() || this.shootFlag) {
+			this.shootFlag = true;
 			this.ledSubsystem.setIdleMode(false);
-			this.ledSubsystem.setColorWithPercentage(Color.kOrangeRed, Color.kBlack, this.shooterSpeedSupplier.get() / 0.8);
+			this.ledSubsystem.setAllColor(Color.kRed);
 
-		} else if (!this.noNoteSupplier.get()) {
+		}else if (this.shooterSpeedSupplier.get() >= 0.1) {
 			this.ledSubsystem.setIdleMode(false);
-			this.ledSubsystem.setColor(Color.kOrangeRed);
+			this.ledSubsystem.setColorWithPercentage(Color.kOrangeRed, Color.kBlack, 1 - (this.shooterSpeedSupplier.get() / 0.8));
+
+		} else if (this.shooterSpeedSupplier.get() <= -0.1) {
+			this.ledSubsystem.setIdleMode(false);
+			this.ledSubsystem.setColorInRange(Color.kBlack, Color.kDarkViolet, lastLEDButterIndex-4, lastLEDButterIndex+4);
+			if (count % 2 == 0) lastLEDButterIndex++;
+			if (lastLEDButterIndex >= LEDSubsystem.TELESCOPE_LED_BUFFER_EACH_LENGTH) lastLEDButterIndex = 0;
+			if (count >= 255) count = 0;
+			count++;
+
+		} else if (this.noteDistanceSupplier.get() >= 0.4) {
+			this.ledSubsystem.setIdleMode(false);
+			this.ledSubsystem.setColorWithPercentage(Color.kOrangeRed, Color.kBlack, (this.noteDistanceSupplier.get() - 0.4) / VisionManager.MAX_NOTE_DISTANCE);
 
 		} else {
 			this.ledSubsystem.setIdleMode(true);

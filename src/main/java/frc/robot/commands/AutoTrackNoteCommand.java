@@ -36,13 +36,13 @@ public class AutoTrackNoteCommand extends Command {
 
     @Override
     public void execute() {
-        if (this.visionManager.noNoteTarget()) {
-            this.swerveSubsystem.situateRobot(new Translation2d(), Math.PI, false);
+        if (this.visionManager.noNoteTarget() || this.visionManager.getNotePositionVector() == null || this.visionManager.getNoteGroundDistance() < 0.1) {
+            this.swerveSubsystem.drive(0.0, 0.0, 0.0, false);
             return;
         }
 
         Translation2d vector = this.visionManager.getNotePositionVector();
-        this.swerveSubsystem.situateRobot(vector, vector.getAngle().getRadians() - Math.PI / 2.0, false);
+        this.swerveSubsystem.situateRobot(vector, vector.getAngle().getRadians(), false, true);
 
 //        final double noteHorizontal = this.visionManager.getNoteHorizontalAngle();
 //

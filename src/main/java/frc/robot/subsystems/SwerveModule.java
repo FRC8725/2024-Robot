@@ -129,9 +129,6 @@ public class SwerveModule implements IDashboardProvider {
     }
 
     public void putDashboard() {
-        // this.driveMotor.set(1.0);
-        // this.turningMotor.set(1.0);
-
         SmartDashboard.putNumber(this.name + " DriveSpeed", this.getState().speedMetersPerSecond);
         SmartDashboard.putNumber(this.name + " AbsTurnPos", this.getState().angle.getDegrees());
     }
