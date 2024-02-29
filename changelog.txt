@@ -154,3 +154,6 @@
 2024/02/28 v1.2.7 
 - Updated LED
 - Adjusted PID
+
+2024/02/29 v1.2.8
+- Updated NotePositionEstimator with new model

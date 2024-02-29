@@ -53,8 +53,7 @@ public class VisionManager extends SubsystemBase implements IDashboardProvider {
         if (this.noNoteTarget()) return null;
         double tx = Units.degreesToRadians(this.noteHorizontalAngle.get());
         double ty = Units.degreesToRadians(this.noteVerticalAngle.get());
-        Translation2d vector = NotePositionEstimator.getPositionVector(tx, ty);
-        return new Translation2d(vector.getY(), -vector.getX());
+        return NotePositionEstimator.getPositionVector(tx, ty);
     }
 
     public double getNoteGroundDistance() {

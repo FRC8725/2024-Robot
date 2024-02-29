@@ -42,7 +42,8 @@ public class AutoTrackNoteCommand extends Command {
         }
 
         Translation2d vector = this.visionManager.getNotePositionVector();
-        this.swerveSubsystem.situateRobot(vector, vector.getAngle().getRadians(), false, true);
+        this.swerveSubsystem.situateRobot(vector.minus(new Translation2d(0.4137, 0.0)),
+                vector.getAngle().getRadians(), false, true);
 
 //        final double noteHorizontal = this.visionManager.getNoteHorizontalAngle();
 //
