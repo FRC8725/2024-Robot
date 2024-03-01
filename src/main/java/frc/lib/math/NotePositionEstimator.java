@@ -7,6 +7,7 @@ import org.apache.commons.math3.geometry.euclidean.threed.Plane;
 import org.apache.commons.math3.geometry.euclidean.threed.Rotation;
 import org.apache.commons.math3.geometry.euclidean.threed.RotationConvention;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 public class NotePositionEstimator {
     private static final double TOLERANCE = 0.000329;
@@ -25,6 +26,10 @@ public class NotePositionEstimator {
         Plane xPlane = new Plane(CAMERA_POS, CAMERA_POS.add(xVector), CAMERA_POS.add(CAMERA_Y_AXIS), TOLERANCE);
         Plane yPlane = new Plane(CAMERA_POS, CAMERA_POS.add(yVector), CAMERA_POS.add(CAMERA_X_AXIS), TOLERANCE);
         Vector3D intersection = Plane.intersection(xPlane, yPlane, GROUND);
-        return new Translation2d(intersection.getX(), intersection.getY());
+        Vector2D vector2D = new Vector2D(intersection.getX(), intersection.getY());
+
+        if (vector2D.getNorm() == 0) return new Translation2d(0.0, 0.0);
+        vector2D.scalarMultiply((vector2D.getNorm() - 0.415) / vector2D.getNorm());
+        return new Translation2d(vector2D.getX(), vector2D.getY());
     }
 }

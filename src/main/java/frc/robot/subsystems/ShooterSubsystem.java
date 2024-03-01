@@ -13,7 +13,7 @@ import frc.robot.constants.RobotPorts;
 
 public class ShooterSubsystem extends SubsystemBase implements IDashboardProvider {
     @OutputUnit(UnitTypes.PERCENTAGES)
-    private static final double SHOOT_SPEED = 1.0; //0.9
+    private static final double SHOOT_SPEED = 1.0; // 0.9
     @OutputUnit(UnitTypes.PERCENTAGES)
     private static final double SHOOT_THRESHOLD = 0.23;
     @OutputUnit(UnitTypes.PERCENTAGES)
