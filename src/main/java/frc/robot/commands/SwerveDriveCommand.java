@@ -27,7 +27,6 @@ public class SwerveDriveCommand extends Command {
 
     @Override
     public void execute() {
-        // TODO test if this still works upon re-entering the teleop mode
         if (this.joystick.isDriving()) {
             this.isSteeringLocked = false;
         } else if (this.isSteeringLocked) {

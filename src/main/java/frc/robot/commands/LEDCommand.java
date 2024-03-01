@@ -1,16 +1,15 @@
 package frc.robot.commands;
 
-import java.util.function.Supplier;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.VisionManager;
 
+import java.util.function.Supplier;
+
 @SuppressWarnings("RedundantMethodOverride")
 public class LEDCommand extends Command {
-
+	private final LEDSubsystem ledSubsystem;
 	private final Supplier<Double> noteDistanceSupplier;
 	private final Supplier<Double> shooterSpeedSupplier;
 	private final Supplier<Boolean> canShootSupplier;
@@ -20,8 +19,7 @@ public class LEDCommand extends Command {
 	private int lastLEDButterIndex = 0;
 	private int count = 0;
 
-	public final LEDSubsystem ledSubsystem;
-  	/** Creates a new LEDCommand. */
+
   	public LEDCommand(LEDSubsystem ledSubsystem, Supplier<Double> noteDistanceSupplier, Supplier<Double> shooterSpeedSupplier, Supplier<Boolean> canShootSupplier, Supplier<Boolean> isShootButtonDown){
 		this.ledSubsystem = ledSubsystem;
 		this.noteDistanceSupplier = noteDistanceSupplier;
@@ -44,7 +42,7 @@ public class LEDCommand extends Command {
 			this.ledSubsystem.setIdleMode(false);
 			this.ledSubsystem.setAllColor(Color.kRed);
 
-		}else if (this.shooterSpeedSupplier.get() >= 0.1) {
+		} else if (this.shooterSpeedSupplier.get() >= 0.1) {
 			this.ledSubsystem.setIdleMode(false);
 			this.ledSubsystem.setColorWithPercentage(Color.kOrangeRed, Color.kBlack, 1 - (this.shooterSpeedSupplier.get() / 0.8));
 
@@ -65,7 +63,6 @@ public class LEDCommand extends Command {
 		}
 	}
 
-	// Called once the command ends or is interrupted.
 	@Override
 	public void end(boolean interrupted) {
 		this.ledSubsystem.setIdleMode(true);

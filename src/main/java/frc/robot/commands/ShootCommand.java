@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.helpers.TidiedUp;
 import frc.robot.joysticks.ControllerJoystick;
 import frc.robot.subsystems.ShooterSubsystem;
-import edu.wpi.first.wpilibj.AddressableLED;
 
 @TidiedUp
 @SuppressWarnings("RedundantMethodOverride")

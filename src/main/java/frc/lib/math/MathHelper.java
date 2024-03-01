@@ -12,8 +12,7 @@ public final class MathHelper {
     }
 
     public static double getSign(double a) {
-        if (a != 0)  return a / FastMath.abs(a);
-        return 0;
+        return (a == 0) ? 0 : (a / FastMath.abs(a));
     }
 
     public static double applyMax(double a, double max) {

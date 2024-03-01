@@ -1,8 +1,6 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.Robot;
 import org.apache.commons.math3.util.FastMath;
 
@@ -155,27 +153,9 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
         return Math.IEEEremainder(-this.gyro.getAngle(), 360);
     }
 
-    public void resetToMiddlePose() {
-        this.resetGyro();
-
-        Pose2d pose2d = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue
-            ? new Pose2d(1.32, 5.55, new Rotation2d())
-            : new Pose2d(15.24, 5.55, new Rotation2d(Math.PI));
-
-        this.resetPose(pose2d);
-    }
-
     public void resetGyro() {
         this.gyro.setAngleAdjustment(0.0);
         this.gyro.reset();
-    }
-
-    public void zeroRobotHeading() {
-        this.situateRobot(0.0);
-    }
-
-    public void situateRobot(double angleSetpoint) {
-        this.situateRobot(new Translation2d(), angleSetpoint - this.getHeading().getRadians(), false, false);
     }
 
     public void situateRobot(Translation2d vector, double angle, boolean fieldOriented, boolean isNoteTracking) {
@@ -196,14 +176,6 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
         SmartDashboard.putNumber("AngleErr", angle);
 
         this.drive(xSpeed, ySpeed, rotation, fieldOriented);
-    }
-
-    public void situateRobot(Pose2d targetPose) {
-        double initialRotation = this.getRobotPosition().getRotation().getRadians();
-        double targetRotation = targetPose.getRotation().getRadians();
-        Translation2d vector = targetPose.getTranslation().minus(this.getRobotPosition().getTranslation());
-
-        this.situateRobot(vector, targetRotation - initialRotation, true, false);
     }
 
     public Rotation2d getHeading() {
