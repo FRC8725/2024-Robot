@@ -1,8 +1,6 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.pathplanner.lib.util.PIDConstants;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -11,24 +9,17 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.ModuleTalonFX;
 import frc.lib.helpers.IDashboardProvider;
 import frc.lib.helpers.OutputUnit;
-import frc.lib.helpers.TidiedUp;
 import frc.lib.helpers.UnitTypes;
 import frc.lib.math.MathHelper;
 import frc.robot.constants.RobotPorts;
-import org.apache.commons.math3.util.FastMath;
 
-@TidiedUp
 public class IntakeSubsystem extends SubsystemBase implements IDashboardProvider {
     @OutputUnit(UnitTypes.DEGREES)
-    public static final double LIFTER_MAX_SETPOINT = 224.5;//224.5;
+    public static final double LIFTER_MAX_SETPOINT = 224.5;
     @OutputUnit(UnitTypes.DEGREES)
     public static final double LIFTER_MAX_BRAKE_SETPOINT = 180.0;
-
     @OutputUnit(UnitTypes.DEGREES)
     public static final double LIFTER_MIN_SETPOINT = 62.0;
-    @OutputUnit(UnitTypes.DEGREES)
-    public static final double LIFTER_MIN_BRAKE_SETPOINT = 100.0;
-
     @OutputUnit(UnitTypes.DEGREES)
     public static final double LIFTER_AMP_SETPOINT = 154.0; // Setpoint for scoring AMP
     @OutputUnit(UnitTypes.DEGREES)
@@ -111,10 +102,7 @@ public class IntakeSubsystem extends SubsystemBase implements IDashboardProvider
     }
 
     public void liftTo(double setpoint) {
-        double output = this.liftPIDController.calculate(this.getLifterPosition(), setpoint);
-        // output = MathHelper.applyMax(output, 0.1);
-        SmartDashboard.putNumber("output", output);
-        this.liftIntake(output);
+        this.liftIntake(this.liftPIDController.calculate(this.getLifterPosition(), setpoint));
     }
 
     public void liftToMax() {
@@ -132,16 +120,7 @@ public class IntakeSubsystem extends SubsystemBase implements IDashboardProvider
     }
 
     public void liftToMin() {
-        double output = this.liftPIDController.calculate(this.getLifterPosition(), LIFTER_MIN_SETPOINT);
-
-        // double output = this.testPIDController.calculate(this.getLifterPosition(), 105.0) - 0.2;
-        // if (output > -0.2) output = -0.2;
-        // if (this.getLifterPosition() < LIFTER_MIN_BRAKE_SETPOINT) {
-        //     output = this.liftPIDController.calculate(this.getLifterPosition(), LIFTER_MIN_SETPOINT);
-        //     output = MathHelper.applyMax(output, 0.2);
-        // }
-
-        this.liftIntake(output);
+        this.liftTo(LIFTER_MIN_SETPOINT);
     }
 
     public void liftToAMP() {

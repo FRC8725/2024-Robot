@@ -232,10 +232,6 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
         this.poseEstimator.resetPosition(this.getHeading(), this.getModulePositions(), pose);
     }
 
-    public void calibratePose(Pose2d pose2d) {
-        // this.poseEstimator.addVisionMeasurement(pose2d, Timer.getFPGATimestamp());
-    }
-
     public void resetRelativeEncoders() {
         this.modules.forEach(SwerveModule::resetRelativeEncoders);
     }

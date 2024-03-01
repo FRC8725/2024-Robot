@@ -157,3 +157,7 @@
 
 2024/02/29 v1.2.8
 - Updated NotePositionEstimator with new model
+
+2024/03/01 v1.2.9
+- Fixed NotePositionEstimator position error
+- Tidied up some code

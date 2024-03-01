@@ -5,9 +5,9 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.helpers.DashboardHelper;
-import frc.lib.helpers.TidiedUp;
 
-@TidiedUp
+import java.util.Optional;
+
 @SuppressWarnings("RedundantMethodOverride")
 public class Robot extends TimedRobot {
     private static final double LOOP_PERIOD = 0.01;
@@ -64,7 +64,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
-        this.robotContainer.teleopPeriodic();
     }
 
     @Override
@@ -85,6 +84,7 @@ public class Robot extends TimedRobot {
     }
 
     public static boolean isBlueAlliance() {
-        return DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue;
+        Optional<DriverStation.Alliance> optional = DriverStation.getAlliance();
+        return optional.isPresent() && optional.get() == DriverStation.Alliance.Blue;
     }
 }
