@@ -164,3 +164,6 @@
 
 2024/03/05 v1.2.10
 - Tuned PIDController for note tracking
+
+2024/03/06 v1.2.11
+- Uploaded more auto
