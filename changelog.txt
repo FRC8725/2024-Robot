@@ -161,3 +161,6 @@
 2024/03/01 v1.2.9
 - Fixed NotePositionEstimator position error
 - Tidied up some code
+
+2024/03/05 v1.2.10
+- Tuned PIDController for note tracking

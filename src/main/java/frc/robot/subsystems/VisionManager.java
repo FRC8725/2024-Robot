@@ -20,7 +20,7 @@ public class VisionManager extends SubsystemBase implements IDashboardProvider {
     @OutputUnit(UnitTypes.DEGREES)
     private static final double LIMELIGHT_MOUNT = -25.0;
     @OutputUnit(UnitTypes.METERS)
-    public static final double MAX_NOTE_DISTANCE = 0.97;
+    public static final double MAX_NOTE_DISTANCE = 2.0;
 
     DoubleSubscriber primaryAprilTagId = NetworkTableInstance.getDefault().getTable("limelight")
             .getDoubleTopic("tid").subscribe(-1);

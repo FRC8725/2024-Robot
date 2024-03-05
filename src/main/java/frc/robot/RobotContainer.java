@@ -16,8 +16,8 @@ public class RobotContainer implements IDashboardProvider {
     private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
     private final TelescopeSubsystem telescopeSubsystem = new TelescopeSubsystem();
     private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-    private final VisionManager visionManager = new VisionManager();
     private final LEDSubsystem ledSubsystem = new LEDSubsystem();
+    private final VisionManager visionManager = new VisionManager();
 
     private final DriverJoystick driverJoystick = new DriverJoystick();
     private final ControllerJoystick controllerJoystick = new ControllerJoystick();
@@ -76,6 +76,7 @@ public class RobotContainer implements IDashboardProvider {
                         new ParallelDeadlineGroup(Commands.waitUntil(this.intakeSubsystem::isLifterAtMax),
                                 Commands.run(this.intakeSubsystem::liftToMax, this.intakeSubsystem)
                         ),
+
                         Commands.runOnce(this.intakeSubsystem::stopAll, this.intakeSubsystem)
                 )
         );

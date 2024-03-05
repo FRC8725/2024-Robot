@@ -81,7 +81,7 @@ public class SwerveSubsystem extends SubsystemBase implements IDashboardProvider
     private final PIDController steerPIDController = new PIDController(
             2.5, 0.08, 0.0,0.01); // TODO re-tune PID
     private final PIDController noteSteerPIDController = new PIDController(
-            0.5, 0.3, 0.0,0.01);       
+            2.0, 0.08, 0.0,0.01);
 
     public SwerveSubsystem() {
         this.registerDashboard();

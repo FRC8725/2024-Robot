@@ -56,7 +56,7 @@ public class LEDCommand extends Command {
 
 		} else if (this.noteDistanceSupplier.get() >= 0.4) {
 			this.ledSubsystem.setIdleMode(false);
-			this.ledSubsystem.setColorWithPercentage(Color.kOrangeRed, Color.kBlack, (this.noteDistanceSupplier.get() - 0.4) / VisionManager.MAX_NOTE_DISTANCE);
+			this.ledSubsystem.setColorWithPercentage(Color.kOrangeRed, Color.kBlack, (this.noteDistanceSupplier.get() - 0.75) / VisionManager.MAX_NOTE_DISTANCE);
 
 		} else {
 			this.ledSubsystem.setIdleMode(true);

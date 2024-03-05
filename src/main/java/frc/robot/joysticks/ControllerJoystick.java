@@ -3,9 +3,7 @@ package frc.robot.joysticks;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.lib.helpers.TidiedUp;
 
-@TidiedUp
 public class ControllerJoystick extends XboxController {
     private static final int PORT = 0;
     private static final double MUSHROOM_HEAD_DEADBAND = 0.1;
